@@ -118,6 +118,7 @@ nomenDB = ''		# Nomen database
 bcpon = 0		# can the bcp files be bcp-ed into the database?  default is no.
 
 inputFile = ''		# file descriptor
+outputFile = ''		# file descriptor
 diagFile = ''		# file descriptor
 errorFile = ''		# file descriptor
 nomenFile = ''		# file descriptor
@@ -189,6 +190,8 @@ def exit(status, message = None):
 		sys.stderr.write('\n' + str(message) + '\n')
  
 	try:
+		inputFile.close()
+		outputFile.close()
 		diagFile.write('\n\nEnd Date/Time: %s\n' % (mgi_utils.date()))
 		errorFile.write('\n\nEnd Date/Time: %s\n' % (mgi_utils.date()))
 		diagFile.close()
@@ -213,7 +216,7 @@ def init():
 	#
 	'''
  
-	global inputFile, diagFile, errorFile, errorFileName, diagFileName, passwordFileName
+	global inputFile, outputFile, diagFile, errorFile, errorFileName, diagFileName, passwordFileName
 	global nomenFileName, refFileName, otherFileName, accFileName, accrefFileName
 	global nomenFile, refFile, otherFile, accFile, accrefFile
 	global mode
@@ -272,6 +275,7 @@ def init():
  
 	fdate = mgi_utils.date('%m%d%Y')	# current date
 	head, tail = os.path.split(inputFileName) 
+        outputFileName = inputFileName + '.out'
 	diagFileName = tail + '.' + fdate + '.diagnostics'
 	errorFileName = tail + '.' + fdate + '.error'
 	nomenFileName = tail + '.MRK_Nomen.bcp'
@@ -284,6 +288,11 @@ def init():
 		inputFile = open(inputFileName, 'r')
 	except:
 		exit(1, 'Could not open file %s\n' % inputFileName)
+		
+	try:
+		outputFile = open(outputFileName, 'w')
+	except:
+		exit(1, 'Could not open file %s\n' % outputFileName)
 		
 	try:
 		diagFile = open(diagFileName, 'w')
@@ -633,6 +642,13 @@ def processFile():
 
         	accFile.write('%d|%s%d|%s|%s|1|%d|%d|0|1|%s|%s|%s\n' \
                 	% (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, nomenKey, mgiTypeKey, cdate, cdate, cdate))
+
+		# write record back out and include MGI Accession ID
+		outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+			% (markerType, symbol, name, chromosome, \
+			markerStatus, jnum, synonyms, otherAccIDs, notes, submittedBy,
+			mgiPrefix + str(mgiKey))
+
         	accKey = accKey + 1
         	mgiKey = mgiKey + 1
 
