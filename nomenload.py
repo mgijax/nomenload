@@ -143,6 +143,7 @@ accKey = 0		# ACC_Accession._Accession_key
 synKey = 0		# NOM_Synonym._Synonym_key
 mgiKey = 0		# ACC_AccessionMax.maxNumericPart
 refAssocKey = 0		# MGI_Reference_Assoc._Assoc_key
+userKey = 0
 
 statusDict = {}		# dictionary of marker statuses for quick lookup
 referenceDict = {}	# dictionary of references for quick lookup
@@ -416,28 +417,6 @@ def verifyLogicalDB(logicalDB, lineNum):
 
 	return(logicalDBKey)
 
-def verifySubmittedBy(submittedBy, lineNum):
-	'''
-	# requires:
-	#	submittedBy - the submittedBy (string)
-	#	lineNum - the line number of the record from the input file
-	#
-	# effects:
-	#	verifies that the Submitted By is non-numm
-	#	writes to the error file if the Submitted By is invalid
-	#
-	# returns:
-	#	0 if the Submitted By is invalid
-	#	1 if the Submitted By is valid
-	#
-	'''
-
-	if len(submittedBy) == 0:
-		errorFile.write('Missing Submitted By for line: %d\n' % (lineNum))
-		return(0)
-
-	return(1)
-
 def setPrimaryKeys():
 	'''
 	# requires:
@@ -518,7 +497,7 @@ def processFile():
 	#
 	'''
 
-	global nomenKey, accKey, mgiKey, synKey, refAssocKey
+	global nomenKey, accKey, mgiKey, synKey, refAssocKey, userKey
 
 	lineNum = 0
 	# For each line in the input file
@@ -542,13 +521,14 @@ def processFile():
 			synonyms = tokens[6]
 			otherAccIDs = tokens[7]
 			notes = tokens[8]
-			submittedBy = tokens[9]
+			userKey = tokens[9]
 		except:
 			exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
 		markerTypeKey = loadlib.verifyMarkerType(markerType, lineNum, errorFile)
 		markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
 		referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
+		userKey = loadlib.verifyUser(userKey, lineNum, errorFile)
 
 		# other acc ids
 		for otherAcc in string.split(otherAccIDs, '|'):
@@ -560,9 +540,10 @@ def processFile():
 				else:
 					error = 1
 
-		if markerTypeKey == 0 or markerStatusKey == 0 or \
+		if markerTypeKey == 0 or \
+			markerStatusKey == 0 or \
 			referenceKey == 0 or \
-			not verifySubmittedBy(submittedBy, lineNum):
+			userKey == 0:
 
 			# set error flag to true
 			error = 1
@@ -575,22 +556,22 @@ def processFile():
 
 		nomenFile.write('%d|%d|%d|%d|%d|%d|%s|%s|%s||%s|||%s|%s|%s|%s\n' \
                 	% (nomenKey, markerTypeKey, markerStatusKey, markerEvent, markerEventReason, curationStateKey, \
-                           symbol, name, chromosome, mgi_utils.prvalue(notes), submittedBy, submittedBy, cdate, cdate))
+                           symbol, name, chromosome, mgi_utils.prvalue(notes), userKey, userKey, cdate, cdate))
 
         	refFile.write('%d|%d|%d|%d|%d|%s|%s|%s|%s\n' \
-			% (refAssocKey, referenceKey, nomenKey, mgiTypeKey, refAssocTypeKey, submittedBy, submittedBy, cdate, cdate))
+			% (refAssocKey, referenceKey, nomenKey, mgiTypeKey, refAssocTypeKey, userKey, userKey, cdate, cdate))
 
 		# MGI Accession ID for the marker
 
-        	accFile.write('%d|%s%d|%s|%s|1|%d|%d|0|1|%s|%s|%s\n' \
-                	% (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, nomenKey, mgiTypeKey, cdate, cdate, cdate))
+        	accFile.write('%d|%s%d|%s|%s|1|%d|%d|0|1|%s|%s|%s|%s\n' \
+                	% (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, nomenKey, mgiTypeKey, userKey, userKey, cdate, cdate))
 
 		# write record back out and include MGI Accession ID
 		outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
 			% (markerType, symbol, name, chromosome, \
 			markerStatus, jnum, mgi_utils.prvalue(synonyms), \
 			mgi_utils.prvalue(otherAccIDs), \
-			mgi_utils.prvalue(notes), submittedBy, \
+			mgi_utils.prvalue(notes), userKey, \
 			mgiPrefix + str(mgiKey)))
 
         	accKey = accKey + 1
@@ -601,17 +582,17 @@ def processFile():
 		for o in string.split(synonyms, '|'):
 			if len(o) > 0:
 				synFile.write('%d|%d|%s|%s|0|%s|%s|%s|%s\n' \
-					% (synKey, nomenKey, referenceKey, o, submittedBy, submittedBy, cdate, cdate))
+					% (synKey, nomenKey, referenceKey, o, userKey, userKey, cdate, cdate))
 				synKey = synKey + 1
 
 		# accession ids
 
 		for acc in otherAccDict.keys():
 			prefixpart, numericpart = accessionlib.split_accnum(acc)
-			accFile.write('%d|%s|%s|%s|%d|%d|%d|0|1|%s|%s|%s\n' \
+			accFile.write('%d|%s|%s|%s|%d|%d|%d|0|1|%s|%s|%s|%s\n' \
                                	% (accKey, acc, prefixpart, numericpart, otherAccDict[acc], nomenKey, \
-				   mgiTypeKey, cdate, cdate, cdate))
-			accrefFile.write('%d|%s|%s|%s|%s\n' % (accKey, referenceKey, cdate, cdate, cdate))
+				   mgiTypeKey, userKey, userKey, cdate, cdate))
+			accrefFile.write('%d|%s|%s|%s|%s|%s\n' % (accKey, referenceKey, userKey, userKey, cdate, cdate))
 			accKey = accKey + 1
 
 		nomenKey = nomenKey + 1
