@@ -5,9 +5,9 @@
 # Purpose:
 #
 #	To load new gene records into Nomen structures:
-#	MRK_Nomen
-#	MRK_Nomen_Reference
-#	MRK_Nomen_Other
+#	NOM_Marker
+#	MGI_Reference_Assoc
+#	NOM_Synonym
 #	ACC_Accession
 #	ACC_AccessionReference
 #
@@ -27,7 +27,7 @@
 #		field 3: Name
 #		field 4: Chromosome
 #		field 5: Marker Status
-#		field 6: J: (without the J:, just #####)
+#		field 6: J: (J:#####)
 #		field 7: List of Synonyms, separated by "|"
 #		field 8: LogicalDB:Acc ID|LogicalDB:Acc ID|... (accession ids)
 #		field 9: Nomenclature Notes
@@ -40,8 +40,6 @@
 #	-P = password file
 #	-M = mode (load, preview)
 #	-I = input file
-#	-G = MGD database
-#	-B = bcp on
 #
 #	processing modes:
 #		load - load the data
@@ -54,9 +52,9 @@
 #
 #       5 BCP files:
 #
-#       MRK_Nomen.bcp                   master Nomen records
-#       MRK_Nomen_Reference.bcp         Nomen/Reference records
-#       MRK_Nomen_Other.bcp             Nomen/Other Name records
+#       NOM_Marker.bcp                  master Nomen records
+#       MGI_Reference_Assoc.bcp         Nomen/Reference records
+#       NOM_Synonym.bcp             	Nomen Synonym records
 #       ACC_Accession.bcp               Accession records
 #       ACC_AccessionReference.bcp      Accession/Reference records
 #
@@ -98,6 +96,9 @@
 #
 # History:
 #
+# lec	12/30/2003
+#	- TR 5327; nomen merge
+#
 # lec	08/02/2002
 #	- created
 #
@@ -110,12 +111,12 @@ import getopt
 import db
 import mgi_utils
 import accessionlib
+import loadlib
 
 #globals
 
 DEBUG = 0		# set DEBUG to false unless preview mode is selected
-nomenDB = ''		# Nomen database
-bcpon = 0		# can the bcp files be bcp-ed into the database?  default is no.
+bcpon = 1		# can the bcp files be bcp-ed into the database?  default is yes.
 
 inputFile = ''		# file descriptor
 outputFile = ''		# file descriptor
@@ -123,7 +124,7 @@ diagFile = ''		# file descriptor
 errorFile = ''		# file descriptor
 nomenFile = ''		# file descriptor
 refFile = ''		# file descriptor
-otherFile = ''		# file descriptor
+synFile = ''		# file descriptor
 accFile = ''		# file descriptor
 accrefFile = ''		# file descriptor
 
@@ -132,25 +133,27 @@ errorFileName = ''	# file name
 passwordFileName = ''	# file name
 nomenFileName = ''	# file name
 refFileName = ''	# file name
-otherFileName = ''	# file name
+synFileName = ''	# file name
 accFileName = ''	# file name
 accrefFileName = ''	# file name
 
 mode = ''		# processing mode
-nomenKey = 0		# MRK_Nomen._Nomen_key
+nomenKey = 0		# NOM_Marker._Nomen_key
 accKey = 0		# ACC_Accession._Accession_key
-otherKey = 0		# MRK_Nomen_Other._Other_key
+synKey = 0		# NOM_Synonym._Synonym_key
 mgiKey = 0		# ACC_AccessionMax.maxNumericPart
+refAssocKey = 0		# MGI_Reference_Assoc._Assoc_key
 
-typeDict = {}		# dictionary of marker types for quick lookup
 statusDict = {}		# dictionary of marker statuses for quick lookup
 referenceDict = {}	# dictionary of references for quick lookup
 logicalDBDict = {}	# dictionary of logical DBs for quick lookup
 
 markerEvent = 1                         # Assigned
 markerEventReason = -1                  # Not Specified
-mgiTypeKey = 1                          # Nomenclature
+curationStateKey = 0
+mgiTypeKey = 21                         # Nomenclature
 mgiPrefix = "MGI:"
+refAssocTypeKey = 1003			# Primary Reference
 
 cdate = mgi_utils.date('%m/%d/%Y')	# current date
 
@@ -170,7 +173,6 @@ def showUsage():
 		'-U user\n' + \
 		'-P password file\n' + \
 		'-M mode\n' + \
-		'-N Nomen database\n' + \
 		'-I input file\n'
 	exit(1, usage)
  
@@ -217,14 +219,13 @@ def init():
 	'''
  
 	global inputFile, outputFile, diagFile, errorFile, errorFileName, diagFileName, passwordFileName
-	global nomenFileName, refFileName, otherFileName, accFileName, accrefFileName
-	global nomenFile, refFile, otherFile, accFile, accrefFile
+	global nomenFileName, refFileName, synFileName, accFileName, accrefFileName
+	global nomenFile, refFile, synFile, accFile, accrefFile
 	global mode
-	global nomenKey, accKey, otherKey, mgiKey
-	global bcpon, nomenDB
+	global nomenKey, accKey, synKey, mgiKey, refAssocKey
  
 	try:
-		optlist, args = getopt.getopt(sys.argv[1:], 'S:D:U:P:M:N:I:B')
+		optlist, args = getopt.getopt(sys.argv[1:], 'S:D:U:P:M:I:')
 	except:
 		showUsage()
  
@@ -251,10 +252,6 @@ def init():
                         mode = opt[1]
                 elif opt[0] == '-I':
                         inputFileName = opt[1]
-                elif opt[0] == '-N':
-                        nomenDB = opt[1]
-                elif opt[0] == '-B':
-                        bcpon = 1
                 else:
                         showUsage()
 
@@ -265,8 +262,7 @@ def init():
 	   user == '' or \
 	   password == '' or \
 	   mode == '' or \
-	   inputFileName == '' or \
-	   nomenDB == '':
+	   inputFileName == '':
 		showUsage()
 
 	# Initialize db.py DBMS parameters
@@ -278,9 +274,9 @@ def init():
         outputFileName = inputFileName + '.out'
 	diagFileName = tail + '.' + fdate + '.diagnostics'
 	errorFileName = tail + '.' + fdate + '.error'
-	nomenFileName = tail + '.MRK_Nomen.bcp'
-	refFileName = tail + '.MRK_Nomen_Reference.bcp'
-	otherFileName = tail + '.MRK_Nomen_Other.bcp'
+	nomenFileName = tail + '.NOM_Marker.bcp'
+	refFileName = tail + '.MGI_Reference_Assoc.bcp'
+	synFileName = tail + '.NOM_Synonym.bcp'
 	accFileName = tail + '.ACC_Accession.bcp'
 	accrefFileName = tail + '.ACC_AccessionReference.bcp'
 
@@ -315,9 +311,9 @@ def init():
 		exit(1, 'Could not open file %s\n' % refFileName)
 		
 	try:
-		otherFile = open(otherFileName, 'w')
+		synFile = open(synFileName, 'w')
 	except:
-		exit(1, 'Could not open file %s\n' % otherFileName)
+		exit(1, 'Could not open file %s\n' % synFileName)
 		
 	try:
 		accFile = open(accFileName, 'w')
@@ -358,46 +354,13 @@ def verifyMode():
 	#
 	'''
 
-	global DEBUG
+	global DEBUG, bcpon
 
 	if mode == 'preview':
 		DEBUG = 1
 		bcpon = 0
 	elif mode != 'load':
 		exit(1, 'Invalid Processing Mode:  %s\n' % (mode))
-
-def verifyReference(referenceID, lineNum):
-	'''
-	# requires:
-	#	referenceID - the Accession ID of the Reference (J:)
-	#	lineNum - the line number of the record from the input file
-	#
-	# effects:
-	#	verifies that the Reference exists by checking the referenceDict
-	#	dictionary for the reference ID or the database.
-	#	writes to the error file if the Reference is invalid
-	#	adds the Reference ID/Key to the global referenceDict dictionary if the
-	#	reference is valid
-	#
-	# returns:
-	#	0 if the Reference is invalid
-	#	Reference Key if the Reference is valid
-	#
-	'''
-
-	global referenceDict
-
-	if referenceDict.has_key(referenceID):
-		referenceKey = referenceDict[referenceID]
-	else:
-		referenceKey = accessionlib.get_Object_key('J:' + referenceID, 'Reference')
-		if referenceKey is None:
-			errorFile.write('Invalid Reference (%d): %s\n' % (lineNum, referenceID))
-			referenceKey = 0
-		else:
-			referenceDict[referenceID] = referenceKey
-
-	return(referenceKey)
 
 def verifyMarkerStatus(markerStatus, lineNum):
 	'''
@@ -425,33 +388,6 @@ def verifyMarkerStatus(markerStatus, lineNum):
 		markerStatusKey = 0
 
 	return(markerStatusKey)
-
-def verifyMarkerType(markerType, lineNum):
-	'''
-	# requires:
-	#	markerType - the Marker Type
-	#	lineNum - the line number of the record from the input file
-	#
-	# effects:
-	#	verifies that:
-	#		the Marker Type exists 
-	#	writes to the error file if the Marker Type is invalid
-	#
-	# returns:
-	#	0 if the Marker Type is invalid
-	#	Marker Type Key if the Marker Type is valid
-	#
-	'''
-
-	markerTypeKey = 0
-
-	if typeDict.has_key(markerType):
-		markerTypeKey = typeDict[markerType]
-	else:
-		errorFile.write('Invalid Marker Type (%d) %s\n' % (lineNum, markerType))
-		markerTypeKey = 0
-
-	return(markerTypeKey)
 
 def verifyLogicalDB(logicalDB, lineNum):
 	'''
@@ -514,51 +450,56 @@ def setPrimaryKeys():
 	#
 	'''
 
-	global nomenKey, accKey, mgiKey, otherKey
+	global nomenKey, accKey, mgiKey, synKey, refAssocKey, curationStateKey
 
-        results = db.sql('select maxKey = max(_Nomen_key) + 1 from %s..MRK_Nomen' % (nomenDB), 'auto')
+        results = db.sql('select maxKey = max(_Nomen_key) + 1 from NOM_Marker', 'auto')
         if results[0]['maxKey'] is None:
                 nomenKey = 1000
         else:
                 nomenKey = results[0]['maxKey']
 
-        results = db.sql('select maxKey = max(_Accession_key) + 1 from %s..ACC_Accession' % (nomenDB), 'auto')
+        results = db.sql('select maxKey = max(_Assoc_key) + 1 from MGI_Reference_Assoc', 'auto')
+        if results[0]['maxKey'] is None:
+                refAssocKey = 1000
+        else:
+                refAssocKey = results[0]['maxKey']
+
+        results = db.sql('select maxKey = max(_Accession_key) + 1 from ACC_Accession', 'auto')
         if results[0]['maxKey'] is None:
                 accKey = 1000
         else:
                 accKey = results[0]['maxKey']
 
-        results = db.sql('select maxKey = max(_Other_key) + 1 from %s..MRK_Nomen_Other' % (nomenDB), 'auto')
+        results = db.sql('select maxKey = max(_Synonym_key) + 1 from NOM_Synonym', 'auto')
         if results[0]['maxKey'] is None:
-                otherKey = 1000
+                synKey = 1000
         else:
-                otherKey = results[0]['maxKey']
+                synKey = results[0]['maxKey']
 
         results = db.sql('select maxKey = maxNumericPart + 1 from ACC_AccessionMax ' + \
 		'where prefixPart = "%s"' % (mgiPrefix), 'auto')
         mgiKey = results[0]['maxKey']
+
+        results = db.sql('select _Term_key from VOC_Term_CurationState_View where term = "Internal"', 'auto')
+        curationStateKey = results[0]['_Term_key']
 
 def loadDictionaries():
 	'''
 	# requires:
 	#
 	# effects:
-	#	loads global dictionaries: typeDict, statusDict, logicalDBDict
+	#	loads global dictionaries: statusDict, logicalDBDict
 	#	for quicker lookup
 	#
 	# returns:
 	#	nothing
 	'''
 
-	global typeDict, statusDict, logicalDBDict
+	global statusDict, logicalDBDict
 
-	results = db.sql('select _Marker_Status_key, status from %s..MRK_Status' % (nomenDB), 'auto')
+	results = db.sql('select _Term_key, term from VOC_Term_NomenStatus_View', 'auto')
 	for r in results:
-		statusDict[r['status']] = r['_Marker_Status_key']
-
-	results = db.sql('select _Marker_Type_key, name from MRK_Types', 'auto')
-	for r in results:
-		typeDict[r['name']] = r['_Marker_Type_key']
+		statusDict[r['term']] = r['_Term_key']
 
 	results = db.sql('select _LogicalDB_key, name from ACC_LogicalDB', 'auto')
 	for r in results:
@@ -577,7 +518,7 @@ def processFile():
 	#
 	'''
 
-	global nomenKey, accKey, mgiKey, otherKey
+	global nomenKey, accKey, mgiKey, synKey, refAssocKey
 
 	lineNum = 0
 	# For each line in the input file
@@ -605,9 +546,9 @@ def processFile():
 		except:
 			exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
-		markerTypeKey = verifyMarkerType(markerType, lineNum)
+		markerTypeKey = loadlib.verifyMarkerType(markerType, lineNum, errorFile)
 		markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
-		referenceKey = verifyReference(jnum, lineNum)
+		referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
 
 		# other acc ids
 		for otherAcc in string.split(otherAccIDs, '|'):
@@ -632,11 +573,12 @@ def processFile():
 
 		# if no errors, process the marker
 
-		nomenFile.write('%d|%d|%d|%d|%d|%s||%s|%s|%s||%s||%s|%s\n' \
-                	% (nomenKey, markerTypeKey, markerStatusKey, markerEvent, markerEventReason, \
-                           submittedBy, symbol, name, chromosome, mgi_utils.prvalue(notes), cdate, cdate))
+		nomenFile.write('%d|%d|%d|%d|%d|%d|%s|%s|%s||%s|||%s|%s|%s|%s\n' \
+                	% (nomenKey, markerTypeKey, markerStatusKey, markerEvent, markerEventReason, curationStateKey, \
+                           symbol, name, chromosome, mgi_utils.prvalue(notes), submittedBy, submittedBy, cdate, cdate))
 
-        	refFile.write('%d|%s|1|1|%s|%s\n' % (nomenKey, referenceKey, cdate, cdate))
+        	refFile.write('%d|%d|%d|%d|%d|%s|%s|%s|%s\n' \
+			% (refAssocKey, referenceKey, nomenKey, mgiTypeKey, refAssocTypeKey, submittedBy, submittedBy, cdate, cdate))
 
 		# MGI Accession ID for the marker
 
@@ -653,13 +595,14 @@ def processFile():
 
         	accKey = accKey + 1
         	mgiKey = mgiKey + 1
+		refAssocKey = refAssocKey + 1
 
-		# other names
+		# synonyms
 		for o in string.split(synonyms, '|'):
 			if len(o) > 0:
-				otherFile.write('%d|%d|%s|%s|0|%s|%s\n' \
-					% (otherKey, nomenKey, referenceKey, o, cdate, cdate))
-				otherKey = otherKey + 1
+				synFile.write('%d|%d|%s|%s|0|%s|%s|%s|%s\n' \
+					% (synKey, nomenKey, referenceKey, o, submittedBy, submittedBy, cdate, cdate))
+				synKey = synKey + 1
 
 		# accession ids
 
@@ -701,28 +644,28 @@ def bcpFiles():
 
 	nomenFile.close()
 	refFile.close()
-	otherFile.close()
+	synFile.close()
 	accFile.close()
 	accrefFile.close()
 
 	bcp1 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
-		% (passwordFileName, nomenDB, \
-	   	'MRK_Nomen', nomenFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
+		% (passwordFileName, db.get_sqlDatabase(), \
+	   	'NOM_Marker', nomenFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
 
 	bcp2 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
-		% (passwordFileName, nomenDB, \
-	   	'MRK_Nomen_Reference', refFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
+		% (passwordFileName, db.get_sqlDatabase(), \
+	   	'MGI_Reference_Assoc', refFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
 
 	bcp3 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
-		% (passwordFileName, nomenDB, \
-	   	'MRK_Nomen_Other', otherFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
+		% (passwordFileName, db.get_sqlDatabase(), \
+	   	'NOM_Synonym', synFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
 
 	bcp4 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
-		% (passwordFileName, nomenDB, \
+		% (passwordFileName, db.get_sqlDatabase(), \
 	   	'ACC_Accession', accFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
 
 	bcp5 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
-		% (passwordFileName, nomenDB, \
+		% (passwordFileName, db.get_sqlDatabase(), \
 	   	'ACC_AccessionReference', accrefFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
 
 	diagFile.write('%s\n' % bcp1)
