@@ -7,7 +7,7 @@
 #	To load new gene records into Nomen structures:
 #	NOM_Marker
 #	MGI_Reference_Assoc
-#	NOM_Synonym
+#	MGI_Synonym
 #	ACC_Accession
 #	ACC_AccessionReference
 #
@@ -54,7 +54,7 @@
 #
 #       NOM_Marker.bcp                  master Nomen records
 #       MGI_Reference_Assoc.bcp         Nomen/Reference records
-#       NOM_Synonym.bcp             	Nomen Synonym records
+#       MGI_Synonym.bcp             	Nomen Synonym records
 #       ACC_Accession.bcp               Accession records
 #       ACC_AccessionReference.bcp      Accession/Reference records
 #
@@ -140,7 +140,7 @@ accrefFileName = ''	# file name
 mode = ''		# processing mode
 nomenKey = 0		# NOM_Marker._Nomen_key
 accKey = 0		# ACC_Accession._Accession_key
-synKey = 0		# NOM_Synonym._Synonym_key
+synKey = 0		# MGI_Synonym._Synonym_key
 mgiKey = 0		# ACC_AccessionMax.maxNumericPart
 refAssocKey = 0		# MGI_Reference_Assoc._Assoc_key
 userKey = 0
@@ -155,6 +155,7 @@ curationStateKey = 0
 mgiTypeKey = 21                         # Nomenclature
 mgiPrefix = "MGI:"
 refAssocTypeKey = 1003			# Primary Reference
+synTypeKey = 1003			# Other Synonym Type key
 
 cdate = mgi_utils.date('%m/%d/%Y')	# current date
 
@@ -277,7 +278,7 @@ def init():
 	errorFileName = tail + '.' + fdate + '.error'
 	nomenFileName = tail + '.NOM_Marker.bcp'
 	refFileName = tail + '.MGI_Reference_Assoc.bcp'
-	synFileName = tail + '.NOM_Synonym.bcp'
+	synFileName = tail + '.MGI_Synonym.bcp'
 	accFileName = tail + '.ACC_Accession.bcp'
 	accrefFileName = tail + '.ACC_AccessionReference.bcp'
 
@@ -476,7 +477,7 @@ def setPrimaryKeys():
         else:
                 accKey = results[0]['maxKey']
 
-        results = db.sql('select maxKey = max(_Synonym_key) + 1 from NOM_Synonym', 'auto')
+        results = db.sql('select maxKey = max(_Synonym_key) + 1 from MGI_Synonym', 'auto')
         if results[0]['maxKey'] is None:
                 synKey = 1000
         else:
@@ -610,8 +611,8 @@ def processFile():
 		# synonyms
 		for o in string.split(synonyms, '|'):
 			if len(o) > 0:
-				synFile.write('%d|%d|%s|%s|0|%s|%s|%s|%s\n' \
-					% (synKey, nomenKey, referenceKey, o, userKey, userKey, cdate, cdate))
+				synFile.write('%d|%d|%d|%d|%s|%s|%s|%s|%s|%s\n' \
+					% (synKey, nomenKey, mgiTypeKey, synTypeKey, referenceKey, o, userKey, userKey, cdate, cdate))
 				synKey = synKey + 1
 
 		# accession ids
@@ -668,7 +669,7 @@ def bcpFiles():
 
 	bcp3 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
 		% (passwordFileName, db.get_sqlDatabase(), \
-	   	'NOM_Synonym', synFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
+	   	'MGI_Synonym', synFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
 
 	bcp4 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
 		% (passwordFileName, db.get_sqlDatabase(), \
