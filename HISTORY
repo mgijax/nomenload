@@ -1,3 +1,9 @@
+TAG: nomenload-3-0-1-mgi298-1
+DATE: 01/13/2004
+STAFF: lec
+RELEASE: A
+CHANGES: do not load duplicate symbols
+
 TAG: nomenload-3-0-1
 DATE: 01/13/2004
 STAFF: lec
