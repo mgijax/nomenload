@@ -390,6 +390,33 @@ def verifyMarkerStatus(markerStatus, lineNum):
 
 	return(markerStatusKey)
 
+def verifyDuplicateMarker(symbol, lineNum):
+	'''
+	# requires:
+	#	symbol - the Marker Symbol
+	#	lineNum - the line number of the record from the input file
+	#
+	# effects:
+	#	verifies that:
+	#		the Marker Symbol is not a duplicate
+	#	writes to the error file if the Symbol is a duplicate
+	#
+	# returns:
+	#	1 if the Marker Symbol is a duplicate
+	#	0 if the Marker Symbol is not a duplicate
+	#
+	'''
+
+	results = db.sql('select _Nomen_key from NOM_Marker where symbol = "%s" ' % (symbol) + \
+		'union ' +
+		'select _Marker_key from MRK_Marker where _Organism_key = 1 and symbol = "%s"' % (symbol), 'auto')
+
+	if len(results) == 0:
+		return 0
+	else:
+		errorFile.write('Duplicate Marker (%d) %s\n' % (lineNum, symbol))
+		return 1
+
 def verifyLogicalDB(logicalDB, lineNum):
 	'''
 	# requires:
@@ -529,6 +556,7 @@ def processFile():
 		markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
 		referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
 		userKey = loadlib.verifyUser(userKey, lineNum, errorFile)
+		isDuplicateMarker = verifyDuplicateMarker(symbol, lineNum, errorFile)
 
 		# other acc ids
 		for otherAcc in string.split(otherAccIDs, '|'):
@@ -543,6 +571,7 @@ def processFile():
 		if markerTypeKey == 0 or \
 			markerStatusKey == 0 or \
 			referenceKey == 0 or \
+			isDuplicateMarker == 1 or \
 			userKey == 0:
 
 			# set error flag to true
