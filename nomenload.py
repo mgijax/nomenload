@@ -556,7 +556,7 @@ def processFile():
 		markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
 		referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
 		userKey = loadlib.verifyUser(userKey, lineNum, errorFile)
-		isDuplicateMarker = verifyDuplicateMarker(symbol, lineNum, errorFile)
+		isDuplicateMarker = verifyDuplicateMarker(symbol, lineNum)
 
 		# other acc ids
 		for otherAcc in string.split(otherAccIDs, '|'):
