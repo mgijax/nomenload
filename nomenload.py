@@ -685,15 +685,10 @@ def bcpFiles():
 	diagFile.write('%s\n' % bcp5)
 
 	os.system(bcp1)
-	db.sql('dump transaction %s with truncate_only' % (db.get_sqlDatabase()), None)
 	os.system(bcp2)
-	db.sql('dump transaction %s with truncate_only' % (db.get_sqlDatabase()), None)
 	os.system(bcp3)
-	db.sql('dump transaction %s with truncate_only' % (db.get_sqlDatabase()), None)
 	os.system(bcp4)
-	db.sql('dump transaction %s with truncate_only' % (db.get_sqlDatabase()), None)
 	os.system(bcp5)
-	db.sql('dump transaction %s with truncate_only' % (db.get_sqlDatabase()), None)
 
 #
 # Main

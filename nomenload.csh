@@ -31,31 +31,46 @@ date >> ${LOG}
 #
 # Execute nomenload
 #
-${NOMENLOAD} -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -I${{DATAFILE} -M${{NOMENMODE} >>& ${LOG}
+${NOMENLOAD} -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -I${DATAFILE} -M${NOMENMODE} >>& ${LOG}
+
+cat - <<EOSQL | doisql.csh $0 >> $LOG
+
+use $DBNAME
+go
+
+declare marker_cursor cursor for
+select n._Nomen_key
+from NOM_Marker n, MGI_Reference_Assoc r, ACC_Accession b, VOC_Term t
+where n._Nomen_key = r._Object_key
+and r._MGIType_key = 21
+and r._Refs_key = b._Object_key
+and b._MGIType_key = 1
+and b.accID = "J:68900"
+and n._NomenStatus_key = t._Term_key
+and term = "In Progress"
+go
+
+declare @nomenKey integer
+
+open marker_cursor
+
+fetch marker_cursor into @nomenKey
+
+while (@@sqlstatus = 0)
+begin
+        exec NOM_transferToMGD @nomenKey, "official"
+        fetch marker_cursor into @nomenKey
+end
+
+close marker_cursor
+deallocate cursor marker_cursor
+
+checkpoint
+go
+
+quit
+
+EOSQL
 
 date >> ${LOG}
-
-#declare marker_cursor cursor for
-#select n._Nomen_key
-#from NOM_Marker n, MGI_Reference_Assoc r
-#where n._Nomen_key = r._Object_key
-#and r._MGIType_key = 21
-#and r._Refs_key = 85878
-#for read only
-#go
-
-#declare @nomenKey integer
-#
-#open marker_cursor
-#
-#fetch marker_cursor into @nomenKey
-#
-#while (@@sqlstatus = 0)
-#begin
-#        exec NOM_transferToMGD @nomenKey, "official"
-#        fetch marker_cursor into @nomenKey
-#end
-#
-#close marker_cursor
-#deallocate cursor marker_cursor
 
