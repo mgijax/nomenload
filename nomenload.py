@@ -644,10 +644,12 @@ def processFile():
                 	% (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, nomenKey, mgiTypeKey, cdate, cdate, cdate))
 
 		# write record back out and include MGI Accession ID
-		outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+		outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
 			% (markerType, symbol, name, chromosome, \
-			markerStatus, jnum, synonyms, otherAccIDs, notes, submittedBy,
-			mgiPrefix + str(mgiKey))
+			markerStatus, jnum, mgi_utils.prvalue(synonyms), \
+			mgi_utils.prvalue(otherAccIDs), \
+			mgi_utils.prvalue(notes), submittedBy, \
+			mgiPrefix + str(mgiKey)))
 
         	accKey = accKey + 1
         	mgiKey = mgiKey + 1
