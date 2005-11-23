@@ -11,6 +11,8 @@
 #	ACC_Accession
 #	ACC_AccessionReference
 #
+# and to (optionally) broadcast them to MGI (MRK_Marker)
+#
 # Assumes:
 #
 #	That no one else is adding Nomen records to the database.
@@ -38,15 +40,17 @@
 #	-D = database
 #	-U = user
 #	-P = password file
-#	-M = mode (load, preview)
+#	-M = mode (load, preview, broadcast)
 #	-I = input file
 #
 #	processing modes:
-#		load - load the data
+#		load - load the data into Nomen structures
 #
 #		preview - perform all record verifications but do not load the data or
 #		          make any changes to the database.  used for testing or to preview
 #			  the load.
+#
+#		broadcast - load the data into Nomen structures and broadcast to MRK structures
 #
 # Output:
 #
@@ -65,6 +69,7 @@
 #
 #	1. Verify Mode.
 #		if mode = load:  process records
+#		if mode = broadcast:  process records and broadcast
 #		if mode = preview:  set "DEBUG" to True
 #
 #	2. Load Marker Types and Marker Statuses into dictionaries for quicker lookup.
@@ -138,6 +143,7 @@ accFileName = ''	# file name
 accrefFileName = ''	# file name
 
 mode = ''		# processing mode
+startNomenKey = 0	# beginning NOM_Marker._Nomen_key
 nomenKey = 0		# NOM_Marker._Nomen_key
 accKey = 0		# ACC_Accession._Accession_key
 synKey = 0		# MGI_Synonym._Synonym_key
@@ -224,7 +230,7 @@ def init():
 	global nomenFileName, refFileName, synFileName, accFileName, accrefFileName
 	global nomenFile, refFile, synFile, accFile, accrefFile
 	global mode
-	global nomenKey, accKey, synKey, mgiKey, refAssocKey
+	global startNomenKey, nomenKey, accKey, synKey, mgiKey, refAssocKey
  
 	try:
 		optlist, args = getopt.getopt(sys.argv[1:], 'S:D:U:P:M:I:')
@@ -361,7 +367,7 @@ def verifyMode():
 	if mode == 'preview':
 		DEBUG = 1
 		bcpon = 0
-	elif mode != 'load':
+	elif mode not in ['load', 'broadcast']:
 		exit(1, 'Invalid Processing Mode:  %s\n' % (mode))
 
 def verifyMarkerStatus(markerStatus, lineNum):
@@ -457,13 +463,14 @@ def setPrimaryKeys():
 	#
 	'''
 
-	global nomenKey, accKey, mgiKey, synKey, refAssocKey, curationStateKey
+	global startNomenKey, nomenKey, accKey, mgiKey, synKey, refAssocKey, curationStateKey
 
         results = db.sql('select maxKey = max(_Nomen_key) + 1 from NOM_Marker', 'auto')
         if results[0]['maxKey'] is None:
                 nomenKey = 1000
         else:
                 nomenKey = results[0]['maxKey']
+        startNomenKey = nomenKey
 
         results = db.sql('select maxKey = max(_Assoc_key) + 1 from MGI_Reference_Assoc', 'auto')
         if results[0]['maxKey'] is None:
@@ -691,6 +698,24 @@ def bcpFiles():
 	os.system(bcp4)
 	os.system(bcp5)
 
+def broadcastToMRK():
+	'''
+	# requires:
+	#
+	# effects:
+	#	broadcasts the recently processed NOM markers to MGI
+	#
+	# returns:
+	#	nothing
+	#
+	'''
+
+	if mode != 'broadcast':
+		return
+
+	for x in range(startNomenKey, nomenKey):
+	    db.sql('exec NOM_transferToMGD %s, "official"' % (x), None)
+
 #
 # Main
 #
@@ -701,5 +726,6 @@ setPrimaryKeys()
 loadDictionaries()
 processFile()
 bcpFiles()
+broadcastToMRK()
 exit(0)
 
