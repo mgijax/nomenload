@@ -13,8 +13,6 @@ if ( ${?MGICONFIG} == 0 ) then
 endif
 
 source ${MGICONFIG}/master.config.csh
-# for doisql...
-source ${MGD_DBSCHEMADIR}/Configuration
 
 # Nomen load specific
 setenv NOMENLOAD	${DATALOAD}/nomenload/nomenload.py
@@ -40,7 +38,7 @@ ${NOMENLOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWOR
 # Broadcast Genes from Nomen to MGI (NOM_ tables to MRK_ tables)
 #
 
-cat - <<EOSQL | doisql.csh $0 >> $LOG
+cat - <<EOSQL | doisql.csh ${MGD_DBSERVER} ${MGD_DBNAME} $0 >> $LOG
 
 use ${MGD_DBNAME}
 go
