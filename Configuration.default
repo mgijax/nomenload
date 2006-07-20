@@ -1,0 +1,14 @@
+#!/bin/csh -f
+
+#
+# Configuration file
+#
+
+cd `dirname $0`
+
+if ( ${?MGICONFIG} == 0 ) then
+	setenv MGICONFIG /home/lec/build36/mgiconfig
+endif
+
+source ${MGICONFIG}/master.config.csh
+

@@ -3,25 +3,24 @@
 #
 # Example Wrapper script to create & load new genes into Nomen
 #
-# Usage:  nomenload.csh
+# Usage:  nomenload.csh configFile
 #
 
-cd `dirname $0` && source ./$1
+cd `dirname $0` && source $1
 
 setenv NOMENLOAD	${DATALOAD}/nomenload/nomenload.py
-setenv LOG `basename $0`.log
 
 cd ${NOMENDATADIR}
 
-rm -rf ${LOG}
-touch ${LOG}
+rm -rf ${NOMENLOG}
+touch ${NOMENLOG}
  
-date >> ${LOG}
+date >> ${NOMENLOG}
  
 #
 # Execute nomenload
 #
-${NOMENLOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -I${NOMENDATAFILE} -M${NOMENMODE} | tee -a ${LOG}
+${NOMENLOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -I${NOMENDATAFILE} -M${NOMENMODE} | tee -a ${NOMENLOG}
 
 #
 # Broadcast Genes from Nomen to MGI (NOM_ tables to MRK_ tables)
@@ -29,9 +28,9 @@ ${NOMENLOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWOR
 
 if ( ${NOMENBROADCAST} == "yes" ) then
 
-echo "Broadcasting symbols..." | tee -a ${LOG}
+echo "Broadcasting symbols..." | tee -a ${NOMENLOG}
 
-cat - <<EOSQL | doisql.csh ${MGD_DBSERVER} ${MGD_DBNAME} $0 | tee -a ${LOG}
+cat - <<EOSQL | doisql.csh ${MGD_DBSERVER} ${MGD_DBNAME} $0 | tee -a ${NOMENLOG}
 
 use ${MGD_DBNAME}
 go
@@ -72,5 +71,5 @@ EOSQL
 
 endif
 
-date >> ${LOG}
+date >> ${NOMENLOG}
 
