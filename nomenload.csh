@@ -6,7 +6,7 @@
 # Usage:  nomenload.csh
 #
 
-cd `dirname $0` && source $1
+cd `dirname $0` && source ./$1
 
 setenv NOMENLOAD	${DATALOAD}/nomenload/nomenload.py
 setenv LOG `basename $0`.log
@@ -21,13 +21,17 @@ date >> ${LOG}
 #
 # Execute nomenload
 #
-${NOMENLOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -I${NOMENDATAFILE} -M${NOMENMODE} >>& ${LOG}
+${NOMENLOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -I${NOMENDATAFILE} -M${NOMENMODE} | tee -a ${LOG}
 
 #
 # Broadcast Genes from Nomen to MGI (NOM_ tables to MRK_ tables)
 #
 
-cat - <<EOSQL | doisql.csh ${MGD_DBSERVER} ${MGD_DBNAME} $0 >> $LOG
+if ( ${NOMENBROADCAST} == "yes" ) then
+
+echo "Broadcasting symbols..." | tee -a ${LOG}
+
+cat - <<EOSQL | doisql.csh ${MGD_DBSERVER} ${MGD_DBNAME} $0 | tee -a ${LOG}
 
 use ${MGD_DBNAME}
 go
@@ -65,6 +69,8 @@ go
 quit
 
 EOSQL
+
+endif
 
 date >> ${LOG}
 
