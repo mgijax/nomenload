@@ -7,7 +7,7 @@
 cd `dirname $0`
 
 if ( ${?MGICONFIG} == 0 ) then
-	setenv MGICONFIG /home/lec/build36/mgiconfig
+	setenv MGICONFIG /usr/local/mgi/live/mgiconfig
 endif
 
 source ${MGICONFIG}/master.config.csh
