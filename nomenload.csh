@@ -6,23 +6,12 @@
 # Usage:  nomenload.csh
 #
 
-cd `dirname $0`
+cd `dirname $0` && source $1
 
-if ( ${?MGICONFIG} == 0 ) then
-	setenv MGICONFIG /usr/local/mgi/live/mgiconfig
-endif
-
-source ${MGICONFIG}/master.config.csh
-
-# Nomen load specific
 setenv NOMENLOAD	${DATALOAD}/nomenload/nomenload.py
-setenv NOMENMODE	load
-#setenv NOMENMODE	preview
-
-# specific to your load
-setenv DATAFILE 	speciftoyourload
-
 setenv LOG `basename $0`.log
+
+cd ${NOMENDATADIR}
 
 rm -rf ${LOG}
 touch ${LOG}
@@ -32,7 +21,7 @@ date >> ${LOG}
 #
 # Execute nomenload
 #
-${NOMENLOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -I${DATAFILE} -M${NOMENMODE} >>& ${LOG}
+${NOMENLOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -I${NOMENDATAFILE} -M${NOMENMODE} >>& ${LOG}
 
 #
 # Broadcast Genes from Nomen to MGI (NOM_ tables to MRK_ tables)
@@ -50,7 +39,7 @@ where n._Nomen_key = r._Object_key
 and r._MGIType_key = 21
 and r._Refs_key = b._Object_key
 and b._MGIType_key = 1
-and b.accID = "J:68900"
+and b.accID = ${NOMENREFERENCE}
 and n._NomenStatus_key = t._Term_key
 and term = "In Progress"
 go
