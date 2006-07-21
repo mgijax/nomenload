@@ -1,14 +1,14 @@
 #!/bin/csh -f
 
 #
-# Example Wrapper script to create & load new genes into Nomen
+# Wrapper script to create & load new genes into Nomen
 #
 # Usage:  nomenload.csh configFile
 #
 
-cd `dirname $0` && source $1
+setenv CONFIGFILE $1
 
-setenv NOMENLOAD	${DATALOAD}/nomenload/nomenload.py
+cd `dirname $0` && source ./${CONFIGFILE}
 
 cd ${NOMENDATADIR}
 
@@ -68,6 +68,12 @@ go
 quit
 
 EOSQL
+
+#
+# Execute mapping load
+#
+
+${MAPPINGLOAD} `dirname $0`/${CONFIGFILE}
 
 endif
 
