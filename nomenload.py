@@ -175,7 +175,7 @@ mgiPrefix = "MGI:"
 refAssocTypeKey = 1003			# Primary Reference
 synTypeKey = 1003			# Other Synonym Type key
 
-mappingCol3 = 'no'
+mappingCol3 = 'yes'
 mappingCol4 = ''
 mappingCol5 = os.environ['MAPPINGASSAYTYPE']
 mappingCol6 = ''
