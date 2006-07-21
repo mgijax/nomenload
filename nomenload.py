@@ -11,9 +11,9 @@
 #	ACC_Accession
 #	ACC_AccessionReference
 #
-# and to (optionally) broadcast them to MGI (MRK_Marker)
-#
 # and to create an input file for the mapping load
+#
+# and to (optionally) broadcast them to MGI (MRK_Marker)
 #
 # Assumes:
 #
@@ -73,7 +73,7 @@
 #		yes (to automatically update the Marker's chromosome field)
 #		Band (leave blank)
 #		Assay Type
-#		Description
+#		Description (leave blank)
 #
 # Processing:
 #

@@ -1,7 +1,8 @@
 #!/bin/csh -f
 
 #
-# Wrapper script to create & load new genes into Nomen
+# Load new genes into Nomen
+# Load Mapping records
 #
 # Usage:  nomenload.csh configFile
 #
