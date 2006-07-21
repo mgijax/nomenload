@@ -23,6 +23,12 @@ date >> ${NOMENLOG}
 ${NOMENLOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -I${NOMENDATAFILE} -M${NOMENMODE} | tee -a ${NOMENLOG}
 
 #
+# Execute mapping load
+#
+
+${MAPPINGLOAD} ./${CONFIGFILE}
+
+#
 # Broadcast Genes from Nomen to MGI (NOM_ tables to MRK_ tables)
 #
 
@@ -73,7 +79,7 @@ EOSQL
 # Execute mapping load
 #
 
-${MAPPINGLOAD} `dirname $0`/${CONFIGFILE}
+${MAPPINGLOAD} ./${CONFIGFILE}
 
 endif
 
