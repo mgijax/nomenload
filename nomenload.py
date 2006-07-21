@@ -633,6 +633,11 @@ def processFile():
 			mgi_utils.prvalue(notes), userKey, \
 			mgiPrefix + str(mgiKey)))
 
+		# mapping record; write it out before incrementing the acc id keys
+
+		mappingFile.write('%s%d\t%s\t%s\t%s\t%s\t%s\n' \
+			% (mgiPrefix, mgiKey, chromosome, mappingCol3, mappingCol4, mappingCol5, mappingCol6))
+
         	accKey = accKey + 1
         	mgiKey = mgiKey + 1
 		refAssocKey = refAssocKey + 1
@@ -653,11 +658,6 @@ def processFile():
 				   mgiTypeKey, userKey, userKey, cdate, cdate))
 			accrefFile.write('%d|%s|%s|%s|%s|%s\n' % (accKey, referenceKey, userKey, userKey, cdate, cdate))
 			accKey = accKey + 1
-
-		# mapping record
-
-		mappingFile.write('%s%d\t%s\t%s\t%s\t%s\t%s\n' \
-			% (mgiPrefix, mgiKey, chromosome, mappingCol3, mappingCol4, mappingCol5, mappingCol6))
 
 		nomenKey = nomenKey + 1
 
