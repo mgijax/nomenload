@@ -70,7 +70,7 @@
 #	Mapping input file:
 #		MGI AccID of Marker
 #		Chromosome
-#		no (to *not* automatically update the Marker's chromosome field; it's already set)
+#		yes (to automatically update the Marker's chromosome field)
 #		Band (leave blank)
 #		Assay Type
 #		Description
@@ -692,6 +692,7 @@ def bcpFiles():
 	synFile.close()
 	accFile.close()
 	accrefFile.close()
+	mappingFile.close()
 
 	bcp1 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
 		% (passwordFileName, db.get_sqlDatabase(), \
