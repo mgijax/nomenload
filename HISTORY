@@ -1,79 +1,69 @@
+TAG: nomenload-build36-4
+DATE: 08/15/2006
+STAFF: lec
+CHANGES: build 36
+
 TAG: nomenload-build36-3
 DATE: 07/28/2006
 STAFF: lec
-RELEASE: A
 CHANGES: build 36
 
 TAG: nomenload-build36-2
 DATE: 07/27/2006
 STAFF: lec
-RELEASE: A
 CHANGES: build 36
 
 TAG: nomenload-build36-BP
 TAG: nomenload-build36-1
 DATE: 07/17/2006
 STAFF: lec
-RELEASE: A
 CHANGES: build 36
 
 TAG: nomenload-build36-BP
 DATE: 07/14/2006
 STAFF: lec
-RELEASE: A
 CHANGES: branch point for build 36
 
 TAG: nomenload-4-0-3
 DATE: 01/13/2005
 STAFF: lec
-RELEASE: A
 CHANGES: convert to MGI_Synonym
 
 TAG: nomenload-4-0-2
 DATE: 02/11/2004
 STAFF: lec
-RELEASE: A
 CHANGES: remove dump commands
 
 TAG: nomenload-4-0-1
 DATE: 02/11/2004
 STAFF: lec
-RELEASE: A
 CHANGES: JSAM; check for duplicate symbols
 
 TAG: nomenload-4-0-0
 DATE: 01/28/2004
 STAFF: lec
-RELEASE: A
 CHANGES: JSAM
 
 TAG: nomenload-3-0-1
 DATE: 01/13/2004
 STAFF: lec
-RELEASE: A
 CHANGES: TR 5327; nomen merge
 
 TAG: nomenload-3-0-0
 DATE: 12/30/2003
 STAFF: lec
-RELEASE: A
 CHANGES: TR 5327; nomen merge
 
 TAG: nomenload-2-0-0
 DATE: 05/28/2003
 STAFF: lec
-RELEASE: A
 CHANGES: added output file creation
 
 TAG: nomenload-1-0-1
 DATE: 10/21/2000
 STAFF: lec
-RELEASE: A
 CHANGES: added db.useOneConnection()
 
 TAG: nomenload-1-0-0
 DATE: 08/14/2000
 STAFF: lec
-RELEASE: A
-CHANGES: New CVS repository
-

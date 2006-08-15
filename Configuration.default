@@ -10,5 +10,8 @@ endif
 
 source ${MGICONFIG}/master.config.csh
 
-setenv NOMENLOAD        ${DATALOAD}/nomenload/nomenload.py
-setenv MAPPINGLOAD      ${DATALOAD}/mappingload/mappingload.csh
+setenv NOMENLOADDIR     ${DATALOAD}/nomenload
+setenv NOMENLOAD        ${NOMENLOADDIR}/nomenload.py
+setenv MAPPINGLOADDIR   ${DATALOAD}/mappingload
+setenv MAPPINGLOAD      ${MAPPINGLOADDIR}/mappingload.csh
+
