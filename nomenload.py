@@ -11,6 +11,8 @@
 #	ACC_Accession
 #	ACC_AccessionReference
 #
+# and to create an input file for the mapping load
+#
 # and to (optionally) broadcast them to MGI (MRK_Marker)
 #
 # Assumes:
@@ -64,6 +66,14 @@
 #
 #	Diagnostics file of all input parameters and SQL commands
 #	Error file
+#
+#	Mapping input file:
+#		MGI AccID of Marker
+#		Chromosome
+#		yes (to automatically update the Marker's chromosome field)
+#		Band (leave blank)
+#		Assay Type
+#		Description (leave blank)
 #
 # Processing:
 #
@@ -132,6 +142,7 @@ refFile = ''		# file descriptor
 synFile = ''		# file descriptor
 accFile = ''		# file descriptor
 accrefFile = ''		# file descriptor
+mappingFile = ''	# file descriptor
 
 diagFileName = ''	# file name
 errorFileName = ''	# file name
@@ -141,6 +152,7 @@ refFileName = ''	# file name
 synFileName = ''	# file name
 accFileName = ''	# file name
 accrefFileName = ''	# file name
+mappingFileName = os.environ['MAPPINGDATAFILE']
 
 mode = ''		# processing mode
 startNomenKey = 0	# beginning NOM_Marker._Nomen_key
@@ -162,6 +174,11 @@ mgiTypeKey = 21                         # Nomenclature
 mgiPrefix = "MGI:"
 refAssocTypeKey = 1003			# Primary Reference
 synTypeKey = 1003			# Other Synonym Type key
+
+mappingCol3 = 'yes'
+mappingCol4 = ''
+mappingCol5 = os.environ['MAPPINGASSAYTYPE']
+mappingCol6 = ''
 
 cdate = mgi_utils.date('%m/%d/%Y')	# current date
 
@@ -228,7 +245,7 @@ def init():
  
 	global inputFile, outputFile, diagFile, errorFile, errorFileName, diagFileName, passwordFileName
 	global nomenFileName, refFileName, synFileName, accFileName, accrefFileName
-	global nomenFile, refFile, synFile, accFile, accrefFile
+	global nomenFile, refFile, synFile, accFile, accrefFile, mappingFile
 	global mode
 	global startNomenKey, nomenKey, accKey, synKey, mgiKey, refAssocKey
  
@@ -332,6 +349,11 @@ def init():
 		accrefFile = open(accrefFileName, 'w')
 	except:
 		exit(1, 'Could not open file %s\n' % accrefFileName)
+		
+	try:
+		mappingFile = open(mappingFileName, 'w')
+	except:
+		exit(1, 'Could not open file %s\n' % mappingFileName)
 		
 	# Log all SQL
 	db.set_sqlLogFunction(db.sqlLogAll)
@@ -611,6 +633,11 @@ def processFile():
 			mgi_utils.prvalue(notes), userKey, \
 			mgiPrefix + str(mgiKey)))
 
+		# mapping record; write it out before incrementing the acc id keys
+
+		mappingFile.write('%s%d\t%s\t%s\t%s\t%s\t%s\n' \
+			% (mgiPrefix, mgiKey, chromosome, mappingCol3, mappingCol4, mappingCol5, mappingCol6))
+
         	accKey = accKey + 1
         	mgiKey = mgiKey + 1
 		refAssocKey = refAssocKey + 1
@@ -665,6 +692,7 @@ def bcpFiles():
 	synFile.close()
 	accFile.close()
 	accrefFile.close()
+	mappingFile.close()
 
 	bcp1 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
 		% (passwordFileName, db.get_sqlDatabase(), \
