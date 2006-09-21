@@ -131,17 +131,19 @@ def process():
 		'and ma.preferred = 1 ' + \
 		'and c._Marker_key = m._Marker_key ' + \
 		'and m._Marker_Status_key != 2 ' + \
-		'and c._Refs_key = 85878', None)
+		'and m.name like "gene model%" ', None)
 
 	db.sql('create index idx1 on #mdeleted(_Sequence_key)', None)
 	db.sql('create index idx2 on #mdeleted(_Marker_key)', None)
 
 	# all non-deleted sequences for markers 
+	# excluding DoTS (36), NIA (53), TIGR (35)
 
 	db.sql('select c._Sequence_key, c._Marker_key ' + \
 		'into #allmarkers ' + \
 		'from #mdeleted m, SEQ_Marker_Cache c ' + \
 		'where m._Marker_key = c._Marker_key ' + \
+		'and c._LogicalDB_key not in (35, 36, 53) ' + \
 		'and not exists (select 1 from #deleted d ' + \
 		'where c._Sequence_key = d._Sequence_key)', None)
 
