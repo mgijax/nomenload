@@ -27,8 +27,8 @@ ${NOMENLOAD}/nomenload.py -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${
 # Execute mapping load
 #
 
-cd ${MAPPINGLOADDIR}
-${MAPPINGLOAD}/mappingload.csh ${NOMENLOADDIR}/${CONFIGFILE} | tee -a ${NOMENLOG}
+cd ${MAPPINGLOAD}
+${MAPPINGLOAD}/mappingload.csh ${NOMENLOAD}/${CONFIGFILE} | tee -a ${NOMENLOG}
 
 date >> ${NOMENLOG}
 

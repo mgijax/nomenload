@@ -64,8 +64,8 @@ EOSQL
 # Execute mapping load
 #
 
-cd ${MAPPINGLOADDIR}
-${MAPPINGLOAD}/mappingload.csh ${NOMENLOADDIR}/${CONFIGFILE}
+cd ${MAPPINGLOAD}
+${MAPPINGLOAD}/mappingload.csh ${NOMENLOAD}/${CONFIGFILE}
 
 date >> ${NOMENLOG}
 
