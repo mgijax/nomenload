@@ -21,7 +21,7 @@ date >> ${NOMENLOG}
 #
 # Execute nomenload
 #
-${NOMENLOAD}/nomenload.py -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -I${NOMENDATAFILE} -M${NOMENMODE} | tee -a ${NOMENLOG}
+${NOMENLOAD}/nomenload.py | tee -a ${NOMENLOG}
 
 #
 # Execute mapping load

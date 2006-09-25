@@ -38,12 +38,6 @@
 #		field 10: Submitted By
 #
 # Parameters:
-#	-S = database server
-#	-D = database
-#	-U = user
-#	-P = password file
-#	-M = mode (load, preview, broadcast)
-#	-I = input file
 #
 #	processing modes:
 #		load - load the data into Nomen structures
@@ -122,13 +116,21 @@
 import sys
 import os
 import string
-import getopt
 import db
 import mgi_utils
 import accessionlib
 import loadlib
 
 #globals
+
+#
+# from configuration file
+#
+passwordFileName = os.environ['MGI_DBPASSWORDFILE']
+mode = os.environ['NOMENMODE']
+inputFileName = os.environ['NOMENDATAFILE']
+mappingFileName = os.environ['MAPPINGDATAFILE']
+mappingCol5 = os.environ['MAPPINGASSAYTYPE']
 
 DEBUG = 0		# set DEBUG to false unless preview mode is selected
 bcpon = 1		# can the bcp files be bcp-ed into the database?  default is yes.
@@ -152,9 +154,7 @@ refFileName = ''	# file name
 synFileName = ''	# file name
 accFileName = ''	# file name
 accrefFileName = ''	# file name
-mappingFileName = os.environ['MAPPINGDATAFILE']
 
-mode = ''		# processing mode
 startNomenKey = 0	# beginning NOM_Marker._Nomen_key
 nomenKey = 0		# NOM_Marker._Nomen_key
 accKey = 0		# ACC_Accession._Accession_key
@@ -177,30 +177,10 @@ synTypeKey = 1003			# Other Synonym Type key
 
 mappingCol3 = 'yes'
 mappingCol4 = ''
-mappingCol5 = os.environ['MAPPINGASSAYTYPE']
 mappingCol6 = ''
 
 cdate = mgi_utils.date('%m/%d/%Y')	# current date
 
-def showUsage():
-	'''
-	# requires:
-	#
-	# effects:
-	# Displays the correct usage of this program and exits
-	# with status of 1.
-	#
-	# returns:
-	'''
- 
-	usage = 'usage: %s -S server\n' % sys.argv[0] + \
-		'-D database\n' + \
-		'-U user\n' + \
-		'-P password file\n' + \
-		'-M mode\n' + \
-		'-I input file\n'
-	exit(1, usage)
- 
 def exit(status, message = None):
 	'''
 	# requires: status, the numeric exit status (integer)
@@ -243,59 +223,16 @@ def init():
 	#
 	'''
  
-	global inputFile, outputFile, diagFile, errorFile, errorFileName, diagFileName, passwordFileName
+	global inputFile, outputFile, diagFile, errorFile, errorFileName, diagFileName
 	global nomenFileName, refFileName, synFileName, accFileName, accrefFileName
 	global nomenFile, refFile, synFile, accFile, accrefFile, mappingFile
-	global mode
 	global startNomenKey, nomenKey, accKey, synKey, mgiKey, refAssocKey
  
-	try:
-		optlist, args = getopt.getopt(sys.argv[1:], 'S:D:U:P:M:I:')
-	except:
-		showUsage()
- 
-	#
-	# Set server, database, user, passwords depending on options
-	# specified by user.
-	#
- 
-	server = ''
-	database = ''
-	user = ''
-	password = ''
- 
-	for opt in optlist:
-                if opt[0] == '-S':
-                        server = opt[1]
-                elif opt[0] == '-D':
-                        database = opt[1]
-                elif opt[0] == '-U':
-                        user = opt[1]
-                elif opt[0] == '-P':
-			passwordFileName = opt[1]
-                elif opt[0] == '-M':
-                        mode = opt[1]
-                elif opt[0] == '-I':
-                        inputFileName = opt[1]
-                else:
-                        showUsage()
-
-	# User must specify Server, Database, User and Password
-	password = string.strip(open(passwordFileName, 'r').readline())
-	if server == '' or \
-	   database == '' or \
-	   user == '' or \
-	   password == '' or \
-	   mode == '' or \
-	   inputFileName == '':
-		showUsage()
-
-	# Initialize db.py DBMS parameters
-	db.set_sqlLogin(user, password, server, database)
 	db.useOneConnection(1)
  
 	fdate = mgi_utils.date('%m%d%Y')	# current date
 	head, tail = os.path.split(inputFileName) 
+
         outputFileName = inputFileName + '.out'
 	diagFileName = tail + '.' + fdate + '.diagnostics'
 	errorFileName = tail + '.' + fdate + '.error'
@@ -362,9 +299,8 @@ def init():
 	db.set_sqlLogFD(diagFile)
 
 	diagFile.write('Start Date/Time: %s\n' % (mgi_utils.date()))
-	diagFile.write('Server: %s\n' % (server))
-	diagFile.write('Database: %s\n' % (database))
-	diagFile.write('User: %s\n' % (user))
+	diagFile.write('Server: %s\n' % (db.get_sqlServer()))
+	diagFile.write('Database: %s\n' % (db.get_sqlDatabase()))
 	diagFile.write('Input File: %s\n' % (inputFileName))
 
 	errorFile.write('Start Date/Time: %s\n\n' % (mgi_utils.date()))
