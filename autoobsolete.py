@@ -113,7 +113,7 @@ def init():
 
 def process():
 
-	# delete Sequences 
+	# deleted Sequences 
 
 	db.sql('select s._Sequence_key into #deleted from SEQ_Sequence s where s._SequenceStatus_key = 316343', None)
 	db.sql('create index idx1 on #deleted(_Sequence_key)', None)
