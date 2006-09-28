@@ -162,7 +162,7 @@ accKey = 0		# ACC_Accession._Accession_key
 synKey = 0		# MGI_Synonym._Synonym_key
 mgiKey = 0		# ACC_AccessionMax.maxNumericPart
 refAssocKey = 0		# MGI_Reference_Assoc._Assoc_key
-userKey = 0
+createdByKey = 0
 
 statusDict = {}		# dictionary of marker statuses for quick lookup
 referenceDict = {}	# dictionary of references for quick lookup
@@ -493,7 +493,7 @@ def processFile():
 	#
 	'''
 
-	global nomenKey, accKey, mgiKey, synKey, refAssocKey, userKey
+	global nomenKey, accKey, mgiKey, synKey, refAssocKey, createdByKey
 
 	lineNum = 0
 	# For each line in the input file
@@ -517,14 +517,14 @@ def processFile():
 			synonyms = tokens[6]
 			otherAccIDs = tokens[7]
 			notes = tokens[8]
-			userKey = tokens[9]
+			createdByKey = tokens[9]
 		except:
 			exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
 		markerTypeKey = loadlib.verifyMarkerType(markerType, lineNum, errorFile)
 		markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
 		referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
-		userKey = loadlib.verifyUser(userKey, lineNum, errorFile)
+		createdByKey = loadlib.verifyUser(createdByKey, lineNum, errorFile)
 		isDuplicateMarker = verifyDuplicateMarker(symbol, lineNum)
 
 		# other acc ids
@@ -541,7 +541,7 @@ def processFile():
 			markerStatusKey == 0 or \
 			referenceKey == 0 or \
 			isDuplicateMarker == 1 or \
-			userKey == 0:
+			createdByKey == 0:
 
 			# set error flag to true
 			error = 1
@@ -554,22 +554,22 @@ def processFile():
 
 		nomenFile.write('%d|%d|%d|%d|%d|%d|%s|%s|%s||%s|||%s|%s|%s|%s\n' \
                 	% (nomenKey, markerTypeKey, markerStatusKey, markerEvent, markerEventReason, curationStateKey, \
-                           symbol, name, chromosome, mgi_utils.prvalue(notes), userKey, userKey, cdate, cdate))
+                           symbol, name, chromosome, mgi_utils.prvalue(notes), createdByKey, createdByKey, cdate, cdate))
 
         	refFile.write('%d|%d|%d|%d|%d|%s|%s|%s|%s\n' \
-			% (refAssocKey, referenceKey, nomenKey, mgiTypeKey, refAssocTypeKey, userKey, userKey, cdate, cdate))
+			% (refAssocKey, referenceKey, nomenKey, mgiTypeKey, refAssocTypeKey, createdByKey, createdByKey, cdate, cdate))
 
 		# MGI Accession ID for the marker
 
         	accFile.write('%d|%s%d|%s|%s|1|%d|%d|0|1|%s|%s|%s|%s\n' \
-                	% (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, nomenKey, mgiTypeKey, userKey, userKey, cdate, cdate))
+                	% (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, nomenKey, mgiTypeKey, createdByKey, createdByKey, cdate, cdate))
 
 		# write record back out and include MGI Accession ID
 		outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
 			% (markerType, symbol, name, chromosome, \
 			markerStatus, jnum, mgi_utils.prvalue(synonyms), \
 			mgi_utils.prvalue(otherAccIDs), \
-			mgi_utils.prvalue(notes), userKey, \
+			mgi_utils.prvalue(notes), createdByKey, \
 			mgiPrefix + str(mgiKey)))
 
 		# mapping record; write it out before incrementing the acc id keys
@@ -585,7 +585,7 @@ def processFile():
 		for o in string.split(synonyms, '|'):
 			if len(o) > 0:
 				synFile.write('%d|%d|%d|%d|%s|%s|%s|%s|%s|%s\n' \
-					% (synKey, nomenKey, mgiTypeKey, synTypeKey, referenceKey, o, userKey, userKey, cdate, cdate))
+					% (synKey, nomenKey, mgiTypeKey, synTypeKey, referenceKey, o, createdByKey, createdByKey, cdate, cdate))
 				synKey = synKey + 1
 
 		# accession ids
@@ -594,8 +594,8 @@ def processFile():
 			prefixpart, numericpart = accessionlib.split_accnum(acc)
 			accFile.write('%d|%s|%s|%s|%d|%d|%d|0|1|%s|%s|%s|%s\n' \
                                	% (accKey, acc, prefixpart, numericpart, otherAccDict[acc], nomenKey, \
-				   mgiTypeKey, userKey, userKey, cdate, cdate))
-			accrefFile.write('%d|%s|%s|%s|%s|%s\n' % (accKey, referenceKey, userKey, userKey, cdate, cdate))
+				   mgiTypeKey, createdByKey, createdByKey, cdate, cdate))
+			accrefFile.write('%d|%s|%s|%s|%s|%s\n' % (accKey, referenceKey, createdByKey, createdByKey, cdate, cdate))
 			accKey = accKey + 1
 
 		nomenKey = nomenKey + 1
