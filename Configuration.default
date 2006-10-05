@@ -10,6 +10,3 @@ endif
 
 source ${MGICONFIG}/master.config.csh
 
-setenv NOMENLOADDIR     ${DATALOAD}/nomenload
-setenv MAPPINGLOADDIR   ${DATALOAD}/mappingload
-
