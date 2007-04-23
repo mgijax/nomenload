@@ -149,7 +149,7 @@ mappingFile = ''	# file descriptor
 
 diagFileName = ''	# file name
 errorFileName = ''	# file name
-passwordFileName = ''	# file name
+#passwordFileName = ''	# file name
 nomenFileName = ''	# file name
 refFileName = ''	# file name
 synFileName = ''	# file name
