@@ -1,3 +1,11 @@
+TAG: nomenload-3-5-3-1
+DATE: 04/23/2006
+STAFF: sc
+CHANGES: TR8260
+1) nomenload.py - password file defined from environment, then set 
+   to empty string - commented out setting to empty string
+2) ncbi.config, ensembl.config - updated to new input directory
+   set mode to incremental per Sophia
 TAG: nomenload-3-5-1-11
 DATE: 10/31/2006
 STAFF: lec
