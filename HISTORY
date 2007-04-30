@@ -1,5 +1,11 @@
+TAG: nomenload-3-5-3-2
+DATE: 04/30/2007
+STAFF: sc
+CHANGES: TR8191
+1) updated vega.config
+
 TAG: nomenload-3-5-3-1
-DATE: 04/23/2006
+DATE: 04/23/2007
 STAFF: sc
 CHANGES: TR8260
 1) nomenload.py - password file defined from environment, then set 
