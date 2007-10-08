@@ -21,14 +21,44 @@ date >> ${NOMENLOG}
 #
 # Execute nomenload
 #
+
 ${NOMENLOAD}/nomenload.py | tee -a ${NOMENLOG}
+set returnStatus=$status
+if ( $returnStatus ) then
+    echo "Nomen Load ${CONFIGFILE}: FAILED" | tee -a ${NOMENLOG}
+else
+    echo "Nomen Load ${CONFIGFILE}: SUCCESSFUL" | tee -a ${NOMENLOG}
+endif
 
 #
 # Execute mapping load
 #
+# Only execute if we have broadcast the markers OR if we are just previewing
+# the mapping
 
-cd ${MAPPINGLOAD}
-${MAPPINGLOAD}/mappingload.csh ${NOMENLOAD}/${CONFIGFILE} | tee -a ${NOMENLOG}
+if ( $returnStatus == 0	&& ( ${NOMENMODE} == 'broadcast' || \
+	${MAPPINGMODE} == 'preview' )) then
+    # Don't try to execute if file  is empty
+    if ( -z ${MAPPINGDATAFILE} ) then
+	echo "Mapping File is empty, skipping mapping load" | tee -a ${NOMENLOG}
+	date >> ${NOMENLOG}
+	exit 0 
+    endif
+
+    # run mappingload
+    cd ${MAPPINGLOAD}
+    ${MAPPINGLOAD}/mappingload.csh ${NOMENLOAD}/${CONFIGFILE} \
+	| tee -a ${NOMENLOG}
+    set returnStatus=$status
+    if ( $returnStatus ) then
+		echo "Mapping Load ${CONFIGFILE}: FAILED" | tee -a ${NOMENLOG}
+    else
+	echo  "Mapping Load ${CONFIGFILE}: SUCCESSFUL" | tee -a ${NOMENLOG}
+    endif
+else
+    echo "Skipping mapping load: nomenload exit status = \
+	$returnStatus Nomen Mode = ${NOMENMODE}" | tee -a ${NOMENLOG}
+endif
 
 date >> ${NOMENLOG}
 
