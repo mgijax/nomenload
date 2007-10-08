@@ -1,3 +1,24 @@
+TAG: nomenload-3-5-4-1
+DATE: 10/08/2007
+STAFF: sc
+CHANGES: TR8451
+1) nomenbatch.config - update to "setenv EIUTILS ${EI}/prod/mgd"
+   (was "setenv EIUTILS ${EI}")
+2) nomentach.csh - Update to "cd ${EIUTILS}" (was "cd ${EI}/mgd")
+3) tr8451.config - adde.
+4) nomenload.csh - check status of nomenload. Only run mapping load if:
+  a) nomenload successful AND
+  b) mappingload nomenload configured as broadcast or 
+     mappingload configured as preview
+  check status of mappingload
+5) nomenload.py  
+ a) removed algorithm description from header and replaced with link to wiki
+ b) split up all lines > 80 chars for readablity 
+ c) improved some of the comments
+ d) updated from 8 to 4 char tab
+6) config.default - cp this file and edit when creating a new nomenload
+   added lots of comments
+
 TAG: nomenload-3-5-3-3
 DATE: 05/15/2007
 STAFF: sc
