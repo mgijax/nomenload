@@ -22,7 +22,7 @@ date >> ${NOMENLOG}
 # Execute nomenload
 #
 
-${NOMENLOAD}/nomenload.py | tee -a ${NOMENLOG}
+${NOMENLOAD}/nomenload.py
 set returnStatus=$status
 if ( $returnStatus ) then
     echo "Nomen Load ${CONFIGFILE}: FAILED" | tee -a ${NOMENLOG}
@@ -35,7 +35,6 @@ endif
 #
 # Only execute if we have broadcast the markers OR if we are just previewing
 # the mapping
-
 if ( $returnStatus == 0	&& ( ${NOMENMODE} == 'broadcast' || \
 	${MAPPINGMODE} == 'preview' )) then
     # Don't try to execute if file  is empty
@@ -47,8 +46,7 @@ if ( $returnStatus == 0	&& ( ${NOMENMODE} == 'broadcast' || \
 
     # run mappingload
     cd ${MAPPINGLOAD}
-    ${MAPPINGLOAD}/mappingload.csh ${NOMENLOAD}/${CONFIGFILE} \
-	| tee -a ${NOMENLOG}
+    ${MAPPINGLOAD}/mappingload.csh ${NOMENLOAD}/${CONFIGFILE}
     set returnStatus=$status
     if ( $returnStatus ) then
 		echo "Mapping Load ${CONFIGFILE}: FAILED" | tee -a ${NOMENLOG}

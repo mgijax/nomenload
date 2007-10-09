@@ -6,11 +6,7 @@
 # cp config.default *.config (e.g. vega.config)
 # set all settings where default value is '?'
 
-if ( ${?MGICONFIG} == 0 ) then
-        setenv MGICONFIG /usr/local/mgi/live/mgiconfig
-endif
-
-source ${MGICONFIG}/master.config.csh
+source ./Configuration
 
 #
 # Nomen Load configuration 
