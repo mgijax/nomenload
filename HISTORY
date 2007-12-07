@@ -1,3 +1,11 @@
+TAG: nomenload-3-5-4-3
+DATE: 11/08/2007
+STAFF: sc
+CHANGES: 
+1) updated *.csh to take full path to config file 
+   (i.e. don't assume in current directory)
+   so that we don't clutter the product with one-time nomenload config files
+
 TAG: nomenload-3-5-4-2
 TAG: nomenload-3-5-4-1
 DATE: 10/08/2007

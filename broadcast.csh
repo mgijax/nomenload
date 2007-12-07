@@ -3,14 +3,16 @@
 #
 # broadcast genes from nomen to MGI
 #
-# Usage:  broadcast.csh configFile
+# Usage:  broadcast.csh fullPathToConfigFile
+#
+# sc - 12/07/2007 - updated to take full path to configfile
 #
 # Assumes that genes were loaded into Nomen previously
 #
 
 setenv CONFIGFILE $1
 
-cd `dirname $0` && source ./${CONFIGFILE}
+cd `dirname $0` && source ${CONFIGFILE}
 
 cd ${NOMENDATADIR}
 
@@ -65,7 +67,7 @@ EOSQL
 #
 
 cd ${MAPPINGLOAD}
-${MAPPINGLOAD}/mappingload.csh ${NOMENLOAD}/${CONFIGFILE}
+${MAPPINGLOAD}/mappingload.csh ${CONFIGFILE}
 
 date >> ${NOMENLOG}
 

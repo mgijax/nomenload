@@ -4,12 +4,13 @@
 # Load new genes into Nomen
 # Load Mapping records
 #
-# Usage:  nomenload.csh configFile
+# Usage:  nomenload.csh fullPathToConfigFile
 #
-
+# sc - 12/07/2007 - updated to take full path to configfile
+#
 setenv CONFIGFILE $1
 
-cd `dirname $0` && source ./${CONFIGFILE}
+cd `dirname $0` && source ${CONFIGFILE}
 
 cd ${NOMENDATADIR}
 
@@ -46,7 +47,7 @@ if ( $returnStatus == 0	&& ( ${NOMENMODE} == 'broadcast' || \
 
     # run mappingload
     cd ${MAPPINGLOAD}
-    ${MAPPINGLOAD}/mappingload.csh ${NOMENLOAD}/${CONFIGFILE}
+    ${MAPPINGLOAD}/mappingload.csh ${CONFIGFILE}
     set returnStatus=$status
     if ( $returnStatus ) then
 		echo "Mapping Load ${CONFIGFILE}: FAILED" | tee -a ${NOMENLOG}

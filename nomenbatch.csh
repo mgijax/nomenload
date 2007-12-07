@@ -3,12 +3,14 @@
 #
 # Process batch withdrawals
 #
-# Usage:  nomenbatch.csh configFile
+# Usage:  nomenbatch.csh fullPathToConfigFile
+#
+# sc - 12/07/2007 - updated to take full path to configfile
 #
 
 setenv CONFIGFILE $1
 
-cd `dirname $0` && source ./${CONFIGFILE}
+cd `dirname $0` && source ${CONFIGFILE}
 
 # source EI config file
 source ${EI}/Configuration
