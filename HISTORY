@@ -1,3 +1,4 @@
+TAG: nomenload-3-5-4-4
 TAG: nomenload-3-5-4-3
 DATE: 11/08/2007
 STAFF: sc
@@ -5,6 +6,8 @@ CHANGES:
 1) updated *.csh to take full path to config file 
    (i.e. don't assume in current directory)
    so that we don't clutter the product with one-time nomenload config files
+2) Configuration.default - removed added sourcing of MGICONFIG to top
+   of config.default and all exising config files in the product
 
 TAG: nomenload-3-5-4-2
 TAG: nomenload-3-5-4-1
