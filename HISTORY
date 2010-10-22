@@ -1,3 +1,14 @@
+TAG: nomenload-4-4-0-1
+DATE: 10/22/2010
+STAFF: sc
+CHANGES:
+1) created bin directory and moved .py and .csh scripts there
+2) renamed config default files to config.template
+3) renamed the specific config files (those already used by an
+   adhoc load) to follow the format
+4) added mkrtypeupdate.config.template
+5) added ./bin/updateMkrType.py and ./bin/updateMkrType.csh
+
 TAG: nomenload-4-1-2-1
 DATE: 10/01/2008
 STAFF: dbm

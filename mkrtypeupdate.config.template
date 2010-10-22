@@ -1,0 +1,30 @@
+#!/bin/csh -f
+
+#
+# default configuration file
+#
+# cp mkrtypeupdate.config.template *.mkrtype.config (e.g. trnnnn.mkrtypeupdate.config)
+# set all settings where default value is '?'
+
+if ( ${?MGICONFIG} == 0 ) then
+        setenv MGICONFIG /usr/local/mgi/live/mgiconfig
+endif
+
+source ${MGICONFIG}/master.config.csh
+
+# directory in which the input file is found and output will be written
+setenv NOMENDATADIR 	?
+
+# full path to the input file
+# will be based on this filename
+setenv NOMENDATAFILE 	${NOMENDATADIR}/?
+
+# full path to jobstream log
+setenv NOMENLOG 	${NOMENDATAFILE}.log
+
+# new marker type 
+setenv NEWMKRTYPE	?
+
+# login of the curator requesting this update
+setenv MODIFIEDBY	?
+
