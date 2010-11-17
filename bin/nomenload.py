@@ -327,8 +327,7 @@ def verifyMarkerStatus(markerStatus, lineNum):
     if statusDict.has_key(markerStatus):
 	markerStatusKey = statusDict[markerStatus]
     else:
-	errorFile.write('Invalid Marker Status (%d) %s\n' % \
-	    (lineNum, markerStatus))
+	errorFile.write('Invalid Marker Status (%d) %s\n' % (lineNum, markerStatus))
 	markerStatusKey = 0
 
     return(markerStatusKey)
@@ -361,8 +360,7 @@ def verifyDuplicateMarker(symbol, lineNum):
     if len(results) == 0:
 	return 0
     else:
-	errorFile.write('Duplicate Marker (%d) %s\n' % \
-	    (lineNum, symbol))
+	errorFile.write('Duplicate Marker (%d) %s\n' % (lineNum, symbol))
 	return 1
 
 def verifyLogicalDB(logicalDB, lineNum):
@@ -387,8 +385,7 @@ def verifyLogicalDB(logicalDB, lineNum):
     if logicalDBDict.has_key(logicalDB):
 	logicalDBKey = logicalDBDict[logicalDB]
     else:
-	errorFile.write('Invalid Logical DB (%d) %s\n' % \
-	    (lineNum, logicalDB))
+	errorFile.write('Invalid Logical DB (%d) %s\n' % (lineNum, logicalDB))
 	logicalDBKey = 0
 
     return(logicalDBKey)
@@ -408,43 +405,35 @@ def setPrimaryKeys():
     global startNomenKey, nomenKey, accKey, mgiKey, synKey
     global refAssocKey, curationStateKey
 
-    results = db.sql('select maxKey = max(_Nomen_key) + 1 ' + \
-	'from NOM_Marker', 'auto')
+    results = db.sql('select maxKey = max(_Nomen_key) + 1 from NOM_Marker', 'auto')
     if results[0]['maxKey'] is None:
 	nomenKey = 1000
     else:
 	nomenKey = results[0]['maxKey']
     startNomenKey = nomenKey
 
-    results = db.sql('select maxKey = max(_Assoc_key) + 1 ' + \
-	'from MGI_Reference_Assoc', 'auto')
+    results = db.sql('select maxKey = max(_Assoc_key) + 1 from MGI_Reference_Assoc', 'auto')
     if results[0]['maxKey'] is None:
 	refAssocKey = 1000
     else:
 	refAssocKey = results[0]['maxKey']
 
-    results = db.sql('select maxKey = max(_Accession_key) + 1 ' + \
-	'from ACC_Accession', 'auto')
+    results = db.sql('select maxKey = max(_Accession_key) + 1 from ACC_Accession', 'auto')
     if results[0]['maxKey'] is None:
 	accKey = 1000
     else:
 	accKey = results[0]['maxKey']
 
-    results = db.sql('select maxKey = max(_Synonym_key) + 1 ' + \
-	'from MGI_Synonym', 'auto')
+    results = db.sql('select maxKey = max(_Synonym_key) + 1 from MGI_Synonym', 'auto')
     if results[0]['maxKey'] is None:
 	synKey = 1000
     else:
 	synKey = results[0]['maxKey']
 
-    results = db.sql('select maxKey = maxNumericPart + 1 ' + \
-	'from ACC_AccessionMax ' + \
-	'where prefixPart = "%s"' % (mgiPrefix), 'auto')
+    results = db.sql('select maxKey = maxNumericPart + 1 from ACC_AccessionMax where prefixPart = "%s"' % (mgiPrefix), 'auto')
     mgiKey = results[0]['maxKey']
 
-    results = db.sql('select _Term_key ' + \
-	'from VOC_Term_CurationState_View ' + \
-	'where term = "Internal"', 'auto')
+    results = db.sql('select _Term_key from VOC_Term_CurationState_View where term = "Internal"', 'auto')
     curationStateKey = results[0]['_Term_key']
 
 def loadDictionaries():
@@ -461,13 +450,11 @@ def loadDictionaries():
 
     global statusDict, logicalDBDict
 
-    results = db.sql('select _Term_key, term ' + \
-	'from VOC_Term_NomenStatus_View', 'auto')
+    results = db.sql('select _Term_key, term from VOC_Term_NomenStatus_View', 'auto')
     for r in results:
 	statusDict[r['term']] = r['_Term_key']
 
-    results = db.sql('select _LogicalDB_key, name ' + \
-	'from ACC_LogicalDB', 'auto')
+    results = db.sql('select _LogicalDB_key, name from ACC_LogicalDB', 'auto')
     for r in results:
 	logicalDBDict[r['name']] = r['_LogicalDB_key']
 
@@ -512,12 +499,10 @@ def processFile():
 	except:
 	    exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
-	markerTypeKey = loadlib.verifyMarkerType(\
-		markerType, lineNum, errorFile)
+	markerTypeKey = loadlib.verifyMarkerType(markerType, lineNum, errorFile)
 	markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
 	referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
-	createdByKey = loadlib.verifyUser(\
-		createdByKey, lineNum, errorFile)
+	createdByKey = loadlib.verifyUser(createdByKey, lineNum, errorFile)
 	isDuplicateMarker = verifyDuplicateMarker(symbol, lineNum)
 
 	# other acc ids
@@ -636,28 +621,23 @@ def bcpFiles():
 
     bcp1 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
 	% (passwordFileName, db.get_sqlDatabase(), \
-	'NOM_Marker', nomenFileName, bcpdelim, db.get_sqlServer(), \
-	    db.get_sqlUser())
+	'NOM_Marker', nomenFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
 
     bcp2 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
 	% (passwordFileName, db.get_sqlDatabase(), \
-	'MGI_Reference_Assoc', refFileName, bcpdelim, \
-	    db.get_sqlServer(), db.get_sqlUser())
+	'MGI_Reference_Assoc', refFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
 
     bcp3 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
 	% (passwordFileName, db.get_sqlDatabase(), \
-	'MGI_Synonym', synFileName, bcpdelim, db.get_sqlServer(), \
-	    db.get_sqlUser())
+	'MGI_Synonym', synFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
 
     bcp4 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
 	% (passwordFileName, db.get_sqlDatabase(), \
-	'ACC_Accession', accFileName, bcpdelim, db.get_sqlServer(), \
-	    db.get_sqlUser())
+	'ACC_Accession', accFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
 
     bcp5 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
 	% (passwordFileName, db.get_sqlDatabase(), \
-	'ACC_AccessionReference', accrefFileName, bcpdelim, \
-	    db.get_sqlServer(), db.get_sqlUser())
+	'ACC_AccessionReference', accrefFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
 
     diagFile.write('%s\n' % bcp1)
     diagFile.write('%s\n' % bcp2)
