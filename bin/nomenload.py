@@ -148,7 +148,7 @@ curationStateKey = 0
 mgiTypeKey = 21                         # Nomenclature
 mgiPrefix = "MGI:"
 refAssocTypeKey = 1003			# Primary Reference
-synTypeKey = 1003			# Other Synonym Type key
+synTypeKey = 1008			# Other Synonym Type key
 
 mappingCol3 = 'yes'			# update Mkr chr?
 mappingCol4 = ''			# band (leave blank)
