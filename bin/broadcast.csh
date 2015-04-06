@@ -29,7 +29,7 @@ use ${MGD_DBNAME}
 go
 
 declare marker_cursor cursor for
-select n._Nomen_key
+select n._ModifiedBy_key, n._Nomen_key
 from NOM_Marker n, MGI_Reference_Assoc r, ACC_Accession b, VOC_Term t
 where n._Nomen_key = r._Object_key
 and r._MGIType_key = 21
@@ -40,16 +40,17 @@ and n._NomenStatus_key = t._Term_key
 and term = "${NOMENSTATUS}"
 go
 
+declare @userKey integer
 declare @nomenKey integer
 
 open marker_cursor
 
-fetch marker_cursor into @nomenKey
+fetch marker_cursor into @userKey, @nomenKey
 
 while (@@sqlstatus = 0)
 begin
-        exec NOM_transferToMGD @nomenKey, "official"
-        fetch marker_cursor into @nomenKey
+        exec NOM_transferToMGD @userKey, @nomenKey, "official"
+        fetch marker_cursor into @userKey, @nomenKey
 end
 
 close marker_cursor

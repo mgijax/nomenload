@@ -667,7 +667,7 @@ def broadcastToMRK():
 	return
 
     for x in range(startNomenKey, nomenKey):
-	db.sql('exec NOM_transferToMGD %s, "official"' % (x), None)
+	db.sql('exec NOM_transferToMGD %s, %s, "official"' % (createdByKey, x), None)
 
 #
 # Main
