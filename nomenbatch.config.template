@@ -17,7 +17,5 @@ setenv EVENTKEY 	# MRK_Event
 setenv EVENTREASONKEY	# MRK_EventReason
 setenv ADDASSYNONYM	1 or 0
 
-setenv EI		${EI_USRLOCALMGI}/ei
-setenv EIUTILS		${EI}/utilities
-setenv NOMENBATCH	${EIUTILS}/batchWithdrawal.py
+setenv NOMENBATCH	${MGI_DBUTILS}/bin/ei/batchWithdrawal.py
 
