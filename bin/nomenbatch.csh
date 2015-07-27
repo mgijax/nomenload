@@ -15,7 +15,7 @@ cd `dirname $0` && source ${CONFIGFILE}
 source ${EI_USRLOCALMGI}/ei/Configuration
 
 # must cd into directory
-cd ${MGI_DBUTILS}/bin/ei
+cd ${PG_DBUTILS}/bin/ei
 
 # run EI NOMENBATCH script
 ${NOMENBATCH} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGI_DBUSER} -P${MGI_DBPASSWORDFILE} -I${INPUTFILE} --refKey=${REFKEY} --eventKey=${EVENTKEY} --eventReasonKey=${EVENTREASONKEY} --addAsSynonym=${ADDASSYNONYM}
