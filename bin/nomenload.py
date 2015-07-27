@@ -349,13 +349,10 @@ def verifyDuplicateMarker(symbol, lineNum):
     #
     '''
 
-    results = db.sql('select _Nomen_key from NOM_Marker ' + \
-	'where symbol = "%s" ' % (symbol) + \
-	'union ' + \
-	'select _Marker_key ' + \
-	'from MRK_Marker ' + \
-	'where _Organism_key = 1 ' + \
-	'and symbol = "%s"' % (symbol), 'auto')
+    results = db.sql('''select _Nomen_key from NOM_Marker where symbol = '%s'
+	union 
+	select _Marker_key from MRK_Marker where _Organism_key = 1 and symbol = '%s'
+	''' % (symbol, symbol), 'auto')
 
     if len(results) == 0:
 	return 0
@@ -405,32 +402,32 @@ def setPrimaryKeys():
     global startNomenKey, nomenKey, accKey, mgiKey, synKey
     global refAssocKey, curationStateKey
 
-    results = db.sql('select maxKey = max(_Nomen_key) + 1 from NOM_Marker', 'auto')
+    results = db.sql('select max(_Nomen_key) + 1 as maxKey from NOM_Marker', 'auto')
     if results[0]['maxKey'] is None:
 	nomenKey = 1000
     else:
 	nomenKey = results[0]['maxKey']
     startNomenKey = nomenKey
 
-    results = db.sql('select maxKey = max(_Assoc_key) + 1 from MGI_Reference_Assoc', 'auto')
+    results = db.sql('select max(_Assoc_key) + 1 as maxKey from MGI_Reference_Assoc', 'auto')
     if results[0]['maxKey'] is None:
 	refAssocKey = 1000
     else:
 	refAssocKey = results[0]['maxKey']
 
-    results = db.sql('select maxKey = max(_Accession_key) + 1 from ACC_Accession', 'auto')
+    results = db.sql('select max(_Accession_key) + 1 as maxKey from ACC_Accession', 'auto')
     if results[0]['maxKey'] is None:
 	accKey = 1000
     else:
 	accKey = results[0]['maxKey']
 
-    results = db.sql('select maxKey = max(_Synonym_key) + 1 from MGI_Synonym', 'auto')
+    results = db.sql('select max(_Synonym_key) + 1 as maxKey from MGI_Synonym', 'auto')
     if results[0]['maxKey'] is None:
 	synKey = 1000
     else:
 	synKey = results[0]['maxKey']
 
-    results = db.sql('select maxKey = maxNumericPart + 1 from ACC_AccessionMax where prefixPart = "%s"' % (mgiPrefix), 'auto')
+    results = db.sql('select maxNumericPart + 1 as maxKey from ACC_AccessionMax where prefixPart = "%s"' % (mgiPrefix), 'auto')
     mgiKey = results[0]['maxKey']
 
     results = db.sql('select _Term_key from VOC_Term_CurationState_View where term = "Internal"', 'auto')

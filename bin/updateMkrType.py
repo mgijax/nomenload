@@ -37,16 +37,12 @@ except:
 #
 # get keys for  NEWMKRTYPE and MODIFIEDBY
 #
-results = db.sql('''select _Marker_Type_key
-	from MRK_Types
-	where name = '%s' ''' % newMkrType, 'auto')
+results = db.sql('''select _Marker_Type_key from MRK_Types where name = '%s' ''' % newMkrType, 'auto')
 if len(results) == 0:
     exit (1, 'Invalid marker type  %s\n' % newMkrType)
 newMkrTypeKey = results[0]['_Marker_Type_key']
 
-results = db.sql('''select _User_key
-	from MGI_User
-	where login = '%s' ''' % modifiedBy, 'auto')
+results = db.sql('''select _User_key from MGI_User where login = '%s' ''' % modifiedBy, 'auto')
 if len(results) == 0:
     exit (1, 'Invalid user login %s\n' % modifiedBy)
 modifiedByKey = results[0]['_User_key']
@@ -57,7 +53,7 @@ for line in inputFile.readlines():
     results = db.sql('''
 	select distinct a.accID, m.symbol
 	from ACC_Accession a, MRK_Marker m 
-        where a.accID = "%s" 
+        where a.accID = '%s' 
         and a._MGIType_key = 2
         and a._Object_key = m._Marker_key
 	''' % (mgiID), 'auto')
@@ -71,7 +67,7 @@ for line in inputFile.readlines():
 	modification_date = "%s", 
         _ModifiedBy_key = %s 
 	from ACC_Accession a, MRK_Marker m 
-	where a.accID = "%s" 
+	where a.accID = '%s' 
 	and a._MGIType_key = 2
 	and a._Object_key = m._Marker_key
 	''' % (newMkrTypeKey, loaddate, modifiedByKey, mgiID)
