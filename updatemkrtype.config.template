@@ -12,6 +12,9 @@ endif
 
 source ${MGICONFIG}/master.config.csh
 
+setenv COLDELIM         "|"
+setenv LINEDELIM        "\n"
+
 # directory in which the input file is found and output will be written
 setenv NOMENDATADIR 	?
 

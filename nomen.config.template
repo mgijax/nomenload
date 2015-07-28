@@ -12,6 +12,9 @@ endif
 
 source ${MGICONFIG}/master.config.csh
 
+setenv COLDELIM         "|"
+setenv LINEDELIM        "\n"
+
 #
 # Nomen Load configuration 
 #

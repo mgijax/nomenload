@@ -32,6 +32,16 @@ else
 endif
 
 #
+# load tables
+#
+${PG_DBUTILS}/bin/bcpin.csh ${MGD_DBSERVER} ${MGD_DBNAME} NOM_Marker . NOM_Marker.bcp ${COLDELIM} ${LINEDELIM} mgd | tee -a ${NOMENLOG}
+${PG_DBUTILS}/bin/bcpin.csh ${MGD_DBSERVER} ${MGD_DBNAME} MGI_Reference_Assoc . MGI_Reference_Assoc.bcp ${COLDELIM} ${LINEDELIM} mgd | tee -a ${NOMENLOG}
+${PG_DBUTILS}/bin/bcpin.csh ${MGD_DBSERVER} ${MGD_DBNAME} MGI_Synonym . MGI_Synonym.bcp ${COLDELIM} ${LINEDELIM} mgd | tee -a ${NOMENLOG}
+${PG_DBUTILS}/bin/bcpin.csh ${MGD_DBSERVER} ${MGD_DBNAME} ACC_Accession . ACC_Accession.bcp ${COLDELIM} ${LINEDELIM} mgd | tee -a ${NOMENLOG}
+${PG_DBUTILS}/bin/bcpin.csh ${MGD_DBSERVER} ${MGD_DBNAME} ACC_AccessionReference . ACC_AccessionReference.bcp ${COLDELIM} ${LINEDELIM} mgd | tee -a ${NOMENLOG}
+
+#
+#
 # Execute mapping load
 #
 # Only execute if we have broadcast the markers OR if we are just previewing
