@@ -427,10 +427,10 @@ def setPrimaryKeys():
     else:
 	synKey = results[0]['maxKey']
 
-    results = db.sql('select maxNumericPart + 1 as maxKey from ACC_AccessionMax where prefixPart = "%s"' % (mgiPrefix), 'auto')
+    results = db.sql('select maxNumericPart + 1 as maxKey from ACC_AccessionMax where prefixPart = \'%s\'' % (mgiPrefix), 'auto')
     mgiKey = results[0]['maxKey']
 
-    results = db.sql('select _Term_key from VOC_Term_CurationState_View where term = "Internal"', 'auto')
+    results = db.sql('select _Term_key from VOC_Term_CurationState_View where term = \'Internal\'', 'auto')
     curationStateKey = results[0]['_Term_key']
 
 def loadDictionaries():
