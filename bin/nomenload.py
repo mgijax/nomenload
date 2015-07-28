@@ -616,25 +616,23 @@ def bcpFiles():
     accrefFile.close()
     mappingFile.close()
 
-    bcp1 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
-	% (passwordFileName, db.get_sqlDatabase(), \
-	'NOM_Marker', nomenFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
+    colDelim = os.environ['COLDELIM']
+    lineDelim = os.environ['LINEDELIM']
 
-    bcp2 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
-	% (passwordFileName, db.get_sqlDatabase(), \
-	'MGI_Reference_Assoc', refFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
+    bcp1 = 'bcpin.csh %s %s %s . %s.bcp %s %s mgd' \
+	% (db.get_sqlServer(), db.get_sqlDatabase(), 'NOM_Marker', 'NOM_Marker', colDelim, lineDelim)
 
-    bcp3 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
-	% (passwordFileName, db.get_sqlDatabase(), \
-	'MGI_Synonym', synFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
+    bcp2 = 'bcpin.csh %s %s %s . %s.bcp %s %s mgd' \
+	% (db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Reference_Assoc', 'MGI_Reference_Assoc', colDelim, lineDelim)
 
-    bcp4 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
-	% (passwordFileName, db.get_sqlDatabase(), \
-	'ACC_Accession', accFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
+    bcp3 = 'bcpin.csh %s %s %s . %s.bcp %s %s mgd' \
+	% (db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Synonym', 'MGI_Synonym', colDelim, lineDelim)
 
-    bcp5 = 'cat %s | bcp %s..%s in %s -c -t\"%s" -S%s -U%s' \
-	% (passwordFileName, db.get_sqlDatabase(), \
-	'ACC_AccessionReference', accrefFileName, bcpdelim, db.get_sqlServer(), db.get_sqlUser())
+    bcp4 = 'bcpin.csh %s %s %s . %s.bcp %s %s mgd' \
+	% (db.get_sqlServer(), db.get_sqlDatabase(), 'ACC_Accession', 'ACC_Accession', colDelim, lineDelim)
+
+    bcp5 = 'bcpin.csh %s %s %s . %s.bcp %s %s mgd' \
+	% (db.get_sqlServer(), db.get_sqlDatabase(), 'ACC_AccessionReference', 'ACC_AccessionReference', colDelim, lineDelim)
 
     diagFile.write('%s\n' % bcp1)
     diagFile.write('%s\n' % bcp2)
