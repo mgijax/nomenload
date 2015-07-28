@@ -590,7 +590,7 @@ def processFile():
     #
 
     if not DEBUG:
-	db.sql('exec ACC_setMax %d' % (lineNum), None)
+	db.sql('select * from ACC_setMax (%d);' % (lineNum), None)
 
 def bcpFiles():
     '''
@@ -662,7 +662,7 @@ def broadcastToMRK():
 	return
 
     for x in range(startNomenKey, nomenKey):
-	db.sql('exec NOM_transferToMGD %s, %s, "official"' % (createdByKey, x), None)
+	db.sql('select * from NOM_transferToMGD (%s, %s, \'official\');' % (createdByKey, x), None)
 
 #
 # Main
