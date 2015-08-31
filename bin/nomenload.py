@@ -144,7 +144,6 @@ logicalDBDict = {}	# dictionary of logical DBs for quick lookup
 
 markerEvent = 1                         # Assigned
 markerEventReason = -1                  # Not Specified
-curationStateKey = 0
 mgiTypeKey = 21                         # Nomenclature
 mgiPrefix = "MGI:"
 refAssocTypeKey = 1003			# Primary Reference
@@ -400,7 +399,7 @@ def setPrimaryKeys():
     '''
 
     global startNomenKey, nomenKey, accKey, mgiKey, synKey
-    global refAssocKey, curationStateKey
+    global refAssocKey
 
     results = db.sql('select max(_Nomen_key) + 1 as maxKey from NOM_Marker', 'auto')
     if results[0]['maxKey'] is None:
@@ -431,7 +430,6 @@ def setPrimaryKeys():
     mgiKey = results[0]['maxKey']
 
     results = db.sql('select _Term_key from VOC_Term_CurationState_View where term = \'Internal\'', 'auto')
-    curationStateKey = results[0]['_Term_key']
 
 def loadDictionaries():
     '''
@@ -526,10 +524,9 @@ def processFile():
 	    continue
 
 	# if no errors, process the marker
-	nomenFile.write('%d|%d|%d|%d|%d|%d|%s|%s|%s||%s|||%s|%s|%s|%s\n' \
+	nomenFile.write('%d|%d|%d|%d||%d|%s|%s|%s||%s|||%s|%s|%s|%s\n' \
 	    % (nomenKey, markerTypeKey, markerStatusKey, markerEvent, \
-		markerEventReason, curationStateKey, \
-	        symbol, name, chromosome, mgi_utils.prvalue(notes), \
+		markerEventReason, symbol, name, chromosome, mgi_utils.prvalue(notes), \
 		createdByKey, createdByKey, cdate, cdate))
 
 	refFile.write('%d|%d|%d|%d|%d|%s|%s|%s|%s\n' \
