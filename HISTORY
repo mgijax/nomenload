@@ -1,3 +1,13 @@
+TAG: nomenload-6-0-0-5
+DATE: 09/14/2015
+STAFF: sc
+CHANGES: While testing TR12109/TR12058 nomenload's discovered some conversion bugs:
+1) replaced: db.set_sqlLogFD(diagFile)
+   with: db.set_commandLogFile(diagFileName) 
+   as db.set_sqlLogFD no longer exists
+2) removed: results = db.sql('select _Term_key from VOC_Term_CurationState_View where term = \'Internal\'', 'auto')
+   as: it is not being used and the view no longer exists
+
 TAG: nomenload-6-0-0-4
 DATE: 08/31/2015
 STAFF: lec

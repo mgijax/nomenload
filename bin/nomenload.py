@@ -123,7 +123,6 @@ mappingFile = ''	# file descriptor
 
 diagFileName = ''	# file name
 errorFileName = ''	# file name
-#passwordFileName = ''	# file name
 nomenFileName = ''	# file name
 refFileName = ''	# file name
 synFileName = ''	# file name
@@ -272,8 +271,7 @@ def init():
     db.set_sqlLogFunction(db.sqlLogAll)
 
     # Set Log File Descriptor
-    db.set_sqlLogFD(diagFile)
-
+    db.set_commandLogFile(diagFileName)
     diagFile.write('Start Date/Time: %s\n' % (mgi_utils.date()))
     diagFile.write('Server: %s\n' % (db.get_sqlServer()))
     diagFile.write('Database: %s\n' % (db.get_sqlDatabase()))
@@ -428,8 +426,6 @@ def setPrimaryKeys():
 
     results = db.sql('select maxNumericPart + 1 as maxKey from ACC_AccessionMax where prefixPart = \'%s\'' % (mgiPrefix), 'auto')
     mgiKey = results[0]['maxKey']
-
-    results = db.sql('select _Term_key from VOC_Term_CurationState_View where term = \'Internal\'', 'auto')
 
 def loadDictionaries():
     '''
