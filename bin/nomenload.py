@@ -548,7 +548,7 @@ def processFile():
 
 	# mapping record; write it out before incrementing the acc id keys
 
-	mappingFile.write('%s%d\t%s\t%s\t%s\t%s\t%s\n' \
+	mappingFile.write('%s%d|%s|%s|%s|%s|%s\n' \
 	    % (mgiPrefix, mgiKey, chromosome, mappingCol3, mappingCol4, \
 		mappingCol5, mappingCol6))
 
