@@ -1,7 +1,8 @@
-TAG: nomenload-6-0-0-5
+TAG: nomenload-6-0-0-???
 DATE: 09/14/2015
 STAFF: sc
-CHANGES: While testing TR12109/TR12058 nomenload's discovered some conversion bugs:
+CHANGES: Checking into CVS so Lori may look at it. 
+While testing TR12109/TR12058 nomenload's discovered some conversion bugs:
 1) replaced: db.set_sqlLogFD(diagFile)
    with: db.set_commandLogFile(diagFileName) 
    as db.set_sqlLogFD no longer exists

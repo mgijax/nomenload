@@ -76,6 +76,9 @@
 #
 # History:
 #
+# sc	09/16/2015 - TR12058 first test of nomenload since conversion to
+#  	postgres - several changed needed. See HISTORY file
+#
 # sc    8/07 - updated comments, broke long lines while creating wiki
 #
 # lec	12/30/2003
@@ -520,7 +523,7 @@ def processFile():
 	    continue
 
 	# if no errors, process the marker
-	nomenFile.write('%d|%d|%d|%d||%d|%s|%s|%s||%s|||%s|%s|%s|%s\n' \
+	nomenFile.write('%d|%d|%d|%d|%d|%s|%s|%s||%s|||%s|%s|%s|%s\n' \
 	    % (nomenKey, markerTypeKey, markerStatusKey, markerEvent, \
 		markerEventReason, symbol, name, chromosome, mgi_utils.prvalue(notes), \
 		createdByKey, createdByKey, cdate, cdate))
@@ -583,7 +586,8 @@ def processFile():
     #
 
     if not DEBUG:
-	db.sql('select * from ACC_setMax (%d);' % (lineNum), None)
+	db.sql('select * from ACC_setMax (%d)' % (lineNum), None)
+ 	db.commit()
 
 def bcpFiles():
     '''
@@ -609,23 +613,24 @@ def bcpFiles():
     accrefFile.close()
     mappingFile.close()
 
-    colDelim = os.environ['COLDELIM']
-    lineDelim = os.environ['LINEDELIM']
+    bcpCommand = os.environ['PG_DBUTILS'] + '/bin/bcpin.csh'
 
-    bcp1 = 'bcpin.csh %s %s %s . %s.bcp %s %s mgd' \
-	% (db.get_sqlServer(), db.get_sqlDatabase(), 'NOM_Marker', 'NOM_Marker', colDelim, lineDelim)
+    currentDir = os.getcwd()
 
-    bcp2 = 'bcpin.csh %s %s %s . %s.bcp %s %s mgd' \
-	% (db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Reference_Assoc', 'MGI_Reference_Assoc', colDelim, lineDelim)
+    bcp1 = '%s %s %s %s %s %s  "|" "\\n" mgd' % \
+	(bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'NOM_Marker', currentDir, nomenFileName)
 
-    bcp3 = 'bcpin.csh %s %s %s . %s.bcp %s %s mgd' \
-	% (db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Synonym', 'MGI_Synonym', colDelim, lineDelim)
+    bcp2 = '%s %s %s %s %s %s  "|" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Reference_Assoc', currentDir, refFileName)
 
-    bcp4 = 'bcpin.csh %s %s %s . %s.bcp %s %s mgd' \
-	% (db.get_sqlServer(), db.get_sqlDatabase(), 'ACC_Accession', 'ACC_Accession', colDelim, lineDelim)
+    bcp3 = '%s %s %s %s %s %s  "|" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Synonym', currentDir, synFileName)
 
-    bcp5 = 'bcpin.csh %s %s %s . %s.bcp %s %s mgd' \
-	% (db.get_sqlServer(), db.get_sqlDatabase(), 'ACC_AccessionReference', 'ACC_AccessionReference', colDelim, lineDelim)
+    bcp4 = '%s %s %s %s %s %s  "|" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'ACC_Accession', currentDir, accFileName)
+
+    bcp5 = '%s %s %s %s %s %s  "|" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'ACC_AccessionReference', currentDir, accrefFileName)
 
     diagFile.write('%s\n' % bcp1)
     diagFile.write('%s\n' % bcp2)
@@ -655,18 +660,26 @@ def broadcastToMRK():
 	return
 
     for x in range(startNomenKey, nomenKey):
-	db.sql('select * from NOM_transferToMGD (%s, %s, \'official\');' % (createdByKey, x), None)
+	db.sql('select * from NOM_transferToMGD (%s, %s)' % (createdByKey, x), None)
+	db.commit()
 
 #
 # Main
 #
 
+print 'init()'
 init()
+print 'verifyMode()'
 verifyMode()
+print 'setPrimaryKeys()'
 setPrimaryKeys()
+print 'loadDictionaries()'
 loadDictionaries()
+print 'processFile()'
 processFile()
+print 'bcpFiles()'
 bcpFiles()
+print 'broadcastToMRK'
 broadcastToMRK()
 exit(0)
 
