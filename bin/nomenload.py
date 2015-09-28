@@ -383,12 +383,12 @@ def verifyChromosome(chromosome, lineNum):
     '''
 
     results = db.sql('''select * from MRK_Chromosome where _Organism_key = 1 and chromosome = '%s'
-	''' % (chromosome, symbol), 'auto')
+	''' % (chromosome), 'auto')
 
-    if len(results) == 0:
+    if len(results) > 0:
 	return 0
     else:
-	errorFile.write('Invalid Chromosome(%d) %s\n' % (lineNum, chromosome))
+	errorFile.write('Invalid Chromosome (%d) %s\n' % (lineNum, chromosome))
 	return 1
 
 def verifyLogicalDB(logicalDB, lineNum):

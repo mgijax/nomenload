@@ -1,36 +1,42 @@
 #!/bin/sh
 #
-#  publishMCV
+#  publishNomen
 ###########################################################################
 #
 # A copy of this script is intended to reside in /usr/local/bin on all
 # servers to make it available in the common PATH.
 #
-# Its allows someone to publish a new mcv input file
-# to the directory where the mcv loader will look for it.
+# Its allows someone to publish a new nomen input file
+# to the directory where the nomen loader will look for it.
 #
 ###########################################################################
 
+if [ ${MGICONFIG} = "" ]
+then
+        MGICONFIG=/usr/local/mgi/live/mgiconfig
+        export MGICONFIG
+fi
+
+. ${MGICONFIG}/master.config.sh
+
 usage ()
 {
-    echo "Usage: publishMCV input_file"
+    echo "Usage: publishNomen
     echo "       where"
-    echo "           input_file = name of the mcv input file"
+    echo "           input_file = name of the nomen input file"
     exit 1
 }
 
 CURRENT_DIR=`pwd`
-
-MCVLOADDIR=/usr/local/mgi/live/dataload/mcvload
-CONFIG=${MCVLOADDIR}/mcvload.config
+CONFIG=${NOMENLOAD}/nomenload.config
 
 #
-# The mcvload product is not installed on all servers, so make sure
+# The nomenload product is not installed on all servers, so make sure
 # it exists on this one.
 #
-if [ ! -d ${MCVLOADDIR} ]
+if [ ! -f ${NOMENLOAD} ]
 then
-    echo "The mcv load software does not exist on this server"
+    echo "The nomen load software does not exist on this server"
     exit 1
 fi
 

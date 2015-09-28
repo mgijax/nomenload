@@ -6,9 +6,6 @@
 # A copy of this script is intended to reside in /usr/local/bin on all
 # servers to make it available in the common PATH.
 #
-# Its allows someone to run the nomen QC reports without having
-# to provide the full path to where the wrapper script is installed.
-#
 ###########################################################################
 
 if [ ${MGICONFIG} = "" ]
@@ -31,7 +28,7 @@ usage ()
 # The nomenload product is not installed on all servers, so make sure
 # it exists on this one.
 #
-if [ ! -d ${NOMENLOADDIR} ]
+if [ ! -f ${NOMENLOAD} ]
 then
     echo "The nomenload software does not exist on this server"; exit 1
 fi
