@@ -208,12 +208,11 @@ def init():
     db.set_sqlUser(user)
     db.set_sqlPasswordFromFile(passwordFileName)
 
-    fdate = mgi_utils.date('%m%d%Y')	# current date
     head, tail = os.path.split(inputFileName) 
 
     outputFileName = inputFileName + '.out'
-    diagFileName = tail + '.' + fdate + '.diagnostics'
-    errorFileName = tail + '.' + fdate + '.error'
+    diagFileName = tail + '.diagnostics'
+    errorFileName = tail + '.error'
     nomenFileName = tail + '.NOM_Marker.bcp'
     refFileName = tail + '.MGI_Reference_Assoc.bcp'
     synFileName = tail + '.MGI_Synonym.bcp'

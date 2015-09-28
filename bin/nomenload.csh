@@ -8,6 +8,7 @@
 #
 # sc - 12/07/2007 - updated to take full path to configfile
 #
+
 setenv CONFIGFILE $1
 
 cd `dirname $0` && source ${CONFIGFILE}
