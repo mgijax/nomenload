@@ -97,6 +97,8 @@ import mgi_utils
 import accessionlib
 import loadlib
 
+#db.setTrace()
+
 #globals
 
 #
@@ -169,12 +171,17 @@ def exit(status, message = None):
     #
     '''
 
+    db.commit()
+    db.useOneConnection()
+
     if message is not None:
 	sys.stderr.write('\n' + str(message) + '\n')
 
     try:
 	inputFile.close()
 	outputFile.close()
+	diagFile.flush()
+	errorFile.flush()
 	diagFile.write('\n\nEnd Date/Time: %s\n' % (mgi_utils.date()))
 	errorFile.write('\n\nEnd Date/Time: %s\n' % (mgi_utils.date()))
 	diagFile.close()
@@ -182,7 +189,6 @@ def exit(status, message = None):
     except:
 	pass
 
-    db.useOneConnection()
     sys.exit(status)
  
 def init():
@@ -273,11 +279,11 @@ def init():
     db.set_sqlLogFunction(db.sqlLogAll)
 
     # Set Log File Descriptor
-    db.set_commandLogFile(diagFileName)
     diagFile.write('Start Date/Time: %s\n' % (mgi_utils.date()))
     diagFile.write('Server: %s\n' % (db.get_sqlServer()))
     diagFile.write('Database: %s\n' % (db.get_sqlDatabase()))
     diagFile.write('Input File: %s\n' % (inputFileName))
+    db.set_commandLogFile(diagFileName)
 
     errorFile.write('Start Date/Time: %s\n\n' % (mgi_utils.date()))
 

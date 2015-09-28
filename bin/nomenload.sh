@@ -23,7 +23,7 @@
 #
 #      - An archive file
 #      - Log files defined by the environment variables ${LOG_PROC},
-#        ${LOG_FILE}, ${LOG_CUR} and ${LOG_VAL}
+#        ${LOG_FILE}, ${LOG_FILE_CUR} and ${LOG_FILE_VAL}
 #      - nomenload logs and bcp file to ${OUTPUTDIR}
 #      - mappingload logs and bcp files  - see mappingload
 #      - Records written to the database tables
@@ -60,8 +60,6 @@ cd `dirname $0`
 LOG=`pwd`/nomenload.log
 rm -rf ${LOG}
 
-RUNTYPE=live
-
 CONFIG_LOAD=$1
 INPUT_FILE_DEFAULT=$2
 
@@ -70,18 +68,19 @@ INPUT_FILE_DEFAULT=$2
 #
 if [ ! -r ${CONFIG_LOAD} ]
 then
-   echo "Cannot read configuration file: ${CONFIG_LOAD}"
+   echo "Cannot read configuration file: ${CONFIG_LOAD}" | tee -a ${LOG}
     exit 1   
 fi
 
 . ${CONFIG_LOAD}
+rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL}
 
 #
 # Make sure the input file exists (regular file or symbolic link).
 #
 if [ "`ls -L ${INPUT_FILE_DEFAULT} 2>/dev/null`" = "" ]
 then
-    echo "Missing input file: ${INPUT_FILE_DEFAULT}"
+    echo "Missing input file: ${INPUT_FILE_DEFAULT}" | tee -a ${LOG_FILE}
     exit 1
 fi
 
@@ -103,11 +102,11 @@ then
     then
         . ${DLAJOBSTREAMFUNC}
     else
-        echo "Cannot source DLA functions script: ${DLAJOBSTREAMFUNC}" | tee -a ${LOG}
+        echo "Cannot source DLA functions script: ${DLAJOBSTREAMFUNC}" | tee -a ${LOG_FILE}
         exit 1
     fi  
 else
-    echo "Environment variable DLAJOBSTREAMFUNC has not been defined." | tee -a ${LOG}
+    echo "Environment variable DLAJOBSTREAMFUNC has not been defined." | tee -a ${LOG_FILE}
     exit 1
 fi
 
@@ -122,40 +121,43 @@ fi
 # the last time the load was run for this input file. If this file exists
 # and is more recent than the input file, the load does not need to be run.
 #
-LASTRUN_FILE=${INPUTDIR}/lastrun
+#LASTRUN_FILE=${INPUTDIR}/lastrun
 
-if [ -f ${LASTRUN_FILE} ]
-then
-    if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
-    then
-        echo "Input file has not been updated - skipping load" | tee -a ${LOG_PROC}
-	exit 0
-    fi
-fi
+#if [ -f ${LASTRUN_FILE} ]
+#then
+#    if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
+#    then
+#        echo "Input file has not been updated - skipping load" | tee -a ${LOG_FILE_PROC}
+#	exit 0
+#    fi
+#fi
 
 #
 # run nomen load
 #
-echo "" >> ${LOG_FILE}
-date >> ${LOG_FILE}
-echo "Running Nomen load" >> ${LOG_FILE}
+echo "" | tee -a ${LOG_FILE}
+date | tee -a ${LOG_FILE}
+echo "Running Nomen load" | tee -a ${LOG_FILE}
 cd ${OUTPUTDIR}
-${NOMENLOAD}/bin/nomenload.py >> ${LOG_FILE}
+${NOMENLOAD}/bin/nomenload.py | tee -a ${LOG_FILE}
 STAT=$?
 checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_LOAD}"
 
 #
 # Archive a copy of the input file, adding a timestamp suffix.
 #
-echo "" >> ${LOG_FILE}
-date >> ${LOG_FILE}
-echo "Archive input file" | tee -a ${LOG_FILE}
-TIMESTAMP=`date '+%Y%m%d.%H%M'`
-ARC_FILE=`basename ${INPUT_FILE_DEFAULT}`.${TIMESTAMP}
-cp -p ${INPUT_FILE_DEFAULT} ${ARCHIVEDIR}/${ARC_FILE}
+#echo "" | tee -a ${LOG_FILE}
+#date | tee -a ${LOG_FILE}
+#echo "Archive input file" | tee -a ${LOG_FILE}
+#TIMESTAMP=`date '+%Y%m%d.%H%M'`
+#ARC_FILE=`basename ${INPUT_FILE_DEFAULT}`.${TIMESTAMP}
+#cp -p ${INPUT_FILE_DEFAULT} ${ARCHIVEDIR}/${ARC_FILE}
 
 #
 # Touch the "lastrun" file to note when the load was run.
 #
-touch ${LASTRUN_FILE}
+#touch ${LASTRUN_FILE}
+
+echo "" | tee -a ${LOG_FILE}
+date | tee -a ${LOG_FILE}
 
