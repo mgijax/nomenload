@@ -601,8 +601,6 @@ def bcpFiles():
     #
     '''
 
-    bcpdelim = "|"
-
     if DEBUG or not bcpon:
 	return
 
@@ -614,22 +612,21 @@ def bcpFiles():
     mappingFile.close()
 
     bcpCommand = os.environ['PG_DBUTILS'] + '/bin/bcpin.csh'
-
     currentDir = os.getcwd()
 
-    bcp1 = '%s %s %s %s %s %s  "|" "\\n" mgd' % \
+    bcp1 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
 	(bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'NOM_Marker', currentDir, nomenFileName)
 
-    bcp2 = '%s %s %s %s %s %s  "|" "\\n" mgd' % \
+    bcp2 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Reference_Assoc', currentDir, refFileName)
 
-    bcp3 = '%s %s %s %s %s %s  "|" "\\n" mgd' % \
+    bcp3 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Synonym', currentDir, synFileName)
 
-    bcp4 = '%s %s %s %s %s %s  "|" "\\n" mgd' % \
+    bcp4 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'ACC_Accession', currentDir, accFileName)
 
-    bcp5 = '%s %s %s %s %s %s  "|" "\\n" mgd' % \
+    bcp5 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'ACC_AccessionReference', currentDir, accrefFileName)
 
     diagFile.write('%s\n' % bcp1)
