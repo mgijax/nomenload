@@ -10,6 +10,7 @@
 #
 
 setenv CONFIGFILE $1
+setenv INPUT_FILE $2
 
 cd `dirname $0` && source ${CONFIGFILE}
 
@@ -38,8 +39,7 @@ endif
 #
 # Only execute if we have broadcast the markers OR if we are just previewing
 # the mapping
-if ( ${RUNSANITYCHECK} == 0 && $returnStatus == 0 && \
-	${NOMENMODE} == 'broadcast' || ${MAPPINGMODE} == 'preview' )) then
+if ( $returnStatus == 0 && ${NOMENMODE} == 'broadcast' || ${MAPPINGMODE} == 'preview' )) then
     # Don't try to execute if file  is empty
     if ( -z ${MAPPINGDATAFILE} ) then
 	echo "Mapping File is empty, skipping mapping load" | tee -a ${LOG_FILE}
