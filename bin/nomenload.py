@@ -108,6 +108,7 @@ mode = os.environ['NOMENMODE']
 inputFileName = os.environ['NOMENDATAFILE']
 mappingFileName = os.environ['MAPPINGDATAFILE']
 mappingCol5 = os.environ['MAPPINGASSAYTYPE']
+runSanityCheck = os.environ['RUNSANITYCHECK']
 
 DEBUG = 0		# set DEBUG to false unless preview mode is selected
 bcpon = 1		# can the bcp files be bcp-ed into the database?  

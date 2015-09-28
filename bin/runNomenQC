@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+#  runNomenQC
+###########################################################################
+#
+# A copy of this script is intended to reside in /usr/local/bin on all
+# servers to make it available in the common PATH.
+#
+# Its allows someone to run the nomen QC reports without having
+# to provide the full path to where the wrapper script is installed.
+#
+###########################################################################
+
+if [ $${MGICONFIG}# = "" ]
+then
+        MGICONFIG=/usr/local/mgi/live/mgiconfig
+	export MGICONFIG
+if
+
+. ${MGICONFIG}/master.config.sh
+
+usage ()
+{
+    echo "Usage: runNomenQC input_file"
+    echo "       where"
+    echo "           input_file = path to the nomen input file"
+    exit 1
+}
+
+#
+# The nomenload product is not installed on all servers, so make sure
+# it exists on this one.
+#
+if [ ! -d ${NOMENLOADDIR} ]
+then
+    echo "The nomenload software does not exist on this server"; exit 1
+fi
+
+#
+# Make sure an input file was passed as an argument to the script.
+#
+if [ $# -eq 1 ]
+then
+    if [ ! -r $1 ]
+    then
+        echo "Input file does not exist: $1"; exit 1
+    fi
+else
+    usage
+fi
+
+#
+# Invoke the nomenload using the santiy check configuration file
+#
+${NOMENLOAD}/bin/nomenload.csh ${NOMENLOAD}/nomensanitycheck.config
+
