@@ -110,6 +110,8 @@ mode = os.environ['NOMENMODE']
 inputFileName = os.environ['INPUT_FILE_DEFAULT']
 mappingFileName = os.environ['MAPPINGDATAFILE']
 mappingCol5 = os.environ['MAPPINGASSAYTYPE']
+diagFileName = os.environ['LOG_DIAG']
+errorFileName = os.environ['LOG_ERROR']
 
 DEBUG = 0		# set DEBUG to false unless preview mode is selected
 bcpon = 1		# can the bcp files be bcp-ed into the database?  
@@ -126,8 +128,6 @@ accFile = ''		# file descriptor
 accrefFile = ''		# file descriptor
 mappingFile = ''	# file descriptor
 
-diagFileName = ''	# file name
-errorFileName = ''	# file name
 nomenFileName = ''	# file name
 refFileName = ''	# file name
 synFileName = ''	# file name
@@ -217,8 +217,6 @@ def init():
     head, tail = os.path.split(inputFileName) 
 
     outputFileName = inputFileName + '.out'
-    diagFileName = tail + '.diagnostics'
-    errorFileName = tail + '.error'
     nomenFileName = 'NOM_Marker.bcp'
     refFileName = 'MGI_Reference_Assoc.bcp'
     synFileName = 'MGI_Synonym.bcp'

@@ -28,7 +28,7 @@ usage ()
 # The nomenload product is not installed on all servers, so make sure
 # it exists on this one.
 #
-if [ ! -f ${NOMENLOAD} ]
+if [ ! -d ${NOMENLOAD} ]
 then
     echo "The nomenload software does not exist on this server"; exit 1
 fi

@@ -34,7 +34,7 @@ CONFIG=${NOMENLOAD}/nomenload.config
 # The nomenload product is not installed on all servers, so make sure
 # it exists on this one.
 #
-if [ ! -f ${NOMENLOAD} ]
+if [ ! -d ${NOMENLOAD} ]
 then
     echo "The nomen load software does not exist on this server"
     exit 1
