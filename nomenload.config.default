@@ -29,8 +29,9 @@ LOG_PROC=${LOGDIR}/nomenload.proc.log
 LOG_DIAG=${LOGDIR}/nomenload.diag.log
 LOG_CUR=${LOGDIR}/nomenload.cur.log
 LOG_VAL=${LOGDIR}/nomenload.val.log
+LOG_ERROR=${LOGDIR}/nomenload.error.log
 
-export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
+export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_ERROR
 
 # Full path to the default input file.
 # This is where the publish script places the file
