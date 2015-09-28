@@ -87,11 +87,12 @@ export EXPERIMENTTYPE
 
 # J number for the mapping experiment reference
 # typically the same Jnum in the nomenload input file
-setenv JNUM             J:?
+JNUM=J:?
+export JNUM
 
 # login of the curator requesting this mapping
-setenv CREATEDBY        yz
-
+CREATEDBY=yz
+export CREATEDBY
 
 ###########################################################################
 #

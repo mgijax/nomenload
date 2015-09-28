@@ -161,3 +161,8 @@ checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_LOAD}"
 echo "" | tee -a ${LOG_FILE}
 date | tee -a ${LOG_FILE}
 
+#
+# cat the error file
+#
+cat ${LOG_ERROR}
+
