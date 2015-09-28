@@ -23,7 +23,7 @@
 #
 #      - An archive file
 #      - Log files defined by the environment variables ${LOG_PROC},
-#        ${LOG_DIAG}, ${LOG_CUR} and ${LOG_VAL}
+#        ${LOG_FILE}, ${LOG_CUR} and ${LOG_VAL}
 #      - nomenload logs and bcp file to ${OUTPUTDIR}
 #      - mappingload logs and bcp files  - see mappingload
 #      - Records written to the database tables
@@ -93,6 +93,24 @@ TMP_FILE=/tmp/`basename $0`.$$
 touch ${TMP_FILE}
 trap "rm -f ${TMP_FILE}" 0 1 2 15
 
+#
+#  Source the DLA library functions.
+#
+
+if [ "${DLAJOBSTREAMFUNC}" != "" ]
+then
+    if [ -r ${DLAJOBSTREAMFUNC} ]
+    then
+        . ${DLAJOBSTREAMFUNC}
+    else
+        echo "Cannot source DLA functions script: ${DLAJOBSTREAMFUNC}" | tee -a ${LOG}
+        exit 1
+    fi  
+else
+    echo "Environment variable DLAJOBSTREAMFUNC has not been defined." | tee -a ${LOG}
+    exit 1
+fi
+
 #####################################
 #
 # Main
@@ -118,20 +136,20 @@ fi
 #
 # run nomen load
 #
-echo "" >> ${LOG_DIAG}
-date >> ${LOG_DIAG}
-echo "Running Nomen load" >> ${LOG_DIAG}
+echo "" >> ${LOG_FILE}
+date >> ${LOG_FILE}
+echo "Running Nomen load" >> ${LOG_FILE}
 cd ${OUTPUTDIR}
-${NOMENLOAD}/bin/nomenload.py >> ${LOG_DIAG}
+${NOMENLOAD}/bin/nomenload.py >> ${LOG_FILE}
 STAT=$?
 checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_LOAD}"
 
 #
 # Archive a copy of the input file, adding a timestamp suffix.
 #
-echo "" >> ${LOG_DIAG}
-date >> ${LOG_DIAG}
-echo "Archive input file" | tee -a ${LOG_DIAG}
+echo "" >> ${LOG_FILE}
+date >> ${LOG_FILE}
+echo "Archive input file" | tee -a ${LOG_FILE}
 TIMESTAMP=`date '+%Y%m%d.%H%M'`
 ARC_FILE=`basename ${INPUT_FILE_DEFAULT}`.${TIMESTAMP}
 cp -p ${INPUT_FILE_DEFAULT} ${ARCHIVEDIR}/${ARC_FILE}

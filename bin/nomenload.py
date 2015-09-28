@@ -213,11 +213,11 @@ def init():
     outputFileName = inputFileName + '.out'
     diagFileName = tail + '.diagnostics'
     errorFileName = tail + '.error'
-    nomenFileName = tail + '.NOM_Marker.bcp'
-    refFileName = tail + '.MGI_Reference_Assoc.bcp'
-    synFileName = tail + '.MGI_Synonym.bcp'
-    accFileName = tail + '.ACC_Accession.bcp'
-    accrefFileName = tail + '.ACC_AccessionReference.bcp'
+    nomenFileName = 'NOM_Marker.bcp'
+    refFileName = 'MGI_Reference_Assoc.bcp'
+    synFileName = 'MGI_Synonym.bcp'
+    accFileName = 'ACC_Accession.bcp'
+    accrefFileName = 'ACC_AccessionReference.bcp'
 
     try:
 	inputFile = open(inputFileName, 'r')
