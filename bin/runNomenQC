@@ -53,5 +53,5 @@ fi
 # Invoke the nomenload using the santiy check configuration file
 # and the arguments that were passed to this script.
 #
-${NOMENLOAD}/bin/nomenload.csh ${NOMENLOAD}/nomensanitycheck.config $*
+${NOMENLOAD}/bin/nomenload.sh ${NOMENLOAD}/nomensanitycheck.config $*
 

@@ -53,7 +53,7 @@
 # History:
 #
 # lec	09/28/2015
-#	- new (using mcvload as a template)
+#	- new (using nomenload as a template)
 #
 
 cd `dirname $0`
@@ -62,7 +62,8 @@ rm -rf ${LOG}
 
 RUNTYPE=live
 
-CONFIG_LOAD=../nomenload.config
+CONFIG_LOAD=$1
+INPUT_FILE_DEFAULT=$2
 
 #
 # Verify and source the configuration file
@@ -74,15 +75,6 @@ then
 fi
 
 . ${CONFIG_LOAD}
-
-#
-# Verify annotation configuration file
-#
-if [ ! -r ${CONFIG_ANNOTLOAD} ]
-then
-   echo "Cannot read configuration file: ${CONFIG_ANNOTLOAD}"
-    exit 1
-fi
 
 #
 # Make sure the input file exists (regular file or symbolic link).
