@@ -42,7 +42,7 @@ export INPUT_FILE_DEFAULT
 # 'broadcast' - load Nomen tables and broadcast to Marker table
 # 'preview' - perform all record verifications, create all output files
 #   but do not load the data or make any changes to the database. 
-NOMENMODE=broadcast
+NOMENMODE=preview
 export NOMENMODE
 
 # This is typically 'In Progress'. If NOMENLOAD="broadcast" then
@@ -76,7 +76,7 @@ export MAPPINGLOG
 # incremental - add mapping to this references experiments
 # full - delete mapping for this reference's experiments, load new mapping
 # preview - do everything except execute bcp/sql 
-MAPPINGMODE=incremental
+MAPPINGMODE=preview
 export MAPPINGMODE
 
 # mapping experiment type - as specified by the curator
