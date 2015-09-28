@@ -13,12 +13,12 @@ setenv CONFIGFILE $1
 
 cd `dirname $0` && source ${CONFIGFILE}
 
-cd ${NOMENDATADIR}
+cd ${INPUTDIR}
 
-rm -rf ${NOMENLOG}
-touch ${NOMENLOG}
+rm -rf ${LOG_FILE}
+touch ${LOG_FILE}
  
-date >> ${NOMENLOG}
+date >> ${LOG_FILE}
  
 #
 # Execute nomenload
@@ -27,9 +27,9 @@ date >> ${NOMENLOG}
 ${NOMENLOAD}/bin/nomenload.py
 set returnStatus=$status
 if ( $returnStatus ) then
-    echo "Nomen Load ${CONFIGFILE}: FAILED" | tee -a ${NOMENLOG}
+    echo "Nomen Load ${CONFIGFILE}: FAILED" | tee -a ${LOG_FILE}
 else
-    echo "Nomen Load ${CONFIGFILE}: SUCCESSFUL" | tee -a ${NOMENLOG}
+    echo "Nomen Load ${CONFIGFILE}: SUCCESSFUL" | tee -a ${LOG_FILE}
 endif
 
 #
@@ -42,8 +42,8 @@ if ( ${RUNSANITYCHECK} == 0 && $returnStatus == 0 && \
 	${NOMENMODE} == 'broadcast' || ${MAPPINGMODE} == 'preview' )) then
     # Don't try to execute if file  is empty
     if ( -z ${MAPPINGDATAFILE} ) then
-	echo "Mapping File is empty, skipping mapping load" | tee -a ${NOMENLOG}
-	date >> ${NOMENLOG}
+	echo "Mapping File is empty, skipping mapping load" | tee -a ${LOG_FILE}
+	date >> ${LOG_FILE}
 	exit 0 
     endif
 
@@ -52,14 +52,14 @@ if ( ${RUNSANITYCHECK} == 0 && $returnStatus == 0 && \
     ${MAPPINGLOAD}/mappingload.csh ${CONFIGFILE}
     set returnStatus=$status
     if ( $returnStatus ) then
-		echo "Mapping Load ${CONFIGFILE}: FAILED" | tee -a ${NOMENLOG}
+		echo "Mapping Load ${CONFIGFILE}: FAILED" | tee -a ${LOG_FILE}
     else
-	echo  "Mapping Load ${CONFIGFILE}: SUCCESSFUL" | tee -a ${NOMENLOG}
+	echo  "Mapping Load ${CONFIGFILE}: SUCCESSFUL" | tee -a ${LOG_FILE}
     endif
 else
     echo "Skipping mapping load: nomenload exit status = \
-	$returnStatus Nomen Mode = ${NOMENMODE}" | tee -a ${NOMENLOG}
+	$returnStatus Nomen Mode = ${NOMENMODE}" | tee -a ${LOG_FILE}
 endif
 
-date >> ${NOMENLOG}
+date >> ${LOG_FILE}
 

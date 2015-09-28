@@ -11,27 +11,27 @@ setenv CONFIGFILE $1
 
 cd `dirname $0` && source ${CONFIGFILE}
 
-cd ${NOMENDATADIR}
+cd ${INPUTDIR}
 
-rm -rf ${NOMENLOG}
-touch ${NOMENLOG}
+rm -rf ${LOG_FILE}
+touch ${LOG_FILE}
  
-date >> ${NOMENLOG}
+date >> ${LOG_FILE}
  
 #
 # Execute nomenload
 #
 echo "Updating markers in: ${NOMENDATAFILE} to Marker Type Key: ${NEWMKRTYPE} \
-	Updated By: ${MODIFIEDBY}" | tee -a ${NOMENLOG}
-echo ${MGD_DBSERVER} | tee -a  ${NOMENLOG}
-echo ${MGD_DBNAME} | tee -a ${NOMENLOG}
-${NOMENLOAD}/bin/updateMkrType.py >& ${NOMENLOG}
+	Updated By: ${MODIFIEDBY}" | tee -a ${LOG_FILE}
+echo ${MGD_DBSERVER} | tee -a  ${LOG_FILE}
+echo ${MGD_DBNAME} | tee -a ${LOG_FILE}
+${NOMENLOAD}/bin/updateMkrType.py >& ${LOG_FILE}
 set returnStatus=$status
 if ( $returnStatus ) then
-    echo "Marker Type Update ${CONFIGFILE}: FAILED" | tee -a ${NOMENLOG}
+    echo "Marker Type Update ${CONFIGFILE}: FAILED" | tee -a ${LOG_FILE}
 else
-    echo "Marker Type Update ${CONFIGFILE}: SUCCESSFUL" | tee -a ${NOMENLOG}
+    echo "Marker Type Update ${CONFIGFILE}: SUCCESSFUL" | tee -a ${LOG_FILE}
 endif
 
-date >> ${NOMENLOG}
+date >> ${LOG_FILE}
 

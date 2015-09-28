@@ -14,16 +14,16 @@ setenv CONFIGFILE $1
 
 cd `dirname $0` && source ${CONFIGFILE}
 
-cd ${NOMENDATADIR}
+cd ${INPUTDIR}
 
-rm -rf ${NOMENLOG}
-touch ${NOMENLOG}
+rm -rf ${LOG_FILE}
+touch ${LOG_FILE}
  
-date >> ${NOMENLOG}
+date >> ${LOG_FILE}
  
-echo "Broadcasting symbols..." | tee -a ${NOMENLOG}
+echo "Broadcasting symbols..." | tee -a ${LOG_FILE}
 
-cat - <<EOSQL | doisql.csh $0 | tee -a ${NOMENLOG}
+cat - <<EOSQL | doisql.csh $0 | tee -a ${LOG_FILE}
 
 DECLARE
 marker_cursor refcursor;
@@ -57,5 +57,5 @@ EOSQL
 cd ${MAPPINGLOAD}
 ${MAPPINGLOAD}/mappingload.csh ${CONFIGFILE}
 
-date >> ${NOMENLOG}
+date >> ${LOG_FILE}
 
