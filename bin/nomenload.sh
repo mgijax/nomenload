@@ -73,7 +73,7 @@ then
 fi
 
 . ${CONFIG_LOAD}
-rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL}
+rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} ${LOG_ERROR}
 
 #
 # Make sure the input file exists (regular file or symbolic link).

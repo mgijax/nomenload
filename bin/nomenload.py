@@ -283,7 +283,7 @@ def init():
     diagFile.write('Input File: %s\n' % (inputFileName))
     db.set_commandLogFile(diagFileName)
 
-    errorFile.write('\nstart: ERROR file\n\n')
+    errorFile.write('\nstart: ERROR file : %s\n\n' % (mgi_utils.date()))
 
 def verifyMode():
     '''
