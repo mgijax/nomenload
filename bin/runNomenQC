@@ -52,8 +52,3 @@ fi
 #
 ${NOMENLOAD}/bin/nomenload.sh ${NOMENLOAD}/nomensanitycheck.config $*
 
-#
-# cat the error file
-#
-cat ${LOG_ERROR}
-

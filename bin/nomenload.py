@@ -183,7 +183,7 @@ def exit(status, message = None):
 	diagFile.flush()
 	errorFile.flush()
 	diagFile.write('\n\nEnd Date/Time: %s\n' % (mgi_utils.date()))
-        errorFile.write('end: ERROR file\n')
+        errorFile.write('\nend: ERROR file\n')
 	diagFile.close()
 	errorFile.close()
     except:
@@ -283,7 +283,7 @@ def init():
     diagFile.write('Input File: %s\n' % (inputFileName))
     db.set_commandLogFile(diagFileName)
 
-    errorFile.write('start: ERROR file...\n')
+    errorFile.write('\nstart: ERROR file\n\n')
 
 def verifyMode():
     '''
