@@ -365,6 +365,32 @@ def verifyDuplicateMarker(symbol, lineNum):
 	errorFile.write('Duplicate Marker (%d) %s\n' % (lineNum, symbol))
 	return 1
 
+def verifyChromosome(chromosome, lineNum):
+    '''
+    # requires:
+    #	chromosome - the Chromosome
+    #	lineNum - the line number of the record from the input file
+    #
+    # effects:
+    #	verifies that:
+    #		the Chromosome is valid
+    #	writes to the error file if the Chromosome is invalid
+    #
+    # returns:
+    #	1 if the Chromosome is valid
+    #	0 if the Chromosome is invalid
+    #
+    '''
+
+    results = db.sql('''select * from MRK_Chromosome where _Organism_key = 1 and chromosome = '%s'
+	''' % (chromosome, symbol), 'auto')
+
+    if len(results) == 0:
+	return 0
+    else:
+	errorFile.write('Invalid Chromosome(%d) %s\n' % (lineNum, chromosome))
+	return 1
+
 def verifyLogicalDB(logicalDB, lineNum):
     '''
     # requires:
@@ -503,6 +529,7 @@ def processFile():
 	referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
 	createdByKey = loadlib.verifyUser(createdByKey, lineNum, errorFile)
 	isDuplicateMarker = verifyDuplicateMarker(symbol, lineNum)
+	chromosome = verifyChromosome(chromosome, lineNum)
 
 	# other acc ids
 	for otherAcc in string.split(otherAccIDs, '|'):
@@ -518,6 +545,7 @@ def processFile():
 	    markerStatusKey == 0 or \
 	    referenceKey == 0 or \
 	    isDuplicateMarker == 1 or \
+	    chromosome == 0 or \
 	    createdByKey == 0:
 
 	    # set error flag to true
@@ -669,19 +697,25 @@ def broadcastToMRK():
 # Main
 #
 
-print 'init()'
 init()
-print 'verifyMode()'
+
+diagFile.write('\nverifyMode()\n')
 verifyMode()
-print 'setPrimaryKeys()'
+
+diagFile.write('\nsetPrimaryKeys()\n')
 setPrimaryKeys()
-print 'loadDictionaries()'
+
+diagFile.write('\nloadDictionaries()\n')
 loadDictionaries()
-print 'processFile()'
+
+diagFile.write('\nprocessFile()\n')
 processFile()
-print 'bcpFiles()'
+
+diagFile.write('\nbcpFiles()\n')
 bcpFiles()
-print 'broadcastToMRK'
+
+diagFile.write('\nbroadcastToMRK\n')
 broadcastToMRK()
+
 exit(0)
 

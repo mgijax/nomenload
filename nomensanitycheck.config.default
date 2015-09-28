@@ -1,0 +1,107 @@
+#!/bin/sh
+
+#
+# default configuration file
+#
+# cp config.default *.config (e.g. vega.config)
+# set all settings where default value is '?'
+
+if [ "${MGICONFIG}" = "" ]
+then
+        MGICONFIG=/usr/local/mgi/live/mgiconfig
+	export MGICONFIG
+fi
+
+. ${MGICONFIG}/master.config.sh
+
+#  Path name of the archive, logs, reports and output directories
+FILEDIR=${DATALOADSOUTPUT}/mgi/nomenload
+ARCHIVEDIR=${FILEDIR}/archive
+LOGDIR=${FILEDIR}/logs
+RPTDIR=${FILEDIR}/reports
+OUTPUTDIR=${FILEDIR}/output
+INPUTDIR=${FILEDIR}/input
+export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR
+
+# Complete path name of the nomenload log files
+LOG_FILE=${LOGDIR}/nomenload.log
+LOG_PROC=${LOGDIR}/nomenload.proc.log
+LOG_DIAG=${LOGDIR}/nomenload.diag.log
+LOG_CUR=${LOGDIR}/nomenload.cur.log
+LOG_VAL=${LOGDIR}/nomenload.val.log
+
+export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
+
+# Full path to the default input file.
+# This is where the publish script places the file
+INPUT_FILE_DEFAULT=${INPUTDIR}/nomenload.txt
+export INPUT_FILE_DEFAULT
+
+# Load Mode:
+# 'load' - load Nomen tables
+# 'broadcast' - load Nomen tables and broadcast to Marker table
+# 'preview' - perform all record verifications, create all output files
+#   but do not load the data or make any changes to the database. 
+NOMENMODE=broadcast
+export NOMENMODE
+
+# This is typically 'In Progress'. If NOMENLOAD="broadcast" then
+# that process will update status to 'Official'
+NOMENSTATUS="In Progress"
+export NOMENSTATUS
+
+#
+# Mapping Load Configuration
+#
+
+# mapping assay type
+MAPPINGASSAYTYPE=assembly
+export MAPPINGASSAYTYPE
+
+# directory in which the input file is found and output will be written
+# this is typically OUTPUTDIR since nomenload creates this file
+MAPPINGDATADIR=${OUTPUTDIR}
+export MAPPINGDATADIR
+
+# full path to the input file. bcp files, error and diagnostics file
+# will e based on this filename
+MAPPINGDATAFILE=${INPUT_FILE_DEFAULT}.mapping
+export MAPPINGDATAFILE
+
+# full path to jobstream log
+MAPPINGLOG=${MAPPINGDATAFILE}.log
+export MAPPINGLOG
+
+# Mapping Mode:
+# incremental - add mapping to this references experiments
+# full - delete mapping for this reference's experiments, load new mapping
+# preview - do everything except execute bcp/sql 
+MAPPINGMODE=incremental
+export MAPPINGMODE
+
+# mapping experiment type - as specified by the curator
+# e.g. "TEXT-Physical Mapping"
+EXPERIMENTTYPE="TEXT-Physical Mapping"
+export EXPERIMENTTYPE
+
+# J number for the mapping experiment reference
+# typically the same Jnum in the nomenload input file
+setenv JNUM             J:?
+
+# login of the curator requesting this mapping
+setenv CREATEDBY        yz
+
+
+###########################################################################
+#
+#  MISCELLANEOUS SETTINGS
+#
+###########################################################################
+
+#  The name of the load for the subject of an email notification
+MAIL_LOADNAME="Nomenclature/Mapping Load"
+export MAIL_LOADNAME
+
+INSTALLDIR=${NOMENLOAD}
+export INSTALLDIR
+
