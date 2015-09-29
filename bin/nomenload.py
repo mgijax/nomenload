@@ -500,6 +500,13 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
 
     error = 0
 
+    markerTypeKey = loadlib.verifyMarkerType(markerType, lineNum, errorFile)
+    markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
+    referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
+    createdByKey = loadlib.verifyUser(createdBy, lineNum, errorFile)
+    isDuplicateMarker = verifyDuplicateMarker(symbol, lineNum)
+    chromosomeSearch = verifyChromosome(chromosome, lineNum)
+
     #
     # 1st instance will be loaded
     # duplicate rows in input file
@@ -513,14 +520,14 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     if len(synonyms) == 0:
 	errorFile.write('WARNING: Missing Synonyms (row %d): %s\n' % (lineNum, symbol))
 
-    markerTypeKey = loadlib.verifyMarkerType(markerType, lineNum, errorFile)
-    markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
-    referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
-    createdByKey = loadlib.verifyUser(createdBy, lineNum, errorFile)
-    isDuplicateMarker = verifyDuplicateMarker(symbol, lineNum)
-    chromosomeSearch = verifyChromosome(chromosome, lineNum)
-
+    # 
+    # Sequences
     # other acc ids
+    #
+
+    if len(otherAccIDs) == 0:
+        errorFile.write('WARNING: Missing Sequences (row %d): %s\n' % (lineNum, symbol))
+
     for otherAcc in string.split(otherAccIDs, '|'):
     	if len(otherAcc) > 0:
 	    try:
@@ -533,9 +540,6 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
 	    except:
 	        errorFile.write('Sequences without Logical DB (row %d): %s\n' % (lineNum, otherAcc))
 	        error = 1
-
-	else:
-		errorFile.write('WARNING: Missing Sequences (row %d): %s\n' % (lineNum, symbol))
 
     #
     # check if sequences are associated with other markers.
@@ -553,6 +557,10 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     	for r in results:
 		errorFile.write('WARNING: Sequence is associated with other Marker (row %d): %s ; %s\n\n' 
 			% (lineNum, acc, r['symbol']))
+
+    #
+    # invalid terms
+    #
 
     if markerTypeKey == 0 or \
        markerStatusKey == 0 or \
