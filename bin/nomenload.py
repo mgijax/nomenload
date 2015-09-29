@@ -140,7 +140,6 @@ accKey = 0		# ACC_Accession._Accession_key
 synKey = 0		# MGI_Synonym._Synonym_key
 mgiKey = 0		# ACC_AccessionMax.maxNumericPart
 refAssocKey = 0		# MGI_Reference_Assoc._Assoc_key
-createdByKey = 0
 
 statusDict = {}		# dictionary of marker statuses for quick lookup
 referenceDict = {}	# dictionary of references for quick lookup
@@ -158,6 +157,23 @@ mappingCol4 = ''			# band (leave blank)
 mappingCol6 = ''			# description ( leave blank)
 
 cdate = mgi_utils.date('%m/%d/%Y')	# current date
+
+markerType = None
+symbol = None
+name = None
+chromosome = None
+markerStatus = None
+jnum = None
+synonyms = None
+otherAccIDs = None
+notes = None
+createdBy = None
+markerTypeKey = 0
+markerStatusKey = 0
+createdByKey = 0
+referenceKey = 0
+logicalDBKey = 0
+otherAccDict = {}
 
 def exit(status, message = None):
     '''
@@ -343,24 +359,49 @@ def verifyDuplicateMarker(symbol, lineNum):
     #
     # effects:
     #	verifies that:
-    #		the Marker Symbol is not a duplicate
+    #		the Symbol is not an existing Official/Interim Marker
+    #		the Symbol is not a Reserved Nomen Marker
+    #
+    #   if the Symbol is a Withdrawn Marker, then issue a warning
+    #
     #	writes to the error file if the Symbol is a duplicate
     #
     # returns:
-    #	1 if the Marker Symbol is a duplicate
     #	0 if the Marker Symbol is not a duplicate
+    #	1 if the Marker Symbol is a duplicate
     #
     '''
 
-    results = db.sql('''select _Nomen_key from NOM_Marker where symbol = '%s'
+    #
+    # warning if Symbol is Withdrawn
+    #
+
+    results = db.sql('''select _Marker_key from MRK_Marker 
+	where _Organism_key = 1 
+		and _Marker_Status_key in (2)
+		and symbol = '%s'
+	''' % (symbol, symbol), 'auto')
+
+    if len(results) > 0:
+	errorFile.write('WARNING: Symbol is Withdrawn : (%d) %s\n\n' % (lineNum, symbol))
+
+    #
+    # official/interim/reserved
+    #
+
+    results = db.sql('''select _Nomen_key from NOM_Marker 
+    	where symbol = '%s' and _NomenStatus_key = 166901
 	union 
-	select _Marker_key from MRK_Marker where _Organism_key = 1 and symbol = '%s'
+	select _Marker_key from MRK_Marker 
+	where _Organism_key = 1 
+		and _Marker_Status_key in (1,3)
+		and symbol = '%s'
 	''' % (symbol, symbol), 'auto')
 
     if len(results) == 0:
 	return 0
     else:
-	errorFile.write('Duplicate Marker (%d) %s\n' % (lineNum, symbol))
+	errorFile.write('Symbol is Official/Inferim/Reserved: (%d) %s\n' % (lineNum, symbol))
 	return 1
 
 def verifyChromosome(chromosome, lineNum):
@@ -384,10 +425,10 @@ def verifyChromosome(chromosome, lineNum):
 	''' % (chromosome), 'auto')
 
     if len(results) > 0:
-	return 0
+	return 1
     else:
 	errorFile.write('Invalid Chromosome (%d) %s\n' % (lineNum, chromosome))
-	return 1
+	return 0
 
 def verifyLogicalDB(logicalDB, lineNum):
     '''
@@ -415,6 +456,58 @@ def verifyLogicalDB(logicalDB, lineNum):
 	logicalDBKey = 0
 
     return(logicalDBKey)
+
+def sanityCheck(markerType, symbol, chromosome, markerStatus,
+	    jnum, otherAccIDs, createdBy, lineNum):
+    '''
+    #
+    # requires:
+    #
+    # effects:
+    #
+    # returns:
+    #	0 if sanity check passes
+    #	1 if sanity check fails
+    #
+    '''
+
+    global markerTypeKey
+    global markerStatusKey
+    global referenceKey
+    global createdByKey
+    global logicalDBKey
+    global otherAccDict
+
+    error = 0
+
+    markerTypeKey = loadlib.verifyMarkerType(markerType, lineNum, errorFile)
+    markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
+    referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
+    createdByKey = loadlib.verifyUser(createdBy, lineNum, errorFile)
+    isDuplicateMarker = verifyDuplicateMarker(symbol, lineNum)
+    chromosomeSearch = verifyChromosome(chromosome, lineNum)
+
+    # other acc ids
+    for otherAcc in string.split(otherAccIDs, '|'):
+    	if len(otherAcc) > 0:
+	    [logicalDB, acc] = string.split(otherAcc, ':')
+	    logicalDBKey = verifyLogicalDB(logicalDB, lineNum)
+	    if logicalDBKey > 0:
+	        otherAccDict[acc] = logicalDBKey
+	    else:
+	        error = 1
+
+    if markerTypeKey == 0 or \
+       markerStatusKey == 0 or \
+       referenceKey == 0 or \
+       isDuplicateMarker == 1 or \
+       chromosomeSearch == 0 or \
+       createdByKey == 0:
+
+        # set error flag to true
+	error = 1
+
+    return (error)
 
 def setPrimaryKeys():
     '''
@@ -495,13 +588,23 @@ def processFile():
     '''
 
     global nomenKey, accKey, mgiKey, synKey, refAssocKey, createdByKey
+    global markerType 
+    global symbol 
+    global name 
+    global chromosome 
+    global markerStatus 
+    global jnum 
+    global synonyms 
+    global otherAccIDs 
+    global notes 
+    global createdBy
+    global otherAccDict
 
     lineNum = 0
     # For each line in the input file
 
     for line in inputFile.readlines():
 
-	error = 0
 	lineNum = lineNum + 1
 	otherAccDict = {}
 
@@ -518,39 +621,17 @@ def processFile():
 	    synonyms = tokens[6]
 	    otherAccIDs = tokens[7]
 	    notes = tokens[8]
-	    createdByKey = tokens[9]
+	    createdBy = tokens[9]
 	except:
 	    exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
-	markerTypeKey = loadlib.verifyMarkerType(markerType, lineNum, errorFile)
-	markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
-	referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
-	createdByKey = loadlib.verifyUser(createdByKey, lineNum, errorFile)
-	isDuplicateMarker = verifyDuplicateMarker(symbol, lineNum)
-	chromosome = verifyChromosome(chromosome, lineNum)
+	#
+	# sanity checks
+	#
 
-	# other acc ids
-	for otherAcc in string.split(otherAccIDs, '|'):
-	    if len(otherAcc) > 0:
-		[logicalDB, acc] = string.split(otherAcc, ':')
-		logicalDBKey = verifyLogicalDB(logicalDB, lineNum)
-		if logicalDBKey > 0:
-		    otherAccDict[acc] = logicalDBKey
-		else:
-		    error = 1
-
-	if markerTypeKey == 0 or \
-	    markerStatusKey == 0 or \
-	    referenceKey == 0 or \
-	    isDuplicateMarker == 1 or \
-	    chromosome == 0 or \
-	    createdByKey == 0:
-
-	    # set error flag to true
-	    error = 1
-
-	# if errors, continue to next record
-	if error:
+        if sanityCheck(markerType, symbol, chromosome, markerStatus, jnum,
+	    	otherAccIDs, createdBy, lineNum) == 1:
+	    errorFile.write(str(tokens) + '\n\n')
 	    continue
 
 	# if no errors, process the marker
