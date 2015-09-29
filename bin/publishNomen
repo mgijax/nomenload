@@ -57,14 +57,6 @@ fi
 INPUT_FILE=$1
 
 #
-# Create a temporary file and make sure that it is removed when this script
-# terminates.
-#
-TMP_FILE=/tmp/`basename $0`.$$
-touch ${TMP_FILE}
-trap "rm -f ${TMP_FILE}" 0 1 2 15
-
-#
 # Make sure the configuration file exists and source it.
 #
 if [ -f ${CONFIG} ]
@@ -76,8 +68,7 @@ else
 fi
 
 #
-# Copy the input file to the input directory where it will be picked up
-# by the load.
+# Copy the input file to the input directory where it will be picked up by the load.
 #
 cd ${CURRENT_DIR}
 echo "Source File:      ${INPUT_FILE}"
