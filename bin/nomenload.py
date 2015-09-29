@@ -50,7 +50,7 @@
 #
 # Sanity Checks: see sanityCheck()
 #
-#        1) Invalid Line
+#        1) Invalid Line (missing column(s))
 #        2) Invalid Marker Status
 #        3) Invalid Chromosome
 #        4) Invalid Logical DB
@@ -687,7 +687,7 @@ def processFile():
 	    notes = tokens[8]
 	    createdBy = tokens[9]
 	except:
-	    errorFile.write('Invalid Line (row %d): %s\n' % (lineNum, line))
+	    errorFile.write('Invalid Line (missing column(s)) (row %d): %s\n' % (lineNum, line))
 	    continue
 
 	#
