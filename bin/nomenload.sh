@@ -78,12 +78,10 @@ then
     usage
 fi
 
-
-CONFIG_LOAD=$1
-
 #
 # Verify and source the configuration file
 #
+CONFIG_LOAD=$1
 if [ ! -r ${CONFIG_LOAD} ]
 then
    echo "Cannot read configuration file: ${CONFIG_LOAD}" | tee -a ${LOG}
@@ -91,28 +89,18 @@ then
 fi
 
 . ${CONFIG_LOAD}
+
 rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} ${LOG_ERROR}
 
 #
 # Make sure the input file exists (regular file or symbolic link).
 #
-
-# sourcing the config file will override this
 INPUT_FILE_DEFAULT=$2
-
 if [ ! -r ${INPUT_FILE_DEFAULT} ]
 then
     echo "Missing input file: ${INPUT_FILE_DEFAULT}" | tee -a ${LOG_FILE}
     exit 1
 fi
-
-#
-# Create a temporary file and make sure that it is removed when this script
-# terminates.
-#
-TMP_FILE=/tmp/`basename $0`.$$
-touch ${TMP_FILE}
-trap "rm -f ${TMP_FILE}" 0 1 2 15
 
 #
 #  Source the DLA library functions.

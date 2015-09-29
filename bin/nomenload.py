@@ -346,7 +346,7 @@ def verifyMarkerStatus(markerStatus, lineNum):
     if statusDict.has_key(markerStatus):
 	markerStatusKey = statusDict[markerStatus]
     else:
-	errorFile.write('Invalid Marker Status (%d) %s\n' % (lineNum, markerStatus))
+	errorFile.write('Invalid Marker Status (row %d) %s\n' % (lineNum, markerStatus))
 	markerStatusKey = 0
 
     return(markerStatusKey)
@@ -383,7 +383,7 @@ def verifyDuplicateMarker(symbol, lineNum):
 	''' % (symbol), 'auto')
 
     if len(results) > 0:
-	errorFile.write('WARNING: Symbol is Withdrawn : (%d) %s\n\n' % (lineNum, symbol))
+	errorFile.write('WARNING: Symbol is Withdrawn : (row %d) %s\n\n' % (lineNum, symbol))
 
     #
     # official/interim/reserved
@@ -401,7 +401,7 @@ def verifyDuplicateMarker(symbol, lineNum):
     if len(results) == 0:
 	return 0
     else:
-	errorFile.write('Symbol is Official/Inferim/Reserved: (%d) %s\n' % (lineNum, symbol))
+	errorFile.write('Symbol is Official/Inferim/Reserved: (row %d) %s\n' % (lineNum, symbol))
 	return 1
 
 def verifyChromosome(chromosome, lineNum):
@@ -427,7 +427,7 @@ def verifyChromosome(chromosome, lineNum):
     if len(results) > 0:
 	return 1
     else:
-	errorFile.write('Invalid Chromosome (%d) %s\n' % (lineNum, chromosome))
+	errorFile.write('Invalid Chromosome (row %d) %s\n' % (lineNum, chromosome))
 	return 0
 
 def verifyLogicalDB(logicalDB, lineNum):
@@ -452,7 +452,7 @@ def verifyLogicalDB(logicalDB, lineNum):
     if logicalDBDict.has_key(logicalDB):
 	logicalDBKey = logicalDBDict[logicalDB]
     else:
-	errorFile.write('Invalid Logical DB (%d) %s\n' % (lineNum, logicalDB))
+	errorFile.write('Invalid Logical DB (row %d) %s\n' % (lineNum, logicalDB))
 	logicalDBKey = 0
 
     return(logicalDBKey)
@@ -490,11 +490,15 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus,
     # other acc ids
     for otherAcc in string.split(otherAccIDs, '|'):
     	if len(otherAcc) > 0:
-	    [logicalDB, acc] = string.split(otherAcc, ':')
-	    logicalDBKey = verifyLogicalDB(logicalDB, lineNum)
-	    if logicalDBKey > 0:
-	        otherAccDict[acc] = logicalDBKey
-	    else:
+	    try:
+	    	[logicalDB, acc] = string.split(otherAcc, ':')
+	    	logicalDBKey = verifyLogicalDB(logicalDB, lineNum)
+	    	if logicalDBKey > 0:
+	        	otherAccDict[acc] = logicalDBKey
+	    	else:
+	        	error = 1
+	    except:
+	        errorFile.write('Sequences without logic DB (row %d) %s\n' % (lineNum, otherAcc))
 	        error = 1
 
     if markerTypeKey == 0 or \
@@ -623,7 +627,7 @@ def processFile():
 	    notes = tokens[8]
 	    createdBy = tokens[9]
 	except:
-	    exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
+	    exit(1, 'Invalid Line (row %d): %s\n' % (lineNum, line))
 
 	#
 	# sanity checks
