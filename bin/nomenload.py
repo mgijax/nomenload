@@ -54,7 +54,7 @@
 #        b) Invalid Chromosome
 #        c) Invalid Logical DB
 #        d) Symbol is Official/Inferim/Reserved
-#        e) Sequences without logic DB
+#        e) Sequences without Logical DB
 #        f) Invalid Line
 #        g) WARNING: Symbol is Withdrawn
 #        h) WARNING: Sequence is associated with other Markers
@@ -526,7 +526,7 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus,
 	    	else:
 	        	error = 1
 	    except:
-	        errorFile.write('Sequences without logic DB (row %d): %s\n' % (lineNum, otherAcc))
+	        errorFile.write('Sequences without Logical DB (row %d): %s\n' % (lineNum, otherAcc))
 	        error = 1
 
     #
