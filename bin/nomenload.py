@@ -59,8 +59,6 @@
 #        7) WARNING: Symbol is Withdrawn
 #        8) WARNING: Sequence is associated with other Markers
 #	 9) WARNING: Duplicate row in input file (1st instance will be loaded)
-#        10) WARNING: Missing Sequences
-#        11) WARNING: Missing Synonyms
 #
 #
 # Output:
@@ -517,16 +515,16 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     else:
     	markerLookup.append(symbol)
 
-    if len(synonyms) == 0:
-	errorFile.write('WARNING: Missing Synonyms (row %d): %s\n' % (lineNum, symbol))
+    #if len(synonyms) == 0:
+	#errorFile.write('WARNING: Missing Synonyms (row %d): %s\n' % (lineNum, symbol))
 
     # 
     # Sequences
     # other acc ids
     #
 
-    if len(otherAccIDs) == 0:
-        errorFile.write('WARNING: Missing Sequences (row %d): %s\n' % (lineNum, symbol))
+    #if len(otherAccIDs) == 0:
+        #errorFile.write('WARNING: Missing Sequences (row %d): %s\n' % (lineNum, symbol))
 
     for otherAcc in string.split(otherAccIDs, '|'):
     	if len(otherAcc) > 0:
