@@ -58,6 +58,7 @@
 #        f) Invalid Line
 #        g) WARNING: Symbol is Withdrawn
 #        h) WARNING: Sequence is associated with other Markers
+#	 i) WARNING: Duplicate row in input file (1st instance will be loaded)
 #
 #
 # Output:
@@ -189,6 +190,7 @@ createdByKey = 0
 referenceKey = 0
 logicalDBKey = 0
 otherAccDict = {}
+markerLookup = []
 
 def exit(status, message = None):
     '''
@@ -492,8 +494,19 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus,
     global createdByKey
     global logicalDBKey
     global otherAccDict
+    global markerLookup
 
     error = 0
+
+    #
+    # 1st instance will be loaded
+    # duplicate rows in input file
+    #
+    if symbol in markerLookup:
+	errorFile.write('WARNING: Duplicate row in input file (row %d): %s\n' % (lineNum, symbol))
+	error = 1
+    else:
+    	markerLookup.append(symbol)
 
     markerTypeKey = loadlib.verifyMarkerType(markerType, lineNum, errorFile)
     markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
@@ -635,6 +648,7 @@ def processFile():
     global notes 
     global createdBy
     global otherAccDict
+    global markerLookup
 
     lineNum = 0
     # For each line in the input file
