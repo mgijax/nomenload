@@ -50,15 +50,17 @@
 #
 # Sanity Checks: see sanityCheck()
 #
-#        a) Invalid Marker Status
-#        b) Invalid Chromosome
-#        c) Invalid Logical DB
-#        d) Symbol is Official/Inferim/Reserved
-#        e) Sequences without Logical DB
-#        f) Invalid Line
-#        g) WARNING: Symbol is Withdrawn
-#        h) WARNING: Sequence is associated with other Markers
-#	 i) WARNING: Duplicate row in input file (1st instance will be loaded)
+#        1) Invalid Line
+#        2) Invalid Marker Status
+#        3) Invalid Chromosome
+#        4) Invalid Logical DB
+#        5) Symbol is Official/Inferim/Reserved
+#        6) Sequences without Logical DB
+#        7) WARNING: Symbol is Withdrawn
+#        8) WARNING: Sequence is associated with other Markers
+#	 9) WARNING: Duplicate row in input file (1st instance will be loaded)
+#        10) WARNING: Missing Sequences
+#        11) WARNING: Missing Synonyms
 #
 #
 # Output:
@@ -474,8 +476,8 @@ def verifyLogicalDB(logicalDB, lineNum):
 
     return(logicalDBKey)
 
-def sanityCheck(markerType, symbol, chromosome, markerStatus,
-	    jnum, otherAccIDs, createdBy, lineNum):
+def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms, 
+	otherAccIDs, createdBy, lineNum):
     '''
     #
     # requires:
@@ -508,6 +510,9 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus,
     else:
     	markerLookup.append(symbol)
 
+    if len(synonyms) == 0:
+	errorFile.write('WARNING: Missing Synonyms (row %d): %s\n' % (lineNum, symbol))
+
     markerTypeKey = loadlib.verifyMarkerType(markerType, lineNum, errorFile)
     markerStatusKey = verifyMarkerStatus(markerStatus, lineNum)
     referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
@@ -528,6 +533,9 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus,
 	    except:
 	        errorFile.write('Sequences without Logical DB (row %d): %s\n' % (lineNum, otherAcc))
 	        error = 1
+
+	else:
+		errorFile.write('WARNING: Missing Sequences (row %d): %s\n' % (lineNum, symbol))
 
     #
     # check if sequences are associated with other markers.
@@ -680,7 +688,7 @@ def processFile():
 	# sanity checks
 	#
 
-        if sanityCheck(markerType, symbol, chromosome, markerStatus, jnum,
+        if sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
 	    	otherAccIDs, createdBy, lineNum) == 1:
 	    errorFile.write(str(tokens) + '\n\n')
 	    continue
