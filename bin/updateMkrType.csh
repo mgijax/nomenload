@@ -7,6 +7,7 @@
 #
 # sc - 10/21/2010 - new
 #
+
 setenv CONFIGFILE $1
 
 cd `dirname $0` && source ${CONFIGFILE}
