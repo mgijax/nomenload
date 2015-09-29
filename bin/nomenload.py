@@ -48,6 +48,17 @@
 #		broadcast - load the data into Nomen structures and 
 #			broadcast to MRK structures
 #
+# Sanity Checks: see sanityCheck()
+#
+#        a) Invalid Marker Status
+#        b) Invalid Chromosome
+#        c) Invalid Logical DB
+#        d) Symbol is Official/Inferim/Reserved
+#        e) Sequences without logic DB
+#        f) Invalid Line
+#        g) WARNING: Symbol is Withdrawn
+#        h) WARNING: Sequence is associated with other Markers
+#
 #
 # Output:
 #
@@ -75,6 +86,10 @@
 #	http://prodwww.informatics.jax.org/software/wiki/index.php/Nomenload
 #
 # History:
+#
+# lec	09/29/2015
+#	- TR11216/12070 
+#	- add ability for curator (sophia) to run sanity checks
 #
 # sc	09/16/2015 - TR12058 first test of nomenload since conversion to
 #  	postgres - several changed needed. See HISTORY file
@@ -221,7 +236,7 @@ def init():
     '''
 
     global inputFile, outputFile, diagFile, errorFile
-    global errorFileNamediagFileName, nomenFileName, refFileName
+    global errorFileName, diagFileName, nomenFileName, refFileName
     global synFileName, accFileName, accrefFileName
     global nomenFile, refFile, synFile, accFile, accrefFile, mappingFile
     global startNomenKey, nomenKey, accKey, synKey, mgiKey, refAssocKey
@@ -346,7 +361,7 @@ def verifyMarkerStatus(markerStatus, lineNum):
     if statusDict.has_key(markerStatus):
 	markerStatusKey = statusDict[markerStatus]
     else:
-	errorFile.write('Invalid Marker Status (row %d) %s\n' % (lineNum, markerStatus))
+	errorFile.write('Invalid Marker Status (row %d): %s\n' % (lineNum, markerStatus))
 	markerStatusKey = 0
 
     return(markerStatusKey)
@@ -383,7 +398,7 @@ def verifyDuplicateMarker(symbol, lineNum):
 	''' % (symbol), 'auto')
 
     if len(results) > 0:
-	errorFile.write('WARNING: Symbol is Withdrawn : (row %d) %s\n\n' % (lineNum, symbol))
+	errorFile.write('WARNING: Symbol is Withdrawn (row %d): %s\n\n' % (lineNum, symbol))
 
     #
     # official/interim/reserved
@@ -401,7 +416,7 @@ def verifyDuplicateMarker(symbol, lineNum):
     if len(results) == 0:
 	return 0
     else:
-	errorFile.write('Symbol is Official/Inferim/Reserved: (row %d) %s\n' % (lineNum, symbol))
+	errorFile.write('Symbol is Official/Inferim/Reserved (row %d): %s\n' % (lineNum, symbol))
 	return 1
 
 def verifyChromosome(chromosome, lineNum):
@@ -427,7 +442,7 @@ def verifyChromosome(chromosome, lineNum):
     if len(results) > 0:
 	return 1
     else:
-	errorFile.write('Invalid Chromosome (row %d) %s\n' % (lineNum, chromosome))
+	errorFile.write('Invalid Chromosome (row %d): %s\n' % (lineNum, chromosome))
 	return 0
 
 def verifyLogicalDB(logicalDB, lineNum):
@@ -452,7 +467,7 @@ def verifyLogicalDB(logicalDB, lineNum):
     if logicalDBDict.has_key(logicalDB):
 	logicalDBKey = logicalDBDict[logicalDB]
     else:
-	errorFile.write('Invalid Logical DB (row %d) %s\n' % (lineNum, logicalDB))
+	errorFile.write('Invalid Logical DB (row %d): %s\n' % (lineNum, logicalDB))
 	logicalDBKey = 0
 
     return(logicalDBKey)
@@ -498,8 +513,25 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus,
 	    	else:
 	        	error = 1
 	    except:
-	        errorFile.write('Sequences without logic DB (row %d) %s\n' % (lineNum, otherAcc))
+	        errorFile.write('Sequences without logic DB (row %d): %s\n' % (lineNum, otherAcc))
 	        error = 1
+
+    #
+    # check if sequences are associated with other markers.
+    # if so, send warning but allow load to continue
+    #
+    for acc in otherAccDict.keys():
+    	results = db.sql('''select m.symbol 
+		from MRK_Marker m, ACC_Accession a
+		where m._Organism_key = 1 
+			and m._Marker_key = a._Object_key
+			and a.accID = '%s'
+			and a._MGIType_key = 2
+		''' % (acc), 'auto')
+
+    	for r in results:
+		errorFile.write('WARNING: Sequence is associated with other Marker (row %d): %s ; %s\n\n' 
+			% (lineNum, acc, r['symbol']))
 
     if markerTypeKey == 0 or \
        markerStatusKey == 0 or \
@@ -627,7 +659,8 @@ def processFile():
 	    notes = tokens[8]
 	    createdBy = tokens[9]
 	except:
-	    exit(1, 'Invalid Line (row %d): %s\n' % (lineNum, line))
+	    errorFile.write('Invalid Line (row %d): %s\n' % (lineNum, line))
+	    continue
 
 	#
 	# sanity checks
