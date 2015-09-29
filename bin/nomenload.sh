@@ -60,8 +60,26 @@ cd `dirname $0`
 LOG=`pwd`/nomenload.log
 rm -rf ${LOG}
 
+usage ()
+{
+    echo "Usage: nomenload.sh config_file input_file"
+    echo "       where"
+    echo "           config_file = path to the nomen configuration file"
+    echo "           input_file = path to the nomen input file"
+    exit 1
+}
+
+#
+# Check usage
+#
+
+if [ ! $# -eq 2 ] 
+then
+    usage
+fi
+
+
 CONFIG_LOAD=$1
-INPUT_FILE_DEFAULT=$2
 
 #
 # Verify and source the configuration file
@@ -78,7 +96,11 @@ rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} ${LOG_ERROR}
 #
 # Make sure the input file exists (regular file or symbolic link).
 #
-if [ "`ls -L ${INPUT_FILE_DEFAULT} 2>/dev/null`" = "" ]
+
+# sourcing the config file will override this
+INPUT_FILE_DEFAULT=$2
+
+if [ ! -r ${INPUT_FILE_DEFAULT} ]
 then
     echo "Missing input file: ${INPUT_FILE_DEFAULT}" | tee -a ${LOG_FILE}
     exit 1

@@ -380,7 +380,7 @@ def verifyDuplicateMarker(symbol, lineNum):
 	where _Organism_key = 1 
 		and _Marker_Status_key in (2)
 		and symbol = '%s'
-	''' % (symbol, symbol), 'auto')
+	''' % (symbol), 'auto')
 
     if len(results) > 0:
 	errorFile.write('WARNING: Symbol is Withdrawn : (%d) %s\n\n' % (lineNum, symbol))
