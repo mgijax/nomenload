@@ -207,7 +207,7 @@ touch ${LASTRUN_FILE}
 #
 # cat the error file
 #
-#cat ${LOG_ERROR}
+cat ${LOG_ERROR}
 
 #echo "" | tee -a ${LOG_FILE}
 #date | tee -a ${LOG_FILE}
