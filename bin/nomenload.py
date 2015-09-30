@@ -212,13 +212,15 @@ def exit(status, message = None):
 
     try:
 	inputFile.close()
-	outputFile.close()
 	diagFile.flush()
 	errorFile.flush()
 	diagFile.write('\n\nEnd Date/Time: %s\n' % (mgi_utils.date()))
         errorFile.write('\nend: ERROR file\n')
 	diagFile.close()
 	errorFile.close()
+
+	if not DEBUG:
+		outputFile.close()
     except:
 	pass
 
@@ -261,10 +263,11 @@ def init():
     except:
 	exit(1, 'Could not open file %s\n' % inputFileName)
 	    
-    try:
-	outputFile = open(outputFileName, 'w')
-    except:
-	exit(1, 'Could not open file %s\n' % outputFileName)
+    if not DEBUG:
+    	try:
+		outputFile = open(outputFileName, 'w')
+    	except:
+		exit(1, 'Could not open file %s\n' % outputFileName)
 	    
     try:
 	diagFile = open(diagFileName, 'w')
@@ -306,8 +309,11 @@ def init():
     except:
 	exit(1, 'Could not open file %s\n' % mappingFileName)
 	    
-    # Log all SQL
+    # Log all SQL 
     db.set_sqlLogFunction(db.sqlLogAll)
+
+    # Set Log File Descriptor
+    db.set_commandLogFile(diagFileName)
 
     # Set Log File Descriptor
     diagFile.write('Start Date/Time: %s\n' % (mgi_utils.date()))
@@ -716,18 +722,19 @@ def processFile():
 		mgiTypeKey, createdByKey, createdByKey, cdate, cdate))
 
 	# write record back out and include MGI Accession ID
-	outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-	    % (markerType, symbol, name, chromosome, \
-		markerStatus, jnum, mgi_utils.prvalue(synonyms), \
-		mgi_utils.prvalue(otherAccIDs), \
-		mgi_utils.prvalue(notes), createdByKey, \
-		mgiPrefix + str(mgiKey)))
+	if not DEBUG:
+		outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+	    		% (markerType, symbol, name, chromosome, \
+			markerStatus, jnum, mgi_utils.prvalue(synonyms), \
+			mgi_utils.prvalue(otherAccIDs), \
+			mgi_utils.prvalue(notes), createdByKey, \
+			mgiPrefix + str(mgiKey)))
 
 	# mapping record; write it out before incrementing the acc id keys
 
-	mappingFile.write('%s%d|%s|%s|%s|%s|%s\n' \
+	mappingFile.write('%s%d|%s|%s|%s|%s|%s|%s|%s\n' \
 	    % (mgiPrefix, mgiKey, chromosome, mappingCol3, mappingCol4, \
-		mappingCol5, mappingCol6))
+		mappingCol5, mappingCol6, jnum, createdBy))
 
 	accKey = accKey + 1
 	mgiKey = mgiKey + 1
@@ -841,24 +848,25 @@ def broadcastToMRK():
 # Main
 #
 
-init()
-
-diagFile.write('\nverifyMode()\n')
+print 'nomenload:verifyMode()'
 verifyMode()
 
-diagFile.write('\nsetPrimaryKeys()\n')
+print 'nomenload:init()'
+init()
+
+print 'nomenload:setPrimaryKeys()'
 setPrimaryKeys()
 
-diagFile.write('\nloadDictionaries()\n')
+print 'nomenload:loadDictionaries()'
 loadDictionaries()
 
-diagFile.write('\nprocessFile()\n')
+print 'nomenload:processFile()'
 processFile()
 
-diagFile.write('\nbcpFiles()\n')
+print 'nomenload:bcpFiles()'
 bcpFiles()
 
-diagFile.write('\nbroadcastToMRK\n')
+print 'nomenload:broadcastToMRK()'
 broadcastToMRK()
 
 exit(0)

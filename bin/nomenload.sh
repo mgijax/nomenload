@@ -81,14 +81,14 @@ fi
 #
 # Verify and source the configuration file
 #
-CONFIG_LOAD=$1
-if [ ! -r ${CONFIG_LOAD} ]
+CONFIG_FILE=$1
+if [ ! -r ${CONFIG_FILE} ]
 then
-   echo "Cannot read configuration file: ${CONFIG_LOAD}" | tee -a ${LOG}
+   echo "Cannot read configuration file: ${CONFIG_FILE}" | tee -a ${LOG}
     exit 1   
 fi
 
-. ${CONFIG_LOAD}
+. ${CONFIG_FILE}
 
 rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} ${LOG_ERROR}
 
@@ -137,13 +137,13 @@ if [ -f ${LASTRUN_FILE} ]
 then
     if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
     then
-        echo "Input file has not been updated - skipping ${NOMENMODE}" | tee -a ${LOG_FILE_PROC}
+        echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
 	exit 0
     fi
 fi
 
 #
-# run nomen load
+# Execute nomen load
 #
 echo "" | tee -a ${LOG_FILE}
 date | tee -a ${LOG_FILE}
@@ -151,7 +151,31 @@ echo "Running nomenload : ${NOMENMODE}" | tee -a ${LOG_FILE}
 cd ${OUTPUTDIR}
 ${NOMENLOAD}/bin/nomenload.py | tee -a ${LOG_DIAG}
 STAT=$?
-checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_LOAD}"
+checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE}"
+
+#
+#
+# Execute mapping load IF:
+# a) nomenload was successfull
+#  and
+# b) nomen:'broadcast' or mapping:'preview'
+#
+#if [ ${STAT} = 0 && [ ${NOMENMODE} = 'broadcast' || ${MAPPINGMODE} = 'preview' ]] 
+#then
+#    if [ -f ${MAPPINGDATAFILE} ] 
+#    then
+#        echo "SKIPPED: ${NOMENMODE} : Mapping File is empty" | tee -a ${LOG_FILE}
+#        date >> ${LOG_FILE}
+#        exit 0 
+#    fi
+#
+#    cd ${MAPPINGLOAD}
+#    echo '${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}'
+#    #STAT=$?
+#    #checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE}"
+#else
+#    echo "SKIPPED: mapping load: nomenload exit status = ${STAT} Nomen Mode = ${NOMENMODE}" | tee -a ${LOG_FILE}
+#fi
 
 #
 # Archive a copy of the input file, adding a timestamp suffix.

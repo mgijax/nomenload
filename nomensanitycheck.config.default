@@ -87,12 +87,12 @@ export EXPERIMENTTYPE
 
 # J number for the mapping experiment reference
 # typically the same Jnum in the nomenload input file
-JNUM=J:?
-export JNUM
+#JNUM=J:?
+#export JNUM
 
 # login of the curator requesting this mapping
-CREATEDBY=yz
-export CREATEDBY
+#CREATEDBY=yz
+#export CREATEDBY
 
 ###########################################################################
 #
