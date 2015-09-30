@@ -151,7 +151,7 @@ echo "Running nomenload : ${NOMENMODE}" | tee -a ${LOG_FILE}
 cd ${OUTPUTDIR}
 ${NOMENLOAD}/bin/nomenload.py | tee -a ${LOG_DIAG}
 STAT=$?
-checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE}"
+checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE} : ${NOMENMODE} : "
 
 #
 #
@@ -171,20 +171,20 @@ then
 
     ${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}
     STAT=$?
-    checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE}"
+    checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE} : ${MAPPINGMODE} : "
 else
-    echo "SKIPPED: mapping load: nomenload exit status = ${STAT} Nomen Mode = ${NOMENMODE}" | tee -a ${LOG_FILE}
+    echo "SKIPPED: mappingload: nomenload exit status = ${STAT} : ${NOMENMODE}" | tee -a ${LOG_FILE}
 fi
 
 #
 # Archive a copy of the input file, adding a timestamp suffix.
 #
-echo "" | tee -a ${LOG_FILE}
-date | tee -a ${LOG_FILE}
-echo "Archive input file" | tee -a ${LOG_FILE}
-TIMESTAMP=`date '+%Y%m%d.%H%M'`
-ARC_FILE=`basename ${INPUT_FILE_DEFAULT}`.${TIMESTAMP}
-cp -p ${INPUT_FILE_DEFAULT} ${ARCHIVEDIR}/${ARC_FILE}
+#echo "" | tee -a ${LOG_FILE}
+#date | tee -a ${LOG_FILE}
+#echo "Archive input file" | tee -a ${LOG_FILE}
+#TIMESTAMP=`date '+%Y%m%d.%H%M'`
+#ARC_FILE=`basename ${INPUT_FILE_DEFAULT}`.${TIMESTAMP}
+#cp -p ${INPUT_FILE_DEFAULT} ${ARCHIVEDIR}/${ARC_FILE}
 
 #
 # Touch the "lastrun" file to note when the load was run.

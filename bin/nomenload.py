@@ -50,16 +50,16 @@
 #
 # Sanity Checks: see sanityCheck()
 #
-#        1) Invalid Line (missing column(s))
-#        2) Invalid Marker Status
-#        3) Invalid Chromosome
-#        4) Invalid Logical DB
-#        5) Symbol is Official/Inferim/Reserved
-#        6) Sequences without Logical DB
-#        7) WARNING: Symbol is Withdrawn
-#        8) WARNING: Sequence is associated with other Markers
-#	 9) WARNING: Duplicate row in input file (1st instance will be loaded)
-#
+#        1)  Invalid Line (missing column(s))
+#        2)  Invalid Marker Status
+#        3)  Invalid Chromosome
+#        4)  Invalid Logical DB
+#        5)  Symbol is Official/Inferim/Reserved
+#        6)  Sequences without Logical DB
+#	 7)  More than 1 Reference in input file
+#        8)  WARNING: Symbol is Withdrawn
+#        9)  WARNING: Sequence is associated with other Markers
+#	 10) WARNING: Duplicate Symbol in input file (1st instance will be loaded)
 #
 # Output:
 #
@@ -523,11 +523,10 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     	markerLookup.append(symbol)
 
     #
-    # 1st instance will be loaded
-    # duplicate rows in input file
+    # Duplciate Reference
     #
     if len(referenceLookup) > 0 and referenceKey not in referenceLookup:
-	errorFile.write('WARNING: More than 1 Reference in input file (row %d): %s\n' % (lineNum, symbol))
+	errorFile.write('More than 1 Reference in input file (row %d): %s\n' % (lineNum, symbol))
 	error = 1
     else:
     	referenceLookup.append(referenceKey)
