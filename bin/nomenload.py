@@ -320,8 +320,6 @@ def init():
     diagFile.write('Server: %s\n' % (db.get_sqlServer()))
     diagFile.write('Database: %s\n' % (db.get_sqlDatabase()))
     diagFile.write('Input File: %s\n' % (inputFileName))
-    db.set_commandLogFile(diagFileName)
-
     errorFile.write('\nstart: ERROR file : %s\n\n' % (mgi_utils.date()))
 
 def verifyMode():
@@ -680,8 +678,9 @@ def processFile():
     global otherAccDict
     global markerLookup
 
-    lineNum = 0
     # For each line in the input file
+
+    lineNum = 0
 
     for line in inputFile.readlines():
 
@@ -714,8 +713,8 @@ def processFile():
 	    	otherAccIDs, createdBy, lineNum) == 1:
 	    errorFile.write(str(tokens) + '\n\n')
 
-	    # uncomment, if the bcp should not run if 1 error is found
-	    #bcpon = 0
+	    # uncomment, if the bcp should not run if at least 1 error is found
+	    bcpon = 0
 
 	    continue
 
@@ -799,15 +798,13 @@ def bcpFiles():
     #
     '''
 
-    if DEBUG or not bcpon:
-	return
-
     nomenFile.close()
     refFile.close()
     synFile.close()
     accFile.close()
     accrefFile.close()
     mappingFile.close()
+    db.commit()
 
     bcpCommand = os.environ['PG_DBUTILS'] + '/bin/bcpin.csh'
     currentDir = os.getcwd()
@@ -877,11 +874,13 @@ loadDictionaries()
 print 'nomenload:processFile()'
 processFile()
 
-print 'nomenload:bcpFiles()'
-bcpFiles()
-
-print 'nomenload:broadcastToMRK()'
-broadcastToMRK()
-
-exit(0)
+if DEBUG or not bcpon:
+    print 'nomenload:sanity check FAILED : no data has been loaded'
+    exit(1)
+else:
+    print 'nomenload:bcpFiles()'
+    bcpFiles()
+    print 'nomenload:broadcastToMRK()'
+    broadcastToMRK()
+    exit(0)
 
