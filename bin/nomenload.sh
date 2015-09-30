@@ -160,22 +160,21 @@ checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE}"
 #  and
 # b) nomen:'broadcast' or mapping:'preview'
 #
-#if [ ${STAT} = 0 && [ ${NOMENMODE} = 'broadcast' || ${MAPPINGMODE} = 'preview' ]] 
-#then
-#    if [ -f ${MAPPINGDATAFILE} ] 
-#    then
-#        echo "SKIPPED: ${NOMENMODE} : Mapping File is empty" | tee -a ${LOG_FILE}
-#        date >> ${LOG_FILE}
-#        exit 0 
-#    fi
-#
-#    cd ${MAPPINGLOAD}
-#    echo '${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}'
-#    #STAT=$?
-#    #checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE}"
-#else
-#    echo "SKIPPED: mapping load: nomenload exit status = ${STAT} Nomen Mode = ${NOMENMODE}" | tee -a ${LOG_FILE}
-#fi
+if [ ${STAT} = 0 && [ ${NOMENMODE} = 'broadcast' || ${MAPPINGMODE} = 'preview' ]] 
+then
+    if [ -f ${MAPPINGDATAFILE} ] 
+    then
+        echo "SKIPPED: ${NOMENMODE} : Mapping File is empty" | tee -a ${LOG_FILE}
+        date >> ${LOG_FILE}
+        exit 0 
+    fi
+
+    ${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}
+    STAT=$?
+    checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE}"
+else
+    echo "SKIPPED: mapping load: nomenload exit status = ${STAT} Nomen Mode = ${NOMENMODE}" | tee -a ${LOG_FILE}
+fi
 
 #
 # Archive a copy of the input file, adding a timestamp suffix.
