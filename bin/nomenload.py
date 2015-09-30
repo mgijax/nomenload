@@ -124,6 +124,7 @@ user = os.environ['MGD_DBUSER']
 passwordFileName = os.environ['MGD_DBPASSWORDFILE']
 mode = os.environ['NOMENMODE']
 inputFileName = os.environ['INPUT_FILE_DEFAULT']
+outputDir = os.environ['OUTPUTDIR']
 mappingFileName = os.environ['MAPPINGDATAFILE']
 mappingCol5 = os.environ['MAPPINGASSAYTYPE']
 diagFileName = os.environ['LOG_DIAG']
@@ -251,12 +252,12 @@ def init():
 
     head, tail = os.path.split(inputFileName) 
 
-    outputFileName = inputFileName + '.out'
-    nomenFileName = 'NOM_Marker.bcp'
-    refFileName = 'MGI_Reference_Assoc.bcp'
-    synFileName = 'MGI_Synonym.bcp'
-    accFileName = 'ACC_Accession.bcp'
-    accrefFileName = 'ACC_AccessionReference.bcp'
+    outputFileName = outputDir + '/' + inputFileName + '.out'
+    nomenFileName = outputDir + '/NOM_Marker.bcp'
+    refFileName = outputDir + '/MGI_Reference_Assoc.bcp'
+    synFileName = outputDir + '/MGI_Synonym.bcp'
+    accFileName = outputDir + '/ACC_Accession.bcp'
+    accrefFileName = outputDir + '/ACC_AccessionReference.bcp'
 
     try:
 	inputFile = open(inputFileName, 'r')
@@ -664,6 +665,7 @@ def processFile():
     #
     '''
 
+    global bcpon
     global nomenKey, accKey, mgiKey, synKey, refAssocKey, createdByKey
     global markerType 
     global symbol 
@@ -714,7 +716,7 @@ def processFile():
 	    errorFile.write(str(tokens) + '\n\n')
 
 	    # uncomment, if the bcp should not run if at least 1 error is found
-	    bcpon = 0
+	    #bcpon = 0
 
 	    continue
 
@@ -786,6 +788,14 @@ def processFile():
 	db.sql('select * from ACC_setMax (%d)' % (lineNum), None)
  	db.commit()
 
+    nomenFile.close()
+    refFile.close()
+    synFile.close()
+    accFile.close()
+    accrefFile.close()
+    mappingFile.close()
+    db.commit()
+
 def bcpFiles():
     '''
     # requires:
@@ -797,14 +807,6 @@ def bcpFiles():
     #	nothing
     #
     '''
-
-    nomenFile.close()
-    refFile.close()
-    synFile.close()
-    accFile.close()
-    accrefFile.close()
-    mappingFile.close()
-    db.commit()
 
     bcpCommand = os.environ['PG_DBUTILS'] + '/bin/bcpin.csh'
     currentDir = os.getcwd()
