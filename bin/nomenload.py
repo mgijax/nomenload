@@ -526,7 +526,7 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     # 1st instance will be loaded
     # duplicate rows in input file
     #
-    if len(referenceLookup) > 0:
+    if len(referenceLookup) > 0 and referenceKey not in referenceLookup:
 	errorFile.write('WARNING: More than 1 Reference in input file (row %d): %s\n' % (lineNum, symbol))
 	error = 1
     else:
