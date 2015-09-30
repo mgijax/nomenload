@@ -174,11 +174,11 @@ if [ ${STAT} == 0 ]
 then
     if [[ ${NOMENMODE} == "broadcast" ]] || [[ ${MAPPINGMODE} == "preview" ]]
     then
-        if [ -f ${MAPPINGDATAFILE} ] 
+        if [ ! -f ${MAPPINGDATAFILE} ] 
         then
             echo "SKIPPED: ${NOMENMODE} : Mapping File is empty" | tee -a ${LOG_FILE}
             date >> ${LOG_FILE}
-            exit 0 
+            exit 1 
         fi
 
         ${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}
