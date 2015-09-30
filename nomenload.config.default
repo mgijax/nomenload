@@ -71,7 +71,8 @@ export MAPPINGDATAFILE
 
 # full path to jobstream log
 MAPPINGLOG=${MAPPINGDATAFILE}.log
-export MAPPINGLOG
+MAPPINGERROR=${MAPPINGDATAFILE}.error
+export MAPPINGLOG MAPPINGERROR
 
 # Mapping Mode:
 # incremental - add mapping to this references experiments

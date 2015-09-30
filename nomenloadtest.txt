@@ -6,8 +6,8 @@ Gene	Gm44425	predicted gene 44425		In Progress	J:109762			Invalid Chrosome(blank
 Gene	Gm44426	predicted gene 44426	UN	In Progress	J:109762			GOOD;Chrosome UN	yz
 Gene	Gm44427	predicted gene 44427	Unknown	In Progress	J:109762			Chrosome Unknown(Invalid)	yz
 Gene	Gm44427	predicted gene 44428	XY	In Progress	J:109762			GOOD;Chrosome XY	yz
-Gene	Gm44427	predicted gene 44429	MT	In Progress	J:109762			GOOD;Chrosome MT	yz
-Gene	Gm44427	predicted gene 44429	Mitochondrial	In Progress	J:109762			Chrosome Mitochondrial(Invalid)	yz
+Gene	Gm44429	predicted gene 44429	MT	In Progress	J:109762			GOOD;Chrosome MT	yz
+Gene	Gm44429	predicted gene 44429	Mitochondrial	In Progress	J:109762			Chrosome Mitochondrial(Invalid)	yz
 Gene	Gm44430	predicted gene 44430	5	In Progress	J:509762			Invalid Reference	yz
 Gene	Gm44432	predicted gene 44432	9	In Progress	J:109762		Sequence DB:AK018729	Sequence Associated with Other Marker	yz
 Gene	Gm44433	predicted gene 44433	9	In Progress	J:109762		Sequence DB:BY670756	GOOD;One Sequence	yz
@@ -19,7 +19,7 @@ Gene	Gm44437	predicted gene 44437	3	In Progress	J:109762			Duplicate symbol(on d
 Gene	Gm44437	predicted gene 44437	6	In Progress	J:109762			Duplicate symbol(on different chr)	yz
 Gene	Gm44438	predicted gene 44438	6	Withdrawn	J:109762			Invalid Status	yz
 Pseudogene	Gm44439	predicted gene 44439	5	In Progress	J:109762		Missing column(Synomym or Sequence)	yz
-Gene	Gm44440	predicted gene 44440	6	In Progress	J:109762			Missing column	yz
+Gene	Gm44440	predicted gene 44440	6	In Progress	J:109762			Good	yz
 Other Genome Feature	Cpgi23114	CpG island 23114	Y	In Progress	J:216922	CGI23114		GOOD;Other Genome Feature	yz
 Other Genome Feature	Cpgi23115	CpG island 23115	X	In Progress	J:216922	CGI23115		Invalid user	xyz
 Other Genome Feature	Cpgi23117	CpG island 23117	Y	In Progress	J:216922	CGI23117|CGI23117Y		GOOD;Two Synonyms	yz

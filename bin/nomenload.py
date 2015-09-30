@@ -130,8 +130,7 @@ diagFileName = os.environ['LOG_DIAG']
 errorFileName = os.environ['LOG_ERROR']
 
 DEBUG = 0		# set DEBUG to false unless preview mode is selected
-bcpon = 1		# can the bcp files be bcp-ed into the database?  
-			# default is yes.
+bcpon = 1		# can the bcp files be bcp-ed into the database?  default is yes (1).
 
 inputFile = ''		# file descriptor
 outputFile = ''		# file descriptor
@@ -703,6 +702,10 @@ def processFile():
         if sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
 	    	otherAccIDs, createdBy, lineNum) == 1:
 	    errorFile.write(str(tokens) + '\n\n')
+
+	    # uncomment, if the bcp should not run if 1 error is found
+	    #bcpon = 0
+
 	    continue
 
 	# if no errors, process the marker
@@ -769,7 +772,7 @@ def processFile():
     # Update the AccessionMax value
     #
 
-    if not DEBUG:
+    if not DEBUG and bcpon:
 	db.sql('select * from ACC_setMax (%d)' % (lineNum), None)
  	db.commit()
 
