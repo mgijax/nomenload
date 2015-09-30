@@ -129,7 +129,7 @@ fi
 #
 # dlautils/preload minus jobstream
 #
-if [ ${NOMENMODE} != 'preview' ]
+if [ ${NOMENMODE} != "preview" ]
 then
     startLog ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} | tee -a ${LOG}
     getConfigEnv >> ${LOG_PROC}
@@ -143,14 +143,14 @@ fi
 #
 LASTRUN_FILE=${INPUTDIR}/lastrun
 
-if [ -f ${LASTRUN_FILE} ]
-then
-    if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
-    then
-        echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
-	exit 0
-    fi
-fi
+#if [ -f ${LASTRUN_FILE} ]
+#then
+#    if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
+#    then
+#        echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
+#	exit 0
+#    fi
+#fi
 
 #
 # Execute nomen load
@@ -170,18 +170,21 @@ checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE} : ${NOMENMODE} : "
 #  and
 # b) nomen:'broadcast' or mapping:'preview'
 #
-if [ ${STAT} = 0 && [ ${NOMENMODE} = 'broadcast' || ${MAPPINGMODE} = 'preview' ]] 
+if [ ${STAT} == 0 ]
 then
-    if [ -f ${MAPPINGDATAFILE} ] 
+    if [[ ${NOMENMODE} == "broadcast" ]] || [[ ${MAPPINGMODE} == "preview" ]]
     then
-        echo "SKIPPED: ${NOMENMODE} : Mapping File is empty" | tee -a ${LOG_FILE}
-        date >> ${LOG_FILE}
-        exit 0 
-    fi
+        if [ -f ${MAPPINGDATAFILE} ] 
+        then
+            echo "SKIPPED: ${NOMENMODE} : Mapping File is empty" | tee -a ${LOG_FILE}
+            date >> ${LOG_FILE}
+            exit 0 
+        fi
 
-    ${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}
-    STAT=$?
-    checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE} : ${MAPPINGMODE} : "
+        ${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}
+        STAT=$?
+        checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE} : ${MAPPINGMODE} : "
+    fi
 else
     echo "SKIPPED: mappingload: nomenload exit status = ${STAT} : ${NOMENMODE}" | tee -a ${LOG_FILE}
 fi
@@ -199,12 +202,12 @@ fi
 #
 # Touch the "lastrun" file to note when the load was run.
 #
-#touch ${LASTRUN_FILE}
+touch ${LASTRUN_FILE}
 
 #
 # cat the error file
 #
-cat ${LOG_ERROR}
+#cat ${LOG_ERROR}
 
 #echo "" | tee -a ${LOG_FILE}
 #date | tee -a ${LOG_FILE}
