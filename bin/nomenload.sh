@@ -209,8 +209,8 @@ touch ${LASTRUN_FILE}
 #
 cat ${LOG_ERROR}
 
-#echo "" | tee -a ${LOG_FILE}
-#date | tee -a ${LOG_FILE}
+echo "" | tee -a ${LOG_FILE}
+date | tee -a ${LOG_FILE}
 
 #
 # run postload cleanup and email logs
