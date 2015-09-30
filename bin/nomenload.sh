@@ -129,9 +129,12 @@ fi
 #
 # dlautils/preload minus jobstream
 #
-startLog ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} | tee -a ${LOG}
-getConfigEnv >> ${LOG_PROC}
-getConfigEnv -e >> ${LOG_DIAG}
+if [ ${NOMENMODE} != 'preview' ]
+then
+    startLog ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} | tee -a ${LOG}
+    getConfigEnv >> ${LOG_PROC}
+    getConfigEnv -e >> ${LOG_DIAG}
+fi
 
 #
 # There should be a "lastrun" file in the input directory that was created
@@ -209,6 +212,9 @@ cat ${LOG_ERROR}
 #
 # run postload cleanup and email logs
 #
-JOBKEY=0;export JOBKEY
-shutDown
+if [ ${NOMENMODE} != 'preview' ]
+then
+    JOBKEY=0;export JOBKEY
+    shutDown
+fi
 

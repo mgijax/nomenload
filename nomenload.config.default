@@ -92,7 +92,7 @@ export EXPERIMENTTYPE
 ###########################################################################
 
 #  The name of the load for the subject of an email notification
-MAIL_LOADNAME="Nomenclature/Mapping Load"
+MAIL_LOADNAME="${NOMENMODE} : Nomen/Mapping Load"
 export MAIL_LOADNAME
 
 INSTALLDIR=${NOMENLOAD}
