@@ -14,8 +14,6 @@
 #
 #  Inputs:
 #
-#      - Common configuration file -
-#               /usr/local/mgi/live/mgiconfig/master.config.sh
 #      - configuration file - nomenload.config
 #      - input file - see nomenload.config
 #
@@ -28,8 +26,6 @@
 #      - mappingload logs and bcp files  - see mappingload
 #      - Records written to the database tables
 #      - Exceptions written to standard error
-#      - Configuration and initialization errors are written to a log file
-#        for the shell script
 #
 #  Exit Codes:
 #
@@ -47,8 +43,9 @@
 #      5) Determine if the input file has changed since the last time that
 #         the load was run. Do not continue if the input file is not new.
 #      6) Load nomenload using configuration file
-#      7) Archive the input file.
-#      8) Touch the "lastrun" file to timestamp the last run of the load.
+#      7) Load mappingload using configuration file
+#      8) Archive the input file.
+#      9) Touch the "lastrun" file to timestamp the last run of the load.
 #
 # History:
 #
@@ -127,7 +124,7 @@ fi
 #####################################
 
 #
-# dlautils/preload minus jobstream
+# dlautils/preload minus jobstream & archive
 #
 if [ ${NOMENMODE} != "preview" ]
 then
@@ -143,14 +140,14 @@ fi
 #
 LASTRUN_FILE=${INPUTDIR}/lastrun
 
-#if [ -f ${LASTRUN_FILE} ]
-#then
-#    if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
-#    then
-#        echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
-#	exit 0
-#    fi
-#fi
+if [ -f ${LASTRUN_FILE} ]
+then
+    if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
+    then
+        echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
+	exit 0
+    fi
+fi
 
 #
 # Execute nomen load
@@ -158,7 +155,6 @@ LASTRUN_FILE=${INPUTDIR}/lastrun
 echo "" | tee -a ${LOG_FILE}
 date | tee -a ${LOG_FILE}
 echo "Running nomenload : ${NOMENMODE}" | tee -a ${LOG_FILE}
-cd ${OUTPUTDIR}
 ${NOMENLOAD}/bin/nomenload.py | tee -a ${LOG_DIAG}
 STAT=$?
 checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE} : ${NOMENMODE} : "
@@ -186,18 +182,18 @@ then
         checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE} : ${MAPPINGMODE} : "
     fi
 else
-    echo "SKIPPED: mappingload: nomenload exit status = ${STAT} : ${NOMENMODE}" | tee -a ${LOG_FILE}
+    echo "FATAL ERROR: nomenload exit status = ${STAT} : ${NOMENMODE}" | tee -a ${LOG_FILE}
 fi
 
 #
-# Archive a copy of the input file, adding a timestamp suffix.
+# Archive
+# dlautils/preload with archive
 #
-#echo "" | tee -a ${LOG_FILE}
-#date | tee -a ${LOG_FILE}
-#echo "Archive input file" | tee -a ${LOG_FILE}
-#TIMESTAMP=`date '+%Y%m%d.%H%M'`
-#ARC_FILE=`basename ${INPUT_FILE_DEFAULT}`.${TIMESTAMP}
-#cp -p ${INPUT_FILE_DEFAULT} ${ARCHIVEDIR}/${ARC_FILE}
+#if [ ${NOMENMODE} != "preview" ]
+#then
+cp -p ${INPUT_FILE_DEFAULT} ${INPUTDIR}
+createArchive ${ARCHIVEDIR} ${LOGDIR} ${INPUTDIR} ${OUTPUTDIR} | tee -a ${LOG}
+#fi 
 
 #
 # Touch the "lastrun" file to note when the load was run.
