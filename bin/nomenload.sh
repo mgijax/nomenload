@@ -140,14 +140,14 @@ fi
 #
 LASTRUN_FILE=${INPUTDIR}/lastrun
 
-if [ -f ${LASTRUN_FILE} ]
-then
-    if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
-    then
-        echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
-	exit 0
-    fi
-fi
+#if [ -f ${LASTRUN_FILE} ]
+#then
+    #if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
+    #then
+        #echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
+	#exit 0
+    #fi
+#fi
 
 #
 # Execute nomen load
@@ -186,14 +186,14 @@ else
 fi
 
 #
-# Archive
+# Archive : publshed only
 # dlautils/preload with archive
 #
-#if [ ${NOMENMODE} != "preview" ]
-#then
-cp -p ${INPUT_FILE_DEFAULT} ${INPUTDIR}
-createArchive ${ARCHIVEDIR} ${LOGDIR} ${INPUTDIR} ${OUTPUTDIR} | tee -a ${LOG}
-#fi 
+if [ ${NOMENMODE} != "preview" ]
+then
+    cp -p ${INPUT_FILE_DEFAULT} ${INPUTDIR}
+    createArchive ${ARCHIVEDIR} ${LOGDIR} ${INPUTDIR} ${OUTPUTDIR} | tee -a ${LOG}
+fi 
 
 #
 # Touch the "lastrun" file to note when the load was run.
