@@ -874,13 +874,13 @@ loadDictionaries()
 print 'nomenload:processFile()'
 processFile()
 
-if DEBUG or not bcpon:
-    print 'nomenload:sanity check FAILED : no data has been loaded'
-    exit(1)
-else:
+if not DEBUG and bcpon:
     print 'nomenload:bcpFiles()'
     bcpFiles()
     print 'nomenload:broadcastToMRK()'
     broadcastToMRK()
     exit(0)
+else:
+    print 'nomenload:sanity check FAILED : no data has been loaded'
+    exit(1)
 
