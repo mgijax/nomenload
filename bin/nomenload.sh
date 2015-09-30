@@ -127,6 +127,13 @@ fi
 #####################################
 
 #
+# dlautils/preload minus jobstream
+#
+startLog ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} | tee -a ${LOG}
+getConfigEnv >> ${LOG_PROC}
+getConfigEnv -e >> ${LOG_DIAG}
+
+#
 # There should be a "lastrun" file in the input directory that was created
 # the last time the load was run for this input file. If this file exists
 # and is more recent than the input file, the load does not need to be run.
@@ -196,6 +203,12 @@ fi
 #
 cat ${LOG_ERROR}
 
-echo "" | tee -a ${LOG_FILE}
-date | tee -a ${LOG_FILE}
+#echo "" | tee -a ${LOG_FILE}
+#date | tee -a ${LOG_FILE}
+
+#
+# run postload cleanup and email logs
+#
+JOBKEY=0;export JOBKEY
+shutDown
 
