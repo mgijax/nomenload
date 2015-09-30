@@ -190,6 +190,7 @@ referenceKey = 0
 logicalDBKey = 0
 otherAccDict = {}
 markerLookup = []
+referenceLookup = []
 
 def exit(status, message = None):
     '''
@@ -500,6 +501,7 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     global logicalDBKey
     global otherAccDict
     global markerLookup
+    global referenceLookup
 
     error = 0
 
@@ -515,10 +517,20 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     # duplicate rows in input file
     #
     if symbol in markerLookup:
-	errorFile.write('WARNING: Duplicate row in input file (row %d): %s\n' % (lineNum, symbol))
+	errorFile.write('WARNING: Duplicate Symbol in input file (row %d): %s\n' % (lineNum, symbol))
 	error = 1
     else:
     	markerLookup.append(symbol)
+
+    #
+    # 1st instance will be loaded
+    # duplicate rows in input file
+    #
+    if referenceKey in referenceLookup:
+	errorFile.write('WARNING: Duplicate Reference in input file (row %d): %s\n' % (lineNum, symbol))
+	error = 1
+    else:
+    	referenceLookup.append(referenceKey)
 
     #if len(synonyms) == 0:
 	#errorFile.write('WARNING: Missing Synonyms (row %d): %s\n' % (lineNum, symbol))
