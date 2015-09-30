@@ -131,27 +131,27 @@ fi
 # the last time the load was run for this input file. If this file exists
 # and is more recent than the input file, the load does not need to be run.
 #
-#LASTRUN_FILE=${INPUTDIR}/lastrun
+LASTRUN_FILE=${INPUTDIR}/lastrun
 
-#if [ -f ${LASTRUN_FILE} ]
-#then
-#    if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
-#    then
-#        echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
-#	exit 0
-#    fi
-#fi
+if [ -f ${LASTRUN_FILE} ]
+then
+    if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
+    then
+        echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
+	exit 0
+    fi
+fi
 
 #
 # Execute nomen load
 #
-#echo "" | tee -a ${LOG_FILE}
-#date | tee -a ${LOG_FILE}
-#echo "Running nomenload : ${NOMENMODE}" | tee -a ${LOG_FILE}
-#cd ${OUTPUTDIR}
-#${NOMENLOAD}/bin/nomenload.py | tee -a ${LOG_DIAG}
-#STAT=$?
-#checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE}"
+echo "" | tee -a ${LOG_FILE}
+date | tee -a ${LOG_FILE}
+echo "Running nomenload : ${NOMENMODE}" | tee -a ${LOG_FILE}
+cd ${OUTPUTDIR}
+${NOMENLOAD}/bin/nomenload.py | tee -a ${LOG_DIAG}
+STAT=$?
+checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE}"
 
 #
 #
@@ -179,12 +179,12 @@ fi
 #
 # Archive a copy of the input file, adding a timestamp suffix.
 #
-#echo "" | tee -a ${LOG_FILE}
-#date | tee -a ${LOG_FILE}
-#echo "Archive input file" | tee -a ${LOG_FILE}
-#TIMESTAMP=`date '+%Y%m%d.%H%M'`
-#ARC_FILE=`basename ${INPUT_FILE_DEFAULT}`.${TIMESTAMP}
-#cp -p ${INPUT_FILE_DEFAULT} ${ARCHIVEDIR}/${ARC_FILE}
+echo "" | tee -a ${LOG_FILE}
+date | tee -a ${LOG_FILE}
+echo "Archive input file" | tee -a ${LOG_FILE}
+TIMESTAMP=`date '+%Y%m%d.%H%M'`
+ARC_FILE=`basename ${INPUT_FILE_DEFAULT}`.${TIMESTAMP}
+cp -p ${INPUT_FILE_DEFAULT} ${ARCHIVEDIR}/${ARC_FILE}
 
 #
 # Touch the "lastrun" file to note when the load was run.
