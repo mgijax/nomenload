@@ -21,7 +21,7 @@ fi
 
 usage ()
 {
-    echo "Usage: publishNomen
+    echo "Usage: publishNomen"
     echo "       where"
     echo "           input_file = name of the nomen input file"
     exit 1
