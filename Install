@@ -97,15 +97,10 @@ chmod -f 775 ${FILEDIR}/*
 chgrp mgi ${FILEDIR}/*
 chgrp mgi ${FILEDIR}/*/*
 
-# The DLAInstall script removes all permissions from shell scripts for
-# group "other" on non-development servers. The QC report wrapper
-# script needs to have permissions restored on hobbiton to allow the
-# curation staff to run it.
 #
-#chmod -f 755 ${NOMENLOAD_QC_SH}
-
-# copy the scripts for curator use into a standard location which exists in
-# their path statements
+# copy the curator scripts into a standard location 
+# make sure this directory is in their unix path
+#
 
 # trim any trailing slash from MGIBIN variable
 DEPLOY_PATH=`echo "${MGIBIN}" | sed 's./$..'`
@@ -141,4 +136,5 @@ if [ -d ${DEPLOY_PATH} ]; then
         done
         echo "Deployed curator files to ${DEPLOY_PATH}"
 fi
+
 exit 0
