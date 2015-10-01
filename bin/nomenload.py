@@ -861,25 +861,26 @@ def broadcastToMRK():
 # Main
 #
 
-print 'nomenload:verifyMode()'
+#print 'nomenload:verifyMode()'
 verifyMode()
 
-print 'nomenload:init()'
+#print 'nomenload:init()'
 init()
 
-print 'nomenload:setPrimaryKeys()'
+#print 'nomenload:setPrimaryKeys()'
 setPrimaryKeys()
 
-print 'nomenload:loadDictionaries()'
+#print 'nomenload:loadDictionaries()'
 loadDictionaries()
 
-print 'nomenload:processFile()'
+#print 'nomenload:processFile()'
 processFile()
 
 if not DEBUG and bcpon:
-    print 'nomenload:bcpFiles()'
+    print 'nomenload:sanity check PASSED : loading data'
+#    print 'nomenload:bcpFiles()'
     bcpFiles()
-    print 'nomenload:broadcastToMRK()'
+#    print 'nomenload:broadcastToMRK()'
     broadcastToMRK()
     exit(0)
 else:
