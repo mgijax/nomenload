@@ -20,7 +20,7 @@ Gene	Gm44437	predicted gene 44437	6	In Progress	J:109762			Duplicate symbol(on d
 Gene	Gm44438	predicted gene 44438	6	Withdrawn	J:109762			Invalid Status	yz
 Pseudogene	Gm44439	predicted gene 44439	5	In Progress	J:109762		Missing column(Synomym or Sequence)	yz
 Gene	Gm44440	predicted gene 44440	6	In Progress	J:109762			Good	yz
-Other Genome Feature	Cpgi23114	CpG island 23114	Y	In Progress	J:216922	CGI23114		GOOD;Other Genome Feature	yz
-Other Genome Feature	Cpgi23115	CpG island 23115	X	In Progress	J:216922	CGI23115		Invalid user	xyz
-Other Genome Feature	Cpgi23117	CpG island 23117	Y	In Progress	J:216922	CGI23117|CGI23117Y		GOOD;Two Synonyms	yz
-Cpgi23117	CpG island 23117	Y	In Progress	J:216922	CGI23117|CGI23117Y		Missing column(No Marker Type)	yz
+Other Genome Feature	Cpgi23114	CpG island 23114	Y	In Progress	J:109762	CGI23114		GOOD;Other Genome Feature	yz
+Other Genome Feature	Cpgi23115	CpG island 23115	X	In Progress	J:109762	CGI23115		Invalid user	xyz
+Other Genome Feature	Cpgi23117	CpG island 23117	Y	In Progress	J:109762	CGI23117|CGI23117Y		GOOD;Two Synonyms	yz
+Cpgi23117	CpG island 23117	Y	In Progress	J:109762	CGI23117|CGI23117Y		Missing column(No Marker Type)	yz
