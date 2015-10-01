@@ -54,7 +54,7 @@
 #        2)  Invalid Marker Status
 #        3)  Invalid Chromosome
 #        4)  Invalid Logical DB
-#        5)  Symbol is Official/Inferim/Reserved
+#        5)  Symbol is Official/Interim/Reserved
 #        6)  Sequences without Logical DB
 #	 7)  More than 1 Reference in input file
 #        8)  WARNING: Symbol is Withdrawn
