@@ -71,6 +71,7 @@ fi
 echo "Source File:      ${INPUT_FILE}"
 echo "Destination File: ${DESTCURRENTDIR}"
 cp -r ${INPUT_FILE} ${DESTCURRENTDIR}/${INPUT_FILE_NAME}
+cp -r ${INPUT_FILE} ${INPUTDIR}/${INPUT_FILE_NAME}
 if [ $? -eq 0 ]
 then
     echo "Copy successful"

@@ -181,7 +181,7 @@ fi
 #
 if [ ${NOMENMODE} != "preview" ]
 then
-    cp -p ${INPUTDIR}/${INPUT_FILE_DEFAULT} ${DESTFILEDIR}
+    cp -p ${INPUT_FILE_DEFAULT} ${DESTFILEDIR}
     createArchive ${ARCHIVEDIR} ${LOGDIR} ${DESTFILEDIR} ${OUTPUTDIR} | tee -a ${LOG}
 fi 
 
