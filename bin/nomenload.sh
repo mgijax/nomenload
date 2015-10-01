@@ -140,14 +140,14 @@ fi
 #
 LASTRUN_FILE=${INPUTDIR}/lastrun
 
-#if [ -f ${LASTRUN_FILE} ]
-#then
-    #if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
-    #then
-        #echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
-	#exit 0
-    #fi
-#fi
+if [ -f ${LASTRUN_FILE} ]
+then
+    if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
+    then
+        echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
+	exit 0
+    fi
+fi
 
 #
 # Execute nomen load

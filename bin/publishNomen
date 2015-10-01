@@ -29,6 +29,7 @@ usage ()
 
 CURRENT_DIR=`pwd`
 CONFIG=${NOMENLOAD}/nomenload.config
+INPUT_FILE=$1
 
 #
 # The nomenload product is not installed on all servers, so make sure
@@ -53,8 +54,6 @@ then
 else
     usage
 fi
-
-INPUT_FILE=$1
 
 #
 # Make sure the configuration file exists and source it.
@@ -82,3 +81,4 @@ else
     echo "Copy failed"
     exit 1
 fi
+
