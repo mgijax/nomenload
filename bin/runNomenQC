@@ -8,7 +8,7 @@
 #
 ###########################################################################
 
-if [ ${MGICONFIG} = "" ]
+if [ -z ${MGICONFIG} ]
 then
         MGICONFIG=/usr/local/mgi/live/mgiconfig
 	export MGICONFIG
