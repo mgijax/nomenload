@@ -124,7 +124,6 @@ user = os.environ['MGD_DBUSER']
 passwordFileName = os.environ['MGD_DBPASSWORDFILE']
 mode = os.environ['NOMENMODE']
 inputFileName = os.environ['INPUT_FILE_DEFAULT']
-outputDir = os.environ['OUTPUTDIR']
 mappingFileName = os.environ['MAPPINGDATAFILE']
 mappingCol5 = os.environ['MAPPINGASSAYTYPE']
 diagFileName = os.environ['LOG_DIAG']
@@ -252,12 +251,12 @@ def init():
 
     head, tail = os.path.split(inputFileName) 
 
-    outputFileName = outputDir + '/' + inputFileName + '.out'
-    nomenFileName = outputDir + '/NOM_Marker.bcp'
-    refFileName = outputDir + '/MGI_Reference_Assoc.bcp'
-    synFileName = outputDir + '/MGI_Synonym.bcp'
-    accFileName = outputDir + '/ACC_Accession.bcp'
-    accrefFileName = outputDir + '/ACC_AccessionReference.bcp'
+    outputFileName = inputFileName + '.out'
+    nomenFileName = 'NOM_Marker.bcp'
+    refFileName = 'MGI_Reference_Assoc.bcp'
+    synFileName = 'MGI_Synonym.bcp'
+    accFileName = 'ACC_Accession.bcp'
+    accrefFileName = 'ACC_AccessionReference.bcp'
 
     try:
 	inputFile = open(inputFileName, 'r')

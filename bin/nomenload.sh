@@ -57,24 +57,6 @@ cd `dirname $0`
 LOG=`pwd`/nomenload.log
 rm -rf ${LOG}
 
-usage ()
-{
-    echo "Usage: nomenload.sh config_file input_file"
-    echo "       where"
-    echo "           config_file = path to the nomen configuration file"
-    echo "           input_file = path to the nomen input file"
-    exit 1
-}
-
-#
-# Check usage
-#
-
-if [ ! $# -eq 2 ] 
-then
-    usage
-fi
-
 #
 # Verify and source the configuration file
 #
@@ -90,9 +72,13 @@ fi
 rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} ${LOG_ERROR}
 
 #
+# use user-provied value or use config/default value
 # Make sure the input file exists (regular file or symbolic link).
 #
-INPUT_FILE_DEFAULT=$2
+if [ $# -eq 2 ] 
+then
+    INPUT_FILE_DEFAULT=$2
+fi
 if [ ! -r ${INPUT_FILE_DEFAULT} ]
 then
     echo "Missing input file: ${INPUT_FILE_DEFAULT}" | tee -a ${LOG_FILE}
@@ -158,6 +144,7 @@ fi
 echo "" | tee -a ${LOG_FILE}
 date | tee -a ${LOG_FILE}
 echo "Running nomenload : ${NOMENMODE}" | tee -a ${LOG_FILE}
+cd ${OUTPUTDIR}
 ${NOMENLOAD}/bin/nomenload.py | tee -a ${LOG_DIAG}
 STAT=$?
 checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE} : ${NOMENMODE} :"

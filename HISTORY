@@ -3,6 +3,10 @@ DATE: 10/01/2015
 STAFF: lec
 CHANGES:
 1) TR2070/12166 : implement curator sanity checking/publishing
+preview:
+${NOMENLOAD}/bin/nomenload.sh ${NOMENLOAD}/nomensanitycheck.config /data/nomen/pending/your-file
+production:
+${NOMENLOAD}/bin/nomenload.sh ${NOMENLOAD}/nomenload.config
 
 TAG: nomenload-6-0-0-6
 TAG: nomenload-6-0-0-5
