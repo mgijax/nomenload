@@ -21,7 +21,11 @@ LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=${FILEDIR}/output
 INPUTDIR=${FILEDIR}/input
-export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR
+export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR
+
+DESTFILEDIR=/data/nomen
+DESTCURRENTDIR=${DESTFILEDIR}/current
+export DESTFILEDIR DESTCURRENTDIR
 
 # Complete path name of the nomenload log files
 LOG_FILE=${LOGDIR}/nomenload.log
@@ -35,7 +39,8 @@ export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_ERROR
 
 # Full path to the default input file.
 # This is where the publish script places the file
-INPUT_FILE_DEFAULT=${INPUTDIR}/nomenload.txt
+INPUT_FILE_NAME=nomenload.txt
+INPUT_FILE_DEFAULT=${INPUTDIR}/${INPUT_FILE_NAME}
 export INPUT_FILE_DEFAULT
 
 # Load Mode:

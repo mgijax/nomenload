@@ -201,7 +201,10 @@ fi
 #
 # Touch the "lastrun" file to note when the load was run.
 #
-touch ${LASTRUN_FILE}
+if [ ${NOMENMODE} != "preview" ]
+then
+    touch ${LASTRUN_FILE}
+fi
 
 #
 # cat the error file
