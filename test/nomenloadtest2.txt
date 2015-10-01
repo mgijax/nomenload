@@ -1,0 +1,26 @@
+Pseudogene	Gm2080	predicted gene 2080	8	In Progress	J:109762			Existing Symbol	yz
+Gene	Gm20806	predicted gene 20806	Y	In Progress	J:109762			Existing Symbol	yz
+gene	Gm44423	predicted gene 42423	5	In Progress	J:109762			Invalid Marker Type(gene should be Gene)	yz
+Pseudogene	Gm44424	predicted gene 44424	111	In Progress	J:109762			Invalid Chromosome	yz
+Gene	Gm44425	predicted gene 44425		In Progress	J:109762			Invalid Chrosome(blank)	yz
+Gene	Gm44426	predicted gene 44426	UN	In Progress	J:109762			GOOD;Chrosome UN	yz
+Gene	Gm44427	predicted gene 44427	Unknown	In Progress	J:109762			Chrosome Unknown(Invalid)	yz
+Gene	Gm44427	predicted gene 44428	XY	In Progress	J:109762			GOOD;Chrosome XY	yz
+Gene	Gm44429	predicted gene 44429	MT	In Progress	J:109762			GOOD;Chrosome MT	yz
+Gene	Gm44429	predicted gene 44429	Mitochondrial	In Progress	J:109762			Chrosome Mitochondrial(Invalid)	yz
+Gene	Gm44430	predicted gene 44430	5	In Progress	J:509762			Invalid Reference	yz
+Gene	Gm44432	predicted gene 44432	9	In Progress	J:109762		Sequence DB:AK018729	Sequence Associated with Other Marker	yz
+Gene	Gm44433	predicted gene 44433	9	In Progress	J:109762		Sequence DB:BY670756	GOOD;One Sequence	yz
+Gene	Gm44434	predicted gene 44434	9	In Progress	J:109762		Sequence DB:AK135464|Sequence DB:AK138955	GOOD;Two GenBank Sequences	yz
+Gene	Gm44435	predicted gene 44435	9	In Progress	J:109762		AK053127	Sequences without logic DB	yz
+Gene	Gm44436	predicted gene 44436	5	In Progress	J:109762			Duplicate rows	yz
+Gene	Gm44436	predicted gene 44436	5	In Progress	J:109762			Duplicate rows	yz
+Gene	Gm44437	predicted gene 44437	3	In Progress	J:109762			Duplicate symbol(on different chr)	yz
+Gene	Gm44437	predicted gene 44437	6	In Progress	J:109762			Duplicate symbol(on different chr)	yz
+Gene	Gm44438	predicted gene 44438	6	Withdrawn	J:109762			Invalid Status	yz
+Pseudogene	Gm44439	predicted gene 44439	5	In Progress	J:109762		Missing column(Synomym or Sequence)	yz
+Gene	Gm44440	predicted gene 44440	6	In Progress	J:109762			Good	yz
+Other Genome Feature	Cpgi23114	CpG island 23114	Y	In Progress	J:216922	CGI23114		GOOD;Other Genome Feature	yz
+Other Genome Feature	Cpgi23115	CpG island 23115	X	In Progress	J:216922	CGI23115		Invalid user	xyz
+Other Genome Feature	Cpgi23117	CpG island 23117	Y	In Progress	J:216922	CGI23117|CGI23117Y		GOOD;Two Synonyms	yz
+Cpgi23117	CpG island 23117	Y	In Progress	J:216922	CGI23117|CGI23117Y		Missing column(No Marker Type)	yz

@@ -157,7 +157,7 @@ date | tee -a ${LOG_FILE}
 echo "Running nomenload : ${NOMENMODE}" | tee -a ${LOG_FILE}
 ${NOMENLOAD}/bin/nomenload.py | tee -a ${LOG_DIAG}
 STAT=$?
-checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE} : ${NOMENMODE} : "
+checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE} : ${NOMENMODE} :"
 
 #
 #
@@ -179,7 +179,7 @@ then
 
         ${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}
         STAT=$?
-        checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE} : ${MAPPINGMODE} : "
+        checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE} : ${MAPPINGMODE} :"
     fi
 else
     echo "FATAL ERROR: nomenload exit status = ${STAT} : ${NOMENMODE}" | tee -a ${LOG_FILE}
