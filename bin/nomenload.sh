@@ -138,14 +138,17 @@ fi
 # the last time the load was run for this input file. If this file exists
 # and is more recent than the input file, the load does not need to be run.
 #
-LASTRUN_FILE=${INPUTDIR}/lastrun
-
-if [ -f ${LASTRUN_FILE} ]
+if [ ${NOMENMODE} != "preview" ]
 then
-    if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
+    LASTRUN_FILE=${INPUTDIR}/lastrun
+
+    if [ -f ${LASTRUN_FILE} ]
     then
-        echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
-	exit 0
+        if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
+        then
+            echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
+	    exit 0
+        fi
     fi
 fi
 
@@ -191,8 +194,8 @@ fi
 #
 if [ ${NOMENMODE} != "preview" ]
 then
-    cp -p ${INPUT_FILE_DEFAULT} ${INPUTDIR}
-    createArchive ${ARCHIVEDIR} ${LOGDIR} ${INPUTDIR} ${OUTPUTDIR} | tee -a ${LOG}
+    cp -p ${INPUTDIR}/${INPUT_FILE_DEFAULT} ${DESTFILEDIR}
+    createArchive ${ARCHIVEDIR} ${LOGDIR} ${DESTFILEDIR} ${OUTPUTDIR} | tee -a ${LOG}
 fi 
 
 #

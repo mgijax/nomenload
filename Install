@@ -93,8 +93,9 @@ then
     chgrp mgi ${INPUT_FILE_DEFAULT}
 fi
 
-chmod -f 775 ${INPUTDIR}
-chgrp mgi ${INPUTDIR}
+chmod -f 775 ${FILEDIR}/*
+chgrp mgi ${FILEDIR}/*
+chgrp mgi ${FILEDIR}/*/*
 
 # The DLAInstall script removes all permissions from shell scripts for
 # group "other" on non-development servers. The QC report wrapper
