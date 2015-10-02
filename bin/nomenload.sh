@@ -204,7 +204,7 @@ date | tee -a ${LOG_FILE}
 #
 # run postload cleanup and email logs
 #
-if [ ${NOMENMODE} != 'preview' ]
+if [ ${NOMENMODE} != "preview" ]
 then
     JOBKEY=0;export JOBKEY
     shutDown
