@@ -883,6 +883,4 @@ if not DEBUG and bcpon:
     broadcastToMRK()
     exit(0)
 else:
-    print 'sanity check FAILED : no data will be loaded'
     exit(1)
-

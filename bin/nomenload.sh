@@ -176,6 +176,16 @@ else
 fi
 
 #
+# set permissions
+#
+chmod -f 775 ${FILEDIR}/*
+chgrp mgi ${FILEDIR}/*
+chgrp mgi ${FILEDIR}/*/*
+chmod -f 775 ${DESTFILEDIR}/*
+chgrp mgi ${DESTFILEDIR}/*
+chgrp mgi ${DESTFILEDIR}/*/*
+
+#
 # Archive : publshed only
 # dlautils/preload with archive
 #
