@@ -249,8 +249,6 @@ def init():
     db.set_sqlUser(user)
     db.set_sqlPasswordFromFile(passwordFileName)
 
-    head, tail = os.path.split(inputFileName) 
-
     outputFileName = inputFileName + '.out'
     nomenFileName = 'NOM_Marker.bcp'
     refFileName = 'MGI_Reference_Assoc.bcp'
