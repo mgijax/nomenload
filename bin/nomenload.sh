@@ -53,11 +53,6 @@
 #	- new (using nomenload as a template)
 #
 
-#
-# set group to 'mgi' so that file permissions are read/write by curators and mgiadmin
-#
-newgrp mgi
-
 cd `dirname $0`
 LOG=`pwd`/nomenload.log
 rm -rf ${LOG}
@@ -179,6 +174,21 @@ then
 else
     echo "FATAL ERROR: nomenload exit status = ${STAT} : ${NOMENMODE}" | tee -a ${LOG_FILE}
 fi
+
+#
+# set permissions
+#
+case `whoami` in
+    mgiadmin)
+	chmod -f 775 ${FILEDIR}/*
+	chgrp -f mgi ${FILEDIR}/*
+	chgrp -f mgi ${FILEDIR}/*/*
+	chmod -f 775 ${DESTFILEDIR}/*
+	chgrp -f mgi ${DESTFILEDIR}/*
+	chgrp -f mgi ${DESTFILEDIR}/*/*
+	chgrp -f mgi ${NOMENLOAD}/bin/nomenload.log
+	;;
+esac
 
 #
 # Archive : publshed only
