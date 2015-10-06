@@ -186,6 +186,7 @@ case `whoami` in
 	chmod -f 775 ${DESTFILEDIR}/*
 	chgrp -f mgi ${DESTFILEDIR}/*
 	chgrp -f mgi ${DESTFILEDIR}/*/*
+	chgrp -f mgi ${NOMENLOAD}/bin
 	chgrp -f mgi ${NOMENLOAD}/bin/nomenload.log
 	;;
 esac
