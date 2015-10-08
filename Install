@@ -68,17 +68,6 @@ then
     mkdir -p ${INPUTDIR}
 fi
 
-#
-# If this installation is being done on bhmgiapp01, create a symbolic link to
-# the same input file path on hobbiton where the input file is published.
-# The input directory should be locked down to protect the symbolic link.
-#
-if [ ${SERVER_NAME} = "bhmgiapp01" ]
-then
-    rm -f ${INPUT_FILE_DEFAULT}
-    ln -s /hobbiton${INPUT_FILE_DEFAULT} ${INPUT_FILE_DEFAULT}
-fi
-
 chmod -f 775 ${FILEDIR}/*
 chgrp mgi ${FILEDIR}/*
 
