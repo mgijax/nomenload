@@ -79,23 +79,8 @@ then
     ln -s /hobbiton${INPUT_FILE_DEFAULT} ${INPUT_FILE_DEFAULT}
 fi
 
-#
-# For any server, if the input file
-# does not exist already, create one that is writable. This is just a
-# place holder until an input file is published. The input directory
-# should be opened up to allow the curation staff to publish new input
-# files.
-#
-if [ ! -f ${INPUT_FILE_DEFAULT} ]
-then
-    touch ${INPUT_FILE_DEFAULT}
-    chmod 664 ${INPUT_FILE_DEFAULT}
-    chgrp mgi ${INPUT_FILE_DEFAULT}
-fi
-
 chmod -f 775 ${FILEDIR}/*
 chgrp mgi ${FILEDIR}/*
-chgrp mgi ${FILEDIR}/*/*
 
 #
 # copy the curator scripts into a standard location 
