@@ -68,28 +68,11 @@ then
     mkdir -p ${INPUTDIR}
 fi
 
-chmod -f 775 ${FILEDIR}/*
-chgrp mgi ${FILEDIR}/*
-
 #
 # copy the curator scripts into a standard location 
-# make sure this directory is in their unix path
-#
-
 # trim any trailing slash from MGIBIN variable
+#
 DEPLOY_PATH=`echo "${MGIBIN}" | sed 's./$..'`
-
-if [ "${DEPLOY_PATH}" = "" ]; then
-        echo "Warning: MGIBIN variable missing from mgiconfig; cannot deploy curator files"
-        exit 0
-fi
-
-if [ ! -d ${DEPLOY_PATH} ]; then
-        # failure to deploy is not a fatal error; could happen during
-        # development under a home directory
-        echo "Warning: ${DEPLOY_PATH} does not exist; curator scripts were not copied."
-        exit 0
-fi
 
 if [ -d ${DEPLOY_PATH} ]; then
         # copy files, change permissions, and check for errors
@@ -110,5 +93,13 @@ if [ -d ${DEPLOY_PATH} ]; then
         done
         echo "Deployed curator files to ${DEPLOY_PATH}"
 fi
+
+#
+# re-set permissions
+#
+chmod -f 775 ${FILEDIR}/*
+chgrp mgi ${FILEDIR}/*
+chmod 775 ${NOMENLOAD}/bin
+chgrp mgi ${NOMENLOAD}/bin
 
 exit 0
