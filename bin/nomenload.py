@@ -215,7 +215,7 @@ def exit(status, message = None):
 	diagFile.flush()
 	errorFile.flush()
 	diagFile.write('\n\nEnd Date/Time: %s\n' % (mgi_utils.date()))
-        errorFile.write('\nend: ERROR file\n')
+        errorFile.write('\nEnd file\n')
 	diagFile.close()
 	errorFile.close()
 
@@ -318,7 +318,7 @@ def init():
     diagFile.write('Server: %s\n' % (db.get_sqlServer()))
     diagFile.write('Database: %s\n' % (db.get_sqlDatabase()))
     diagFile.write('Input File: %s\n' % (inputFileName))
-    errorFile.write('\nstart: ERROR file : %s\n\n' % (mgi_utils.date()))
+    errorFile.write('\nStart file: %s\n\n' % (mgi_utils.date()))
 
 def verifyMode():
     '''
