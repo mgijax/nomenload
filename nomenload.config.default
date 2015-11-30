@@ -102,7 +102,7 @@ MAIL_LOADNAME="${NOMENMODE} : Nomen/Mapping Load"
 export MAIL_LOADNAME
 
 #  Recipient list for mailing the log files (comma-separated)
-MAIL_LOG_PROC="mgiadmin@jax.org,sophia.zhu@jax.org"
+MAIL_LOG_PROC="${USER},sophia.zhu@jax.org"
 export MAIL_LOG_PROC
 
 INSTALLDIR=${NOMENLOAD}
