@@ -1,4 +1,4 @@
-#!/bin/csh -f
+#!/bin/csh -fx
 
 #
 # Update a marker's type, including user who modified the marker type
@@ -12,27 +12,27 @@ setenv CONFIGFILE $1
 
 cd `dirname $0` && source ${CONFIGFILE}
 
-cd ${INPUTDIR}
+cd ${NOMENDATADIR}
 
-rm -rf ${LOG_FILE}
-touch ${LOG_FILE}
+rm -rf ${NOMENLOG}
+touch ${NOMENLOG}
  
-date >> ${LOG_FILE}
+date >> ${NOMENLOG}
  
 #
 # Execute nomenload
 #
-echo "Updating markers in: ${NOMENDATAFILE} to Marker Type Key: ${NEWMKRTYPE} \
-	Updated By: ${MODIFIEDBY}" | tee -a ${LOG_FILE}
-echo ${MGD_DBSERVER} | tee -a  ${LOG_FILE}
-echo ${MGD_DBNAME} | tee -a ${LOG_FILE}
-${NOMENLOAD}/bin/updateMkrType.py >& ${LOG_FILE}
+echo "Updating markers in: ${NOMENDATAFILE} to Marker Type: ${NEWMKRTYPE} \
+	Updated By: ${MODIFIEDBY}" | tee -a ${NOMENLOG}
+echo ${MGD_DBSERVER} | tee -a  ${NOMENLOG}
+echo ${MGD_DBNAME} | tee -a ${NOMENLOG}
+${NOMENLOAD}/bin/updateMkrType.py >& ${NOMENLOG}
 set returnStatus=$status
 if ( $returnStatus ) then
-    echo "Marker Type Update ${CONFIGFILE}: FAILED" | tee -a ${LOG_FILE}
+    echo "Marker Type Update ${CONFIGFILE}: FAILED" | tee -a ${NOMENLOG}
 else
-    echo "Marker Type Update ${CONFIGFILE}: SUCCESSFUL" | tee -a ${LOG_FILE}
+    echo "Marker Type Update ${CONFIGFILE}: SUCCESSFUL" | tee -a ${NOMENLOG}
 endif
 
-date >> ${LOG_FILE}
+date >> ${NOMENLOG}
 

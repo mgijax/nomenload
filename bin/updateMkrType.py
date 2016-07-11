@@ -1,8 +1,8 @@
 #!/usr/local/bin/python
 
-# update a set of markers to marker type ${NEWMARKERTYPE}
+# update a set of markers to marker type 
 # update modification date
-# update modified by ${BYWHOM}
+# update modified by 
 
 import sys
 import os
@@ -28,7 +28,8 @@ db.set_sqlPasswordFromFile(passwordFileName)
 db.set_sqlLogFunction(db.sqlLogAll)
 inputFileName = os.environ['NOMENDATAFILE']
 inputFile = None          # file descriptor
-
+updateList = [] # list of marker keys to update
+mgiToMrkKeyDict = {} # {mgiID:markerKey, ...}
 try:
         inputFile = open(inputFileName, 'r')
 except:
@@ -47,33 +48,40 @@ if len(results) == 0:
     exit (1, 'Invalid user login %s\n' % modifiedBy)
 modifiedByKey = results[0]['_User_key']
 
+#
+# Create mouse marker MGI ID to marker key lookup
+results = db.sql('''select a.accid, m._Marker_key
+	from ACC_Accession a, MRK_Marker m
+	where a._MGIType_key = 2
+	and a._LogicalDB_key = 1
+	and a.preferred = 1
+	and a.prefixPart = 'MGI:'
+	and a._Object_key = m._Marker_key
+	and m._Organism_key = 1''', 'auto')
+for r in results:
+    mgiToMrkKeyDict[r['accid']] = r['_Marker_key']
+
+# iterate thru the file creating list of marker keys to update
 for line in inputFile.readlines():
     tokens = string.split(line[:-1], '\t')
     mgiID = string.strip(tokens[0])
-    results = db.sql('''
-	select distinct a.accID, m.symbol
-	from ACC_Accession a, MRK_Marker m 
-        where a.accID = '%s' 
-        and a._MGIType_key = 2
-        and a._Object_key = m._Marker_key
-	''' % (mgiID), 'auto')
 
-    if len(results) == 0:
-        print 'Invalid Marker MGI ID: %s' % mgiID
-        continue
+    if mgiID not in mgiToMrkKeyDict:
+	print '%s is not a valid mouse ID' % mgiID
+	exit (1, 'Invalid mouse ID %s\n' % mgiID)
+    updateList.append(mgiToMrkKeyDict[mgiID])
+
+for key in updateList:
     cmd = '''
 	update MRK_Marker
 	set _Marker_Type_key = %s, 
-	modification_date = "%s", 
+	modification_date = '%s', 
         _ModifiedBy_key = %s 
-	from ACC_Accession a, MRK_Marker m 
-	where a.accID = '%s' 
-	and a._MGIType_key = 2
-	and a._Object_key = m._Marker_key
-	''' % (newMkrTypeKey, loaddate, modifiedByKey, mgiID)
-
+	where _Marker_key = %s''' % (newMkrTypeKey, loaddate, modifiedByKey, key)
+    print cmd
     db.sql(cmd, 'auto')
 
+db.commit()
 inputFile.close()
 
 db.useOneConnection(0)
