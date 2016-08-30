@@ -405,7 +405,7 @@ def verifyDuplicateMarker(symbol, lineNum):
 	errorFile.write('WARNING: Symbol is Withdrawn (row %d): %s\n\n' % (lineNum, symbol))
 
     #
-    # official/interim/reserved
+    # official/reserved
     #
 
     results = db.sql('''select _Nomen_key from NOM_Marker 
@@ -413,7 +413,7 @@ def verifyDuplicateMarker(symbol, lineNum):
 	union 
 	select _Marker_key from MRK_Marker 
 	where _Organism_key = 1 
-		and _Marker_Status_key in (1,3)
+		and _Marker_Status_key = 1
 		and symbol = '%s'
 	''' % (symbol, symbol), 'auto')
 
