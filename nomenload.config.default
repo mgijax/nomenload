@@ -52,9 +52,8 @@ export INPUT_FILE_DEFAULT
 NOMENMODE=broadcast
 export NOMENMODE
 
-# This is typically 'In Progress'. If NOMENLOAD="broadcast" then
-# that process will update status to 'Official'
-NOMENSTATUS="In Progress"
+# If NOMENLOAD="broadcast" then that process will update status to 'Official'
+NOMENSTATUS="Reserved"
 export NOMENSTATUS
 
 #
