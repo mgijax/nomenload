@@ -397,7 +397,7 @@ def verifyDuplicateMarker(symbol, lineNum):
 
     results = db.sql('''select _Marker_key from MRK_Marker 
 	where _Organism_key = 1 
-		and _Marker_Status_key in (2)
+		and _Marker_Status_key = 2
 		and symbol = '%s'
 	''' % (symbol), 'auto')
 
