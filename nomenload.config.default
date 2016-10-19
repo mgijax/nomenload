@@ -44,18 +44,11 @@ INPUT_FILE_NAME=nomenload.txt
 INPUT_FILE_DEFAULT=${DESTCURRENTDIR}/${INPUT_FILE_NAME}
 export INPUT_FILE_DEFAULT
 
-# Load Mode:
-# 'load' - load Nomen tables
-# 'broadcast' - load Nomen tables and broadcast to Marker table
+# 'load' - load tables
 # 'preview' - perform all record verifications, create all output files
 #   but do not load the data or make any changes to the database. 
-NOMENMODE=broadcast
+NOMENMODE=load
 export NOMENMODE
-
-# This is typically 'In Progress'. If NOMENLOAD="broadcast" then
-# that process will update status to 'Official'
-NOMENSTATUS="In Progress"
-export NOMENSTATUS
 
 #
 # Mapping Load Configuration

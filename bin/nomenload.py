@@ -5,7 +5,7 @@
 # Purpose:
 #
 #	1) To load new gene records into Nomen structures:
-#	    NOM_Marker
+#	    MRK_Marker
 #	    MGI_Reference_Assoc
 #	    MGI_Synonym
 #	    ACC_Accession
@@ -45,9 +45,6 @@
 #		preview - perform all record verifications but do not load the 
 #			data or make any changes to the database.
 #
-#		broadcast - load the data into Nomen structures and 
-#			broadcast to MRK structures
-#
 # Sanity Checks: see sanityCheck()
 #
 #        1)  Invalid Line (missing column(s))
@@ -65,7 +62,7 @@
 #
 #       5 BCP files:
 #
-#       NOM_Marker.bcp                  master Nomen records
+#       MRK_Marker.bcp                  master Nomen records
 #       MGI_Reference_Assoc.bcp         Nomen/Reference records
 #       MGI_Synonym.bcp             	Nomen Synonym records
 #       ACC_Accession.bcp               Accession records
@@ -136,35 +133,45 @@ inputFile = ''		# file descriptor
 outputFile = ''		# file descriptor
 diagFile = ''		# file descriptor
 errorFile = ''		# file descriptor
-nomenFile = ''		# file descriptor
+markerFile = ''		# file descriptor
 refFile = ''		# file descriptor
 synFile = ''		# file descriptor
 accFile = ''		# file descriptor
 accrefFile = ''		# file descriptor
 mappingFile = ''	# file descriptor
+historyFile = ''	# file descriptor
+offsetFile = ''		# file descriptor
+alleleFile = ''		# file descriptor
 
-nomenFileName = ''	# file name
+markerFileName = ''	# file name
 refFileName = ''	# file name
 synFileName = ''	# file name
 accFileName = ''	# file name
 accrefFileName = ''	# file name
+historyFileName = ''	# file name
+historyFileName = ''	# file name
+offsetFileName = ''	# file name
+offsetFileName = ''	# file name
+alleleFileName = ''	# file name
+alleleFileName = ''	# file name
 
-startNomenKey = 0	# beginning NOM_Marker._Nomen_key
-nomenKey = 0		# NOM_Marker._Nomen_key
+markerKey = 0		# MRK_Marker._Marker_key
 accKey = 0		# ACC_Accession._Accession_key
 synKey = 0		# MGI_Synonym._Synonym_key
 mgiKey = 0		# ACC_AccessionMax.maxNumericPart
 refAssocKey = 0		# MGI_Reference_Assoc._Assoc_key
+alleleKey = 0
 
 statusDict = {}		# dictionary of marker statuses for quick lookup
 referenceDict = {}	# dictionary of references for quick lookup
 logicalDBDict = {}	# dictionary of logical DBs for quick lookup
 
-markerEvent = 1                         # Assigned
-markerEventReason = -1                  # Not Specified
-mgiTypeKey = 21                         # Nomenclature
+markerEvent = 1                        # Assigned
+markerEventReason = -1                 # Not Specified
+mgiTypeKey = 2                         # Nomenclature
+alleleTypeKey = 11
 mgiPrefix = "MGI:"
-refAssocTypeKey = 1003			# Primary Reference
+refAssocTypeKey = 1018			# General Reference
 synTypeKey = 1008			# Other Synonym Type key
 
 mappingCol3 = 'yes'			# update Mkr chr?
@@ -240,21 +247,26 @@ def init():
     '''
 
     global inputFile, outputFile, diagFile, errorFile
-    global errorFileName, diagFileName, nomenFileName, refFileName
+    global errorFileName, diagFileName, markerFileName, refFileName
+    global historyFileName, offsetFileName, alleleFileName
     global synFileName, accFileName, accrefFileName
-    global nomenFile, refFile, synFile, accFile, accrefFile, mappingFile
-    global startNomenKey, nomenKey, accKey, synKey, mgiKey, refAssocKey
+    global markerFile, refFile, synFile, accFile, accrefFile, mappingFile
+    global historyFile, offsetFile, alleleFile
+    global markerKey, accKey, synKey, mgiKey, refAssocKey, alleleKey
 
     db.useOneConnection(1)
     db.set_sqlUser(user)
     db.set_sqlPasswordFromFile(passwordFileName)
 
     outputFileName = inputFileName + '.out'
-    nomenFileName = 'NOM_Marker.bcp'
+    markerFileName = 'MRK_Marker.bcp'
     refFileName = 'MGI_Reference_Assoc.bcp'
     synFileName = 'MGI_Synonym.bcp'
     accFileName = 'ACC_Accession.bcp'
     accrefFileName = 'ACC_AccessionReference.bcp'
+    historyFileName = 'MRK_History.bcp'
+    offsetFileName = 'MRK_Offset.bcp'
+    alleleFileName = 'ALL_Allele.bcp'
 
     try:
 	inputFile = open(inputFileName, 'r')
@@ -278,9 +290,9 @@ def init():
 	exit(1, 'Could not open file %s\n' % errorFileName)
 	    
     try:
-	nomenFile = open(nomenFileName, 'w')
+	markerFile = open(markerFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % nomenFileName)
+	exit(1, 'Could not open file %s\n' % markerFileName)
 	    
     try:
 	refFile = open(refFileName, 'w')
@@ -306,6 +318,21 @@ def init():
 	mappingFile = open(mappingFileName, 'w')
     except:
 	exit(1, 'Could not open file %s\n' % mappingFileName)
+	    
+    try:
+	historyFile = open(historyFileName, 'w')
+    except:
+	exit(1, 'Could not open file %s\n' % historyFileName)
+	    
+    try:
+	offsetFile = open(offsetFileName, 'w')
+    except:
+	exit(1, 'Could not open file %s\n' % offsetFileName)
+	    
+    try:
+	alleleFile = open(alleleFileName, 'w')
+    except:
+	exit(1, 'Could not open file %s\n' % alleleFileName)
 	    
     # Log all SQL 
     db.set_sqlLogFunction(db.sqlLogAll)
@@ -340,7 +367,7 @@ def verifyMode():
     if mode == 'preview':
 	DEBUG = 1
 	bcpon = 0
-    elif mode not in ['load', 'broadcast']:
+    elif mode not in ['load']:
 	exit(1, 'Invalid Processing Mode:  %s\n' % (mode))
 
 def verifyMarkerStatus(markerStatus, lineNum):
@@ -408,19 +435,17 @@ def verifyDuplicateMarker(symbol, lineNum):
     # official/reserved
     #
 
-    results = db.sql('''select _Nomen_key from NOM_Marker 
-    	where symbol = '%s' and _NomenStatus_key = 166901
-	union 
+    results = db.sql('''
 	select _Marker_key from MRK_Marker 
 	where _Organism_key = 1 
-		and _Marker_Status_key = 1
+		and _Marker_Status_key in (1,3)
 		and symbol = '%s'
-	''' % (symbol, symbol), 'auto')
+	''' % (symbol), 'auto')
 
     if len(results) == 0:
 	return 0
     else:
-	errorFile.write('Symbol is Official/Inferim/Reserved (row %d): %s\n' % (lineNum, symbol))
+	errorFile.write('Symbol is Official/Reserved (row %d): %s\n' % (lineNum, symbol))
 	return 1
 
 def verifyChromosome(chromosome, lineNum):
@@ -596,15 +621,20 @@ def setPrimaryKeys():
     #
     '''
 
-    global startNomenKey, nomenKey, accKey, mgiKey, synKey
+    global markerKey, accKey, mgiKey, synKey, alleleKey
     global refAssocKey
 
-    results = db.sql('select max(_Nomen_key) + 1 as maxKey from NOM_Marker', 'auto')
+    results = db.sql('select max(_Marker_key) + 1 as maxKey from MRK_Marker', 'auto')
     if results[0]['maxKey'] is None:
-	nomenKey = 1000
+	markerKey = 1000
     else:
-	nomenKey = results[0]['maxKey']
-    startNomenKey = nomenKey
+	markerKey = results[0]['maxKey']
+
+    results = db.sql('select max(_Allele_key) + 1 as maxKey from ALL_Allele', 'auto')
+    if results[0]['maxKey'] is None:
+	alleleKey = 1000
+    else:
+	alleleKey = results[0]['maxKey']
 
     results = db.sql('select max(_Assoc_key) + 1 as maxKey from MGI_Reference_Assoc', 'auto')
     if results[0]['maxKey'] is None:
@@ -641,9 +671,9 @@ def loadDictionaries():
 
     global statusDict, logicalDBDict
 
-    results = db.sql('select _Term_key, term from VOC_Term_NomenStatus_View', 'auto')
+    results = db.sql('select _Marker_Status_key, status from MRK_Status', 'auto')
     for r in results:
-	statusDict[r['term']] = r['_Term_key']
+	statusDict[r['status']] = r['_Marker_Status_key']
 
     results = db.sql('select _LogicalDB_key, name from ACC_LogicalDB', 'auto')
     for r in results:
@@ -663,7 +693,7 @@ def processFile():
     '''
 
     global bcpon
-    global nomenKey, accKey, mgiKey, synKey, refAssocKey, createdByKey
+    global markerKey, accKey, mgiKey, synKey, refAssocKey, createdByKey, alleleKey
     global markerType 
     global symbol 
     global name 
@@ -718,19 +748,30 @@ def processFile():
 	    continue
 
 	# if no errors, process the marker
-	nomenFile.write('%d|%d|%d|%d|%d|%s|%s|%s||%s|||%s|%s|%s|%s\n' \
-	    % (nomenKey, markerTypeKey, markerStatusKey, markerEvent, \
-		markerEventReason, symbol, name, chromosome, mgi_utils.prvalue(notes), \
+	markerFile.write('%d|1|%d|%d|%s|%s|%s||%s|%s|%s|%s\n' \
+	    % (markerKey, markerStatusKey, markerTypeKey, symbol, name, chromosome, \
 		createdByKey, createdByKey, cdate, cdate))
 
+	historyFile.write('%d|1|-1|%d|%d|1|%s|%s|%s|%s|%s|%s\n' \
+	    % (markerKey, markerKey, referenceKey, name, cdate,
+		createdByKey, createdByKey, cdate, cdate))
+
+	if chromosome == 'UN':
+		v_offset = -999
+	else:
+		v_offset = -1
+	offsetFile.write('%d|0|%d|%s|%s\n' \
+	    % (markerKey, v_offset, cdate, cdate))
+
+	# maybe we don't need this
 	refFile.write('%d|%d|%d|%d|%d|%s|%s|%s|%s\n' \
-	    % (refAssocKey, referenceKey, nomenKey, mgiTypeKey, \
+	    % (refAssocKey, referenceKey, markerKey, mgiTypeKey, \
 		refAssocTypeKey, createdByKey, createdByKey, cdate, cdate))
 
 	# MGI Accession ID for the marker
 
 	accFile.write('%d|%s%d|%s|%s|1|%d|%d|0|1|%s|%s|%s|%s\n' \
-	    % (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, nomenKey, \
+	    % (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, markerKey, \
 		mgiTypeKey, createdByKey, createdByKey, cdate, cdate))
 
 	# write record back out and include MGI Accession ID
@@ -756,7 +797,7 @@ def processFile():
 	for o in string.split(synonyms, '|'):
 	    if len(o) > 0:
 		synFile.write('%d|%d|%d|%d|%s|%s|%s|%s|%s|%s\n' \
-		    % (synKey, nomenKey, mgiTypeKey, synTypeKey, referenceKey, \
+		    % (synKey, markerKey, mgiTypeKey, synTypeKey, referenceKey, \
 			o, createdByKey, createdByKey, cdate, cdate))
 		synKey = synKey + 1
 
@@ -766,14 +807,42 @@ def processFile():
 	    prefixpart, numericpart = accessionlib.split_accnum(acc)
 	    accFile.write('%d|%s|%s|%s|%d|%d|%d|0|1|%s|%s|%s|%s\n' \
 		% (accKey, acc, prefixpart, numericpart, otherAccDict[acc], \
-		    nomenKey, mgiTypeKey, createdByKey, createdByKey, \
+		    markerKey, mgiTypeKey, createdByKey, createdByKey, \
 		    cdate, cdate))
 	    accrefFile.write('%d|%s|%s|%s|%s|%s\n' \
 		% (accKey, referenceKey, createdByKey, createdByKey, \
 		    cdate, cdate))
 	    accKey = accKey + 1
 
-	nomenKey = nomenKey + 1
+	#
+	# if 'official'
+	#
+
+	if markerStatus == 'official':
+   	    if symbol.find('mt-') < 0 or \
+   	       name.find('withdrawn, =') < 0 or  \
+   	       name.find('dna segment') < 0 or \
+   	       name.find('EST ') < 0 or \
+   	       name.find('expressed sequence') < 0 or \
+   	       name.find('cDNA sequence') < 0 or \
+   	       name.find('gene model') < 0 or \
+   	       name.find('hypothetical protein') < 0 or \
+               name.find('ecotropic viral integration site') < 0 or \
+               name.find('viral polymerase') < 0:
+
+		alleleFile.write('%d|%d|-2|847095|847131|847114|3982955|11025586|%s|%s||1|0|0||4268545|%s|%s|%s|%s|%s|%s\n' \
+	    		% (alleleKey, markerKey, symbol + '<+>', 'wild type', createdByKey, createdByKey, createdByKey, cdate, cdate, cdate))
+	        # MGI Accession ID for the allele
+
+	        accFile.write('%d|%s%d|%s|%s|1|%d|%d|0|1|%s|%s|%s|%s\n' \
+	            % (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, alleleKey, \
+		        alleleTypeKey, createdByKey, createdByKey, cdate, cdate))
+
+	        alleleKey = alleleKey + 1
+	        accKey = accKey + 1
+	        mgiKey = mgiKey + 1
+
+	markerKey = markerKey + 1
 
     # end of "for line in inputFile.readlines():"
 
@@ -785,12 +854,13 @@ def processFile():
 	db.sql('select * from ACC_setMax (%d)' % (lineNum), None)
  	db.commit()
 
-    nomenFile.close()
+    markerFile.close()
     refFile.close()
     synFile.close()
     accFile.close()
     accrefFile.close()
     mappingFile.close()
+    historyFile.close()
     db.commit()
 
 def bcpFiles():
@@ -809,7 +879,7 @@ def bcpFiles():
     currentDir = os.getcwd()
 
     bcp1 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
-	(bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'NOM_Marker', currentDir, nomenFileName)
+	(bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_Marker', currentDir, markerFileName)
 
     bcp2 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Reference_Assoc', currentDir, refFileName)
@@ -823,36 +893,32 @@ def bcpFiles():
     bcp5 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'ACC_AccessionReference', currentDir, accrefFileName)
 
+    bcp6 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_History', currentDir, historyFileName)
+
+    bcp7 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_Offset', currentDir, offsetFileName)
+
+    bcp8 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'ALL_Allele', currentDir, alleleFileName)
+
     diagFile.write('%s\n' % bcp1)
     diagFile.write('%s\n' % bcp2)
     diagFile.write('%s\n' % bcp3)
     diagFile.write('%s\n' % bcp4)
     diagFile.write('%s\n' % bcp5)
+    diagFile.write('%s\n' % bcp6)
+    diagFile.write('%s\n' % bcp7)
+    diagFile.write('%s\n' % bcp8)
 
     os.system(bcp1)
     os.system(bcp2)
     os.system(bcp3)
     os.system(bcp4)
     os.system(bcp5)
-
-def broadcastToMRK():
-    '''
-    # requires:
-    #
-    # effects:
-    #	broadcasts the recently processed NOM markers to MGI
-    #
-    # returns:
-    #	nothing
-    #
-    '''
-
-    if mode != 'broadcast':
-	return
-
-    for x in range(startNomenKey, nomenKey):
-	db.sql('select * from NOM_transferToMGD (%s, %s)' % (createdByKey, x), None)
-	db.commit()
+    os.system(bcp6)
+    os.system(bcp7)
+    os.system(bcp8)
 
 #
 # Main
@@ -877,8 +943,6 @@ if not DEBUG and bcpon:
     print 'sanity check PASSED : loading data'
 #    print 'bcpFiles()'
     bcpFiles()
-#    print 'broadcastToMRK()'
-    broadcastToMRK()
     exit(0)
 else:
     exit(1)
