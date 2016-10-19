@@ -139,6 +139,7 @@ synFile = ''		# file descriptor
 accFile = ''		# file descriptor
 accrefFile = ''		# file descriptor
 mappingFile = ''	# file descriptor
+mrkcurrentFile = ''	# file descriptor
 historyFile = ''	# file descriptor
 offsetFile = ''		# file descriptor
 alleleFile = ''		# file descriptor
@@ -148,11 +149,9 @@ refFileName = ''	# file name
 synFileName = ''	# file name
 accFileName = ''	# file name
 accrefFileName = ''	# file name
-historyFileName = ''	# file name
+mrkcurrentFileName = ''	# file name
 historyFileName = ''	# file name
 offsetFileName = ''	# file name
-offsetFileName = ''	# file name
-alleleFileName = ''	# file name
 alleleFileName = ''	# file name
 
 markerKey = 0		# MRK_Marker._Marker_key
@@ -248,10 +247,10 @@ def init():
 
     global inputFile, outputFile, diagFile, errorFile
     global errorFileName, diagFileName, markerFileName, refFileName
-    global historyFileName, offsetFileName, alleleFileName
+    global mrkcurrentFileName, historyFileName, offsetFileName, alleleFileName
     global synFileName, accFileName, accrefFileName
     global markerFile, refFile, synFile, accFile, accrefFile, mappingFile
-    global historyFile, offsetFile, alleleFile
+    global mrkcurrentFile, historyFile, offsetFile, alleleFile
     global markerKey, accKey, synKey, mgiKey, refAssocKey, alleleKey
 
     db.useOneConnection(1)
@@ -264,6 +263,7 @@ def init():
     synFileName = 'MGI_Synonym.bcp'
     accFileName = 'ACC_Accession.bcp'
     accrefFileName = 'ACC_AccessionReference.bcp'
+    mrkcurrentFileName = 'MRK_Current.bcp'
     historyFileName = 'MRK_History.bcp'
     offsetFileName = 'MRK_Offset.bcp'
     alleleFileName = 'ALL_Allele.bcp'
@@ -318,6 +318,11 @@ def init():
 	mappingFile = open(mappingFileName, 'w')
     except:
 	exit(1, 'Could not open file %s\n' % mappingFileName)
+	    
+    try:
+	mrkcurrentFile = open(mrkcurrentFileName, 'w')
+    except:
+	exit(1, 'Could not open file %s\n' % mrkcurrentFileName)
 	    
     try:
 	historyFile = open(historyFileName, 'w')
@@ -752,6 +757,9 @@ def processFile():
 	    % (markerKey, markerStatusKey, markerTypeKey, symbol, name, chromosome, \
 		createdByKey, createdByKey, cdate, cdate))
 
+	mrkcurrentFile.write('%d|%d|%s|%s\n' \
+	    % (markerKey, markerKey, cdate, cdate))
+
 	historyFile.write('%d|1|-1|%d|%d|1|%s|%s|%s|%s|%s|%s\n' \
 	    % (markerKey, markerKey, referenceKey, name, cdate,
 		createdByKey, createdByKey, cdate, cdate))
@@ -860,7 +868,10 @@ def processFile():
     accFile.close()
     accrefFile.close()
     mappingFile.close()
+    mrkcurrentFile.close()
     historyFile.close()
+    offsetFile.close()
+    alleleFile.close()
     db.commit()
 
 def bcpFiles():
@@ -894,12 +905,15 @@ def bcpFiles():
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'ACC_AccessionReference', currentDir, accrefFileName)
 
     bcp6 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
-        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_History', currentDir, historyFileName)
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_Current', currentDir, mrkcurrentFileName)
 
     bcp7 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
-        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_Offset', currentDir, offsetFileName)
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_History', currentDir, historyFileName)
 
     bcp8 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_Offset', currentDir, offsetFileName)
+
+    bcp9 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'ALL_Allele', currentDir, alleleFileName)
 
     diagFile.write('%s\n' % bcp1)
@@ -910,6 +924,7 @@ def bcpFiles():
     diagFile.write('%s\n' % bcp6)
     diagFile.write('%s\n' % bcp7)
     diagFile.write('%s\n' % bcp8)
+    diagFile.write('%s\n' % bcp9)
 
     os.system(bcp1)
     os.system(bcp2)
@@ -919,6 +934,7 @@ def bcpFiles():
     os.system(bcp6)
     os.system(bcp7)
     os.system(bcp8)
+    os.system(bcp9)
 
 #
 # Main
