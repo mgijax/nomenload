@@ -60,6 +60,7 @@
 #        8)  WARNING: Symbol is Withdrawn
 #        9)  WARNING: Sequence is associated with other Markers
 #	 10) WARNING: Duplicate Symbol in input file (1st instance will be loaded)
+#	 11) WARNING: Symbol already exists in Nomen
 #
 # Output:
 #
@@ -567,6 +568,18 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     	for r in results:
 		errorFile.write('WARNING: Sequence is associated with other Marker (row %d): %s ; %s\n\n' 
 			% (lineNum, acc, r['symbol']))
+
+    #
+    # symbols already exists in Nomen
+    #
+    results = db.sql('''select m.symbol
+    	from NOM_Marker m
+	where m.symbol = '%s'
+    	''' % (symbol))
+    if len(results) > 0:
+        errorFile.write('Symbol already exists (row %d): %s\n\n' 
+			% (lineNum, symbol))
+        error = 1
 
     #
     # invalid terms
