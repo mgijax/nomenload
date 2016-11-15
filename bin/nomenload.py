@@ -111,6 +111,8 @@ import accessionlib
 import loadlib
 
 #db.setTrace()
+db.setAutoTranslate(False)
+db.setAutoTranslateBE(False)
 
 #globals
 
