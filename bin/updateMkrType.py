@@ -12,9 +12,6 @@ import mgi_utils
 import accessionlib
 import loadlib
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 #
 # from configuration file
 #
