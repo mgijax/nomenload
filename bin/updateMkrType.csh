@@ -22,8 +22,7 @@ date >> ${NOMENLOG}
 #
 # Execute nomenload
 #
-echo "Updating markers in: ${NOMENDATAFILE} to Marker Type: ${NEWMKRTYPE} \
-	Updated By: ${MODIFIEDBY}" | tee -a ${NOMENLOG}
+echo "Updating markers in: ${NOMENDATAFILE} to Marker Type: ${NEWMKRTYPE}, Updated By: ${MODIFIEDBY}" | tee -a ${NOMENLOG}
 echo ${MGD_DBSERVER} | tee -a  ${NOMENLOG}
 echo ${MGD_DBNAME} | tee -a ${NOMENLOG}
 ${NOMENLOAD}/bin/updateMkrType.py >& ${NOMENLOG}

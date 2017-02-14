@@ -1,16 +1,12 @@
+TAG: nomenload-6-0-8-1
 TAG: nomenload-6-0-6-1
-DATE: 10/24/2016
+DATE: 10/24/2016, 02/14/2017
 STAFF: lec
 CHANGES:
 TR11083/Retire/Archive Nomenclature Table (NOM_Marker)
 added sanity check for NOM_Marker duplicates
-
-TAG: nomenload-6-0-5-1
-DATE: 08/30/2016
-STAFF: lec
-CHANGES:
-TR11083/Retire/Archive Nomenclature Table (NOM_Marker)
  _Marker_Status_key in (1,3) changed to "= 1"
+TR12069/lib_py_postgres cleanup
 
 TAG: nomenload-6-0-4-2
 DATE: 07/11/2016
