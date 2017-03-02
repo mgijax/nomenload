@@ -600,15 +600,14 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
 			% (lineNum, acc, r['symbol']))
 
     #
-    # symbols already exists in Nomen
+    # symbols already exists in MGD
     #
     results = db.sql('''select m.symbol
-    	from NOM_Marker m
-	where m.symbol = '%s'
+    	from MRK_Marker m
+	where m._Organism_key = 1 and m.symbol = '%s'
     	''' % (symbol))
     if len(results) > 0:
-        errorFile.write('Symbol already exists (row %d): %s\n\n' 
-			% (lineNum, symbol))
+        errorFile.write('Symbol already exists (row %d): %s\n\n' % (lineNum, symbol))
         error = 1
 
     #

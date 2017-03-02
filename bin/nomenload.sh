@@ -154,11 +154,11 @@ checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE} : ${NOMENMODE} :"
 # Execute mapping load IF:
 # a) nomenload was successfull
 #  and
-# b) nomen:'broadcast' or mapping:'preview'
+# b) nomen:'load' or mapping:'preview'
 #
 if [ ${STAT} == 0 ]
 then
-    if [[ ${NOMENMODE} == "broadcast" ]] || [[ ${MAPPINGMODE} == "preview" ]]
+    if [[ ${NOMENMODE} == "load" ]] || [[ ${MAPPINGMODE} == "preview" ]]
     then
         if [ ! -f ${MAPPINGDATAFILE} ] 
         then
