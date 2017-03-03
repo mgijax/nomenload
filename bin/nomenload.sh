@@ -150,29 +150,18 @@ STAT=$?
 checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE} : ${NOMENMODE} :"
 
 #
+# Execute mapping load if not "preview" and nomenload was successful
 #
-# Execute mapping load IF:
-# a) nomenload was successfull
-#  and
-# b) nomen:'load' or mapping:'preview'
-#
-if [ ${STAT} == 0 ]
+if [ ${NOMENMODE} != "preview" ]
 then
-    if [[ ${NOMENMODE} == "load" ]] || [[ ${MAPPINGMODE} == "preview" ]]
-    then
-        if [ ! -f ${MAPPINGDATAFILE} ] 
-        then
-            echo "SKIPPED: ${NOMENMODE} : Mapping File is empty" | tee -a ${LOG_FILE}
-            date >> ${LOG_FILE}
-            exit 1 
-        fi
-
-        ${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}
-        STAT=$?
-        checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE} : ${MAPPINGMODE} :"
-    fi
-else
-    echo "FATAL ERROR: nomenload exit status = ${STAT} : ${NOMENMODE}" | tee -a ${LOG_FILE}
+	if [[ ${STAT} == 0 ]]
+	then
+		${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}
+		STAT=$?
+		checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE} : ${MAPPINGMODE} :"
+	else
+		echo "FATAL ERROR: nomenload exit status = ${STAT} : ${NOMENMODE}" | tee -a ${LOG_FILE}
+	fi
 fi
 
 #

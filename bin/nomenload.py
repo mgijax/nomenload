@@ -4,7 +4,7 @@
 #
 # Purpose:
 #
-#	1) To load new gene records into Nomen structures:
+#	1) To load new gene records into Marker structures:
 #	    MRK_Marker
 #	    MGI_Reference_Assoc
 #	    MGI_Synonym
@@ -12,8 +12,6 @@
 #	    ACC_AccessionReference
 #
 # 	2) To create an input file for the mapping load
-#
-# 	3) To (optionally) broadcast them to MGI (MRK_Marker)
 #
 # Assumes:
 #
@@ -57,7 +55,6 @@
 #        8)  WARNING: Symbol is Withdrawn
 #        9)  WARNING: Sequence is associated with other Markers
 #	 10) WARNING: Duplicate Symbol in input file (1st instance will be loaded)
-#	 11) WARNING: Symbol already exists in Nomen
 #
 # Output:
 #
@@ -430,7 +427,7 @@ def verifyDuplicateMarker(symbol, lineNum):
 
     results = db.sql('''select _Marker_key from MRK_Marker 
 	where _Organism_key = 1 
-		and _Marker_Status_key = 2
+		and _Marker_Status_key in (2)
 		and symbol = '%s'
 	''' % (symbol), 'auto')
 
@@ -598,17 +595,6 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     	for r in results:
 		errorFile.write('WARNING: Sequence is associated with other Marker (row %d): %s ; %s\n\n' 
 			% (lineNum, acc, r['symbol']))
-
-    #
-    # symbols already exists in MGD
-    #
-    results = db.sql('''select m.symbol
-    	from MRK_Marker m
-	where m._Organism_key = 1 and m.symbol = '%s'
-    	''' % (symbol))
-    if len(results) > 0:
-        errorFile.write('Symbol already exists (row %d): %s\n\n' % (lineNum, symbol))
-        error = 1
 
     #
     # invalid terms
