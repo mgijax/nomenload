@@ -836,7 +836,7 @@ def processFile():
                name.find('ecotropic viral integration site') < 0 or \
                name.find('viral polymerase') < 0:
 
-		alleleFile.write('%d|%d|-2|847095|847131|847114|3982955|11025586|%s|%s||1|0|0||4268545|%s|%s|%s|%s|%s|%s\n' \
+		alleleFile.write('%d|%d|-2|847095|847131|847114|3982955|11025586|%s|%s|1|0|0||4268545|%s|%s|%s|%s|%s|%s\n' \
 	    		% (alleleKey, markerKey, symbol + '<+>', 'wild type', createdByKey, createdByKey, createdByKey, cdate, cdate, cdate))
 	        # MGI Accession ID for the allele
 
