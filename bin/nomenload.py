@@ -141,6 +141,8 @@ mrkcurrentFile = ''	# file descriptor
 historyFile = ''	# file descriptor
 offsetFile = ''		# file descriptor
 alleleFile = ''		# file descriptor
+noteFile = ''		# file descriptor
+notechunkFile = ''		# file descriptor
 
 markerFileName = ''	# file name
 refFileName = ''	# file name
@@ -151,13 +153,16 @@ mrkcurrentFileName = ''	# file name
 historyFileName = ''	# file name
 offsetFileName = ''	# file name
 alleleFileName = ''	# file name
+noteFileName = ''	# file name
+notechunkFileName = ''	# file name
 
 markerKey = 0		# MRK_Marker._Marker_key
 accKey = 0		# ACC_Accession._Accession_key
 synKey = 0		# MGI_Synonym._Synonym_key
 mgiKey = 0		# ACC_AccessionMax.maxNumericPart
 refAssocKey = 0		# MGI_Reference_Assoc._Assoc_key
-alleleKey = 0
+alleleKey = 0		# ALL_Allele._Allele_key
+noteKey = 0		# MGI_Note._Note_key
 
 statusDict = {}		# dictionary of marker statuses for quick lookup
 referenceDict = {}	# dictionary of references for quick lookup
@@ -245,11 +250,11 @@ def init():
 
     global inputFile, outputFile, diagFile, errorFile
     global errorFileName, diagFileName, markerFileName, refFileName
-    global mrkcurrentFileName, historyFileName, offsetFileName, alleleFileName
+    global mrkcurrentFileName, historyFileName, offsetFileName, alleleFileName, noteFileName, notechunkFileName
     global synFileName, accFileName, accrefFileName
     global markerFile, refFile, synFile, accFile, accrefFile, mappingFile
-    global mrkcurrentFile, historyFile, offsetFile, alleleFile
-    global markerKey, accKey, synKey, mgiKey, refAssocKey, alleleKey
+    global mrkcurrentFile, historyFile, offsetFile, alleleFile, noteFile, notechunkFile
+    global markerKey, accKey, synKey, mgiKey, refAssocKey, alleleKey, noteKey
 
     db.useOneConnection(1)
     db.set_sqlUser(user)
@@ -265,6 +270,8 @@ def init():
     historyFileName = 'MRK_History.bcp'
     offsetFileName = 'MRK_Offset.bcp'
     alleleFileName = 'ALL_Allele.bcp'
+    noteFileName = 'MGI_Note.bcp'
+    notechunkFileName = 'MGI_NoteChunk.bcp'
 
     try:
 	inputFile = open(inputFileName, 'r')
@@ -336,6 +343,16 @@ def init():
 	alleleFile = open(alleleFileName, 'w')
     except:
 	exit(1, 'Could not open file %s\n' % alleleFileName)
+	    
+    try:
+	noteFile = open(noteFileName, 'w')
+    except:
+	exit(1, 'Could not open file %s\n' % noteFileName)
+	    
+    try:
+	notechunkFile = open(notechunkFileName, 'w')
+    except:
+	exit(1, 'Could not open file %s\n' % notechunkFileName)
 	    
     # Log all SQL 
     db.set_sqlLogFunction(db.sqlLogAll)
@@ -624,7 +641,7 @@ def setPrimaryKeys():
     #
     '''
 
-    global markerKey, accKey, mgiKey, synKey, alleleKey
+    global markerKey, accKey, mgiKey, synKey, alleleKey, noteKey
     global refAssocKey
 
     results = db.sql('select max(_Marker_key) + 1 as maxKey from MRK_Marker', 'auto')
@@ -638,6 +655,12 @@ def setPrimaryKeys():
 	alleleKey = 1000
     else:
 	alleleKey = results[0]['maxKey']
+
+    results = db.sql('select max(_Note_key) + 1 as maxKey from MGI_Note', 'auto')
+    if results[0]['maxKey'] is None:
+	noteKey = 1000
+    else:
+	noteKey = results[0]['maxKey']
 
     results = db.sql('select max(_Assoc_key) + 1 as maxKey from MGI_Reference_Assoc', 'auto')
     if results[0]['maxKey'] is None:
@@ -696,7 +719,7 @@ def processFile():
     '''
 
     global bcpon
-    global markerKey, accKey, mgiKey, synKey, refAssocKey, createdByKey, alleleKey
+    global markerKey, accKey, mgiKey, synKey, refAssocKey, createdByKey, alleleKey, noteKey
     global markerType 
     global symbol 
     global name 
@@ -780,6 +803,14 @@ def processFile():
 	    % (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, markerKey, \
 		mgiTypeKey, createdByKey, createdByKey, cdate, cdate))
 
+	# Sequence Notes (1009)
+	if len(notes) > 0:
+	    notes = notes.replace('|', '\\|')
+	    noteFile.write('%d|%s|2|1009|%s|%s|%s|%s\n' \
+	    	% (noteKey, markerKey, createdByKey, createdByKey, cdate, cdate))
+	    notechunkFile.write('%d|1|%s|%s|%s|%s|%s\n' \
+	    	% (noteKey, notes, createdByKey, createdByKey, cdate, cdate))
+
 	# write record back out and include MGI Accession ID
 	if not DEBUG:
 		outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
@@ -798,6 +829,7 @@ def processFile():
 	accKey = accKey + 1
 	mgiKey = mgiKey + 1
 	refAssocKey = refAssocKey + 1
+	noteKey = noteKey + 1
 
 	# synonyms
 	for o in string.split(synonyms, '|'):
@@ -870,6 +902,8 @@ def processFile():
     historyFile.close()
     offsetFile.close()
     alleleFile.close()
+    noteFile.close()
+    notechunkFile.close()
     db.commit()
 
 def bcpFiles():
@@ -914,6 +948,12 @@ def bcpFiles():
     bcp9 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'ALL_Allele', currentDir, alleleFileName)
 
+    bcp10 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Note', currentDir, noteFileName)
+
+    bcp11 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_NoteChunk', currentDir, notechunkFileName)
+
     diagFile.write('%s\n' % bcp1)
     diagFile.write('%s\n' % bcp2)
     diagFile.write('%s\n' % bcp3)
@@ -923,6 +963,8 @@ def bcpFiles():
     diagFile.write('%s\n' % bcp7)
     diagFile.write('%s\n' % bcp8)
     diagFile.write('%s\n' % bcp9)
+    diagFile.write('%s\n' % bcp10)
+    diagFile.write('%s\n' % bcp11)
 
     os.system(bcp1)
     os.system(bcp2)
@@ -933,6 +975,8 @@ def bcpFiles():
     os.system(bcp7)
     os.system(bcp8)
     os.system(bcp9)
+    os.system(bcp10)
+    os.system(bcp11)
 
 #
 # Main

@@ -156,6 +156,7 @@ if [ ${NOMENMODE} != "preview" ]
 then
 	if [[ ${STAT} == 0 ]]
 	then
+		cd ${OUTPUTDIR}
 		${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}
 		STAT=$?
 		checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE} : ${MAPPINGMODE} :"
