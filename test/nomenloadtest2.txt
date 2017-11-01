@@ -1,8 +1,0 @@
-Gene	Gm44426	predicted gene 44426	UN	In Progress	J:109762			Good;Chrosome UN	yz
-Gene	Gm44427	predicted gene 44428	XY	In Progress	J:109762			Good;Chrosome XY	yz
-Gene	Gm44429	predicted gene 44429	MT	In Progress	J:109762			Good;Chrosome MT	yz
-Gene	Gm44433	predicted gene 44433	9	In Progress	J:109762		Sequence DB:BY670756	Good;One Sequence	yz
-Gene	Gm44434	predicted gene 44434	9	In Progress	J:109762		Sequence DB:AK135464|Sequence DB:AK138955	Good;Two GenBank Sequences	yz
-Gene	Gm44440	predicted gene 44440	6	In Progress	J:109762			Good	yz
-Other Genome Feature	Cpgi23114	CpG island 23114	Y	In Progress	J:109762	CGI23114		Good;Other Genome Feature	yz
-Other Genome Feature	Cpgi23117	CpG island 23117	Y	In Progress	J:109762	CGI23117|CGI23117Y		Good;Two Synonyms	yz
