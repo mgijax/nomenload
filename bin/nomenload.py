@@ -174,7 +174,7 @@ mgiTypeKey = 2                         # Nomenclature
 alleleTypeKey = 11
 mgiPrefix = "MGI:"
 refAssocTypeKey = 1018			# General Reference
-synTypeKey = 1008			# Other Synonym Type key
+synTypeKey = 1004			# Other Synonym Type key
 
 mappingCol3 = 'yes'			# update Mkr chr?
 mappingCol4 = ''			# band (leave blank)
