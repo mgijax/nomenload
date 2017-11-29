@@ -227,9 +227,7 @@ def exit(status, message = None):
         errorFile.write('\nEnd file\n')
 	diagFile.close()
 	errorFile.close()
-
-	if not DEBUG:
-		outputFile.close()
+	outputFile.close()
     except:
 	pass
 
@@ -278,11 +276,10 @@ def init():
     except:
 	exit(1, 'Could not open file %s\n' % inputFileName)
 	    
-    if not DEBUG:
-    	try:
-		outputFile = open(outputFileName, 'w')
-    	except:
-		exit(1, 'Could not open file %s\n' % outputFileName)
+    try:
+	outputFile = open(outputFileName, 'w')
+    except:
+	exit(1, 'Could not open file %s\n' % outputFileName)
 	    
     try:
 	diagFile = open(diagFileName, 'w')
@@ -812,13 +809,12 @@ def processFile():
 	    	% (noteKey, notes, createdByKey, createdByKey, cdate, cdate))
 
 	# write record back out and include MGI Accession ID
-	if not DEBUG:
-		outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-	    		% (markerType, symbol, name, chromosome, \
-			markerStatus, jnum, mgi_utils.prvalue(synonyms), \
-			mgi_utils.prvalue(otherAccIDs), \
-			mgi_utils.prvalue(notes), createdByKey, \
-			mgiPrefix + str(mgiKey)))
+	outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+	    	% (markerType, symbol, name, chromosome, \
+		markerStatus, jnum, mgi_utils.prvalue(synonyms), \
+		mgi_utils.prvalue(otherAccIDs), \
+		mgi_utils.prvalue(notes), createdByKey, \
+		mgiPrefix + str(mgiKey)))
 
 	# mapping record; write it out before incrementing the acc id keys
 
@@ -853,11 +849,11 @@ def processFile():
 	    accKey = accKey + 1
 
 	#
-	# if 'official'
+	# if 'official' and markerType = 'gene'
 	#
 
-	if markerStatus == 'official':
-   	    if symbol.find('mt-') < 0 or \
+	if markerStatus == 'official' and markerTypeKey == 1:
+	    if symbol.find('mt-') < 0 or \
    	       name.find('withdrawn, =') < 0 or  \
    	       name.find('dna segment') < 0 or \
    	       name.find('EST ') < 0 or \
@@ -889,7 +885,7 @@ def processFile():
     #
 
     if not DEBUG and bcpon:
-	db.sql('select * from ACC_setMax (%d)' % (lineNum), None)
+	db.sql('''update ACC_AccessionMax set maxnumericpart = %s where prefixpart = 'MGI:' ''' % (mgiKey), 'auto')
  	db.commit()
 
     markerFile.close()
@@ -977,6 +973,10 @@ def bcpFiles():
     os.system(bcp9)
     os.system(bcp10)
     os.system(bcp11)
+
+    results = db.sql('select * from ACC_AccessionMax', 'auto')
+    for r in results:
+    	print r
 
 #
 # Main
