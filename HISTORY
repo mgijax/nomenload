@@ -1,3 +1,9 @@
+TAG: nomenload-6-0-11-5
+DATE: 12/04/2017
+STAFF: lec
+CHANGES:
+removed ${OUTPUTDIR} from "rm -rf"
+
 TAG: nomenload-6-0-11-4
 TAG: nomenload-6-0-11-3
 TAG: nomenload-6-0-11-2

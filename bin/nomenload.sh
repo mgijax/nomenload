@@ -69,7 +69,7 @@ fi
 
 . ${CONFIG_FILE}
 
-rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} ${LOG_ERROR} ${OUTPUTDIR}/*
+rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} ${LOG_ERROR}
 
 #
 # use user-provied value or use config/default value
