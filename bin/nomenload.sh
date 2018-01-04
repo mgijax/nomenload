@@ -86,6 +86,12 @@ then
 fi
 
 #
+# Convert the input file into a QC-ready version that can be used to run
+# the sanity/QC reports against.
+#
+dos2unix ${INPUT_FILE_DEFAULT} ${INPUT_FILE_DEFAULT} 2>/dev/null
+
+#
 #  Source the DLA library functions.
 #
 
