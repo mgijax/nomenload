@@ -659,7 +659,7 @@ def setPrimaryKeys():
     else:
 	noteKey = results[0]['maxKey']
 
-    results = db.sql('select max(_Assoc_key) + 1 as maxKey from MGI_Reference_Assoc', 'auto')
+    results = db.sql(''' select nextval('mgi_reference_assoc_seq') as maxKey ''', 'auto')
     if results[0]['maxKey'] is None:
 	refAssocKey = 1000
     else:
@@ -977,6 +977,9 @@ def bcpFiles():
     results = db.sql('select * from ACC_AccessionMax', 'auto')
     for r in results:
     	print r
+
+    # update mgi_reference_assoc_seq auto-sequence
+    db.sql(''' select setval('mgi_reference_assoc_seq', (select max(_Assoc_key) + 1 from MGI_Reference_Assoc)) ''', None)
 
 #
 # Main
