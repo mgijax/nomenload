@@ -979,7 +979,7 @@ def bcpFiles():
     	print r
 
     # update mgi_reference_assoc_seq auto-sequence
-    db.sql(''' select setval('mgi_reference_assoc_seq', (select max(_Assoc_key) + 1 from MGI_Reference_Assoc)) ''', None)
+    db.sql(''' select setval('mgi_reference_assoc_seq', (select max(_Assoc_key) from MGI_Reference_Assoc)) ''', None)
 
 #
 # Main
