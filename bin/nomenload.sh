@@ -54,19 +54,11 @@
 #
 
 cd `dirname $0`
-LOG=`pwd`/nomenload.log
-rm -rf ${LOG}
 
 #
 # Verify and source the configuration file
 #
 CONFIG_FILE=$1
-if [ ! -r ${CONFIG_FILE} ]
-then
-   echo "Cannot read configuration file: ${CONFIG_FILE}" | tee -a ${LOG}
-    exit 1   
-fi
-
 . ${CONFIG_FILE}
 
 rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} ${LOG_ERROR}
