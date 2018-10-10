@@ -139,7 +139,6 @@ accrefFile = ''		# file descriptor
 mappingFile = ''	# file descriptor
 mrkcurrentFile = ''	# file descriptor
 historyFile = ''	# file descriptor
-offsetFile = ''		# file descriptor
 alleleFile = ''		# file descriptor
 noteFile = ''		# file descriptor
 notechunkFile = ''		# file descriptor
@@ -151,7 +150,6 @@ accFileName = ''	# file name
 accrefFileName = ''	# file name
 mrkcurrentFileName = ''	# file name
 historyFileName = ''	# file name
-offsetFileName = ''	# file name
 alleleFileName = ''	# file name
 noteFileName = ''	# file name
 notechunkFileName = ''	# file name
@@ -248,10 +246,10 @@ def init():
 
     global inputFile, outputFile, diagFile, errorFile
     global errorFileName, diagFileName, markerFileName, refFileName
-    global mrkcurrentFileName, historyFileName, offsetFileName, alleleFileName, noteFileName, notechunkFileName
+    global mrkcurrentFileName, historyFileName, alleleFileName, noteFileName, notechunkFileName
     global synFileName, accFileName, accrefFileName
     global markerFile, refFile, synFile, accFile, accrefFile, mappingFile
-    global mrkcurrentFile, historyFile, offsetFile, alleleFile, noteFile, notechunkFile
+    global mrkcurrentFile, historyFile, alleleFile, noteFile, notechunkFile
     global markerKey, accKey, synKey, mgiKey, refAssocKey, alleleKey, noteKey
 
     db.useOneConnection(1)
@@ -266,7 +264,6 @@ def init():
     accrefFileName = 'ACC_AccessionReference.bcp'
     mrkcurrentFileName = 'MRK_Current.bcp'
     historyFileName = 'MRK_History.bcp'
-    offsetFileName = 'MRK_Offset.bcp'
     alleleFileName = 'ALL_Allele.bcp'
     noteFileName = 'MGI_Note.bcp'
     notechunkFileName = 'MGI_NoteChunk.bcp'
@@ -330,11 +327,6 @@ def init():
 	historyFile = open(historyFileName, 'w')
     except:
 	exit(1, 'Could not open file %s\n' % historyFileName)
-	    
-    try:
-	offsetFile = open(offsetFileName, 'w')
-    except:
-	exit(1, 'Could not open file %s\n' % offsetFileName)
 	    
     try:
 	alleleFile = open(alleleFileName, 'w')
@@ -770,9 +762,14 @@ def processFile():
 
 	    continue
 
+	if chromosome == 'UN':
+		cmOffset = -999
+	else:
+		cmOffset = -1
+
 	# if no errors, process the marker
-	markerFile.write('%d|1|%d|%d|%s|%s|%s||%s|%s|%s|%s\n' \
-	    % (markerKey, markerStatusKey, markerTypeKey, symbol, name, chromosome, \
+	markerFile.write('%d|1|%d|%d|%s|%s|%s||%s|%s|%s|%s|%s\n' \
+	    % (markerKey, markerStatusKey, markerTypeKey, symbol, name, chromosome, cmOffset, \
 		createdByKey, createdByKey, cdate, cdate))
 
 	mrkcurrentFile.write('%d|%d|%s|%s\n' \
@@ -781,13 +778,6 @@ def processFile():
 	historyFile.write('%d|1|-1|%d|%d|1|%s|%s|%s|%s|%s|%s\n' \
 	    % (markerKey, markerKey, referenceKey, name, cdate,
 		createdByKey, createdByKey, cdate, cdate))
-
-	if chromosome == 'UN':
-		v_offset = -999
-	else:
-		v_offset = -1
-	offsetFile.write('%d|0|%d|%s|%s\n' \
-	    % (markerKey, v_offset, cdate, cdate))
 
 	# maybe we don't need this
 	refFile.write('%d|%d|%d|%d|%d|%s|%s|%s|%s\n' \
@@ -896,7 +886,6 @@ def processFile():
     mappingFile.close()
     mrkcurrentFile.close()
     historyFile.close()
-    offsetFile.close()
     alleleFile.close()
     noteFile.close()
     notechunkFile.close()
@@ -939,15 +928,12 @@ def bcpFiles():
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_History', currentDir, historyFileName)
 
     bcp8 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
-        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_Offset', currentDir, offsetFileName)
-
-    bcp9 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'ALL_Allele', currentDir, alleleFileName)
 
-    bcp10 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
+    bcp9 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Note', currentDir, noteFileName)
 
-    bcp11 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
+    bcp10 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_NoteChunk', currentDir, notechunkFileName)
 
     diagFile.write('%s\n' % bcp1)
@@ -960,7 +946,6 @@ def bcpFiles():
     diagFile.write('%s\n' % bcp8)
     diagFile.write('%s\n' % bcp9)
     diagFile.write('%s\n' % bcp10)
-    diagFile.write('%s\n' % bcp11)
 
     os.system(bcp1)
     os.system(bcp2)
@@ -972,7 +957,6 @@ def bcpFiles():
     os.system(bcp8)
     os.system(bcp9)
     os.system(bcp10)
-    os.system(bcp11)
 
     results = db.sql('select * from ACC_AccessionMax', 'auto')
     for r in results:
