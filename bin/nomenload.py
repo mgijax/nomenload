@@ -962,8 +962,13 @@ def bcpFiles():
     for r in results:
     	print r
 
+    # update mrk_marker_seq auto-sequence
+    db.sql(''' select setval('mrk_marker_seq', (select max(_Marker_key) from MRK_Marker)) ''', None)
+    db.commit()
+
     # update mgi_reference_assoc_seq auto-sequence
     db.sql(''' select setval('mgi_reference_assoc_seq', (select max(_Assoc_key) from MGI_Reference_Assoc)) ''', None)
+    db.commit()
 
 #
 # Main
@@ -991,3 +996,4 @@ if not DEBUG and bcpon:
     exit(0)
 else:
     exit(1)
+

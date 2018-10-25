@@ -1,3 +1,9 @@
+TAG: nomenload-6-0-13-?
+DATE: 10/25/2018
+STAFF: lec 
+CHANGES: TR12963/teleuse-to-mgd_java_api
+add autosequence logic to nomenload.py
+
 TAG: nomenload-6-0-12-3
 DATE: 08/01/2018
 STAFF: lec 
