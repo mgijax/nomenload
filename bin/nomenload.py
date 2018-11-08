@@ -633,7 +633,7 @@ def setPrimaryKeys():
     global markerKey, accKey, mgiKey, synKey, alleleKey, noteKey
     global refAssocKey
 
-    results = db.sql('''' select nextval('mrk_marker_seq') as maxKey ''', 'auto')
+    results = db.sql(''' select nextval('mrk_marker_seq') as maxKey ''', 'auto')
     markerKey = results[0]['maxKey']
 
     results = db.sql('select max(_Allele_key) + 1 as maxKey from ALL_Allele', 'auto')
@@ -648,7 +648,7 @@ def setPrimaryKeys():
     results = db.sql('select max(_Accession_key) + 1 as maxKey from ACC_Accession', 'auto')
     accKey = results[0]['maxKey']
 
-    results = db.sql('''' select nextval('mgi_synonym_seq') as maxKey ''', 'auto')
+    results = db.sql(''' select nextval('mgi_synonym_seq') as maxKey ''', 'auto')
     synKey = results[0]['maxKey']
 
     results = db.sql('select maxNumericPart + 1 as maxKey from ACC_AccessionMax where prefixPart = \'%s\'' % (mgiPrefix), 'auto')
