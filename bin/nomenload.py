@@ -633,41 +633,23 @@ def setPrimaryKeys():
     global markerKey, accKey, mgiKey, synKey, alleleKey, noteKey
     global refAssocKey
 
-    results = db.sql('select max(_Marker_key) + 1 as maxKey from MRK_Marker', 'auto')
-    if results[0]['maxKey'] is None:
-	markerKey = 1000
-    else:
-	markerKey = results[0]['maxKey']
+    results = db.sql('''' select nextval('mrk_marker_seg') as maxKey ''', 'auto')
+    markerKey = results[0]['maxKey']
 
     results = db.sql('select max(_Allele_key) + 1 as maxKey from ALL_Allele', 'auto')
-    if results[0]['maxKey'] is None:
-	alleleKey = 1000
-    else:
-	alleleKey = results[0]['maxKey']
+    alleleKey = results[0]['maxKey']
 
     results = db.sql('select max(_Note_key) + 1 as maxKey from MGI_Note', 'auto')
-    if results[0]['maxKey'] is None:
-	noteKey = 1000
-    else:
-	noteKey = results[0]['maxKey']
+    noteKey = results[0]['maxKey']
 
     results = db.sql(''' select nextval('mgi_reference_assoc_seq') as maxKey ''', 'auto')
-    if results[0]['maxKey'] is None:
-	refAssocKey = 1000
-    else:
-	refAssocKey = results[0]['maxKey']
+    refAssocKey = results[0]['maxKey']
 
     results = db.sql('select max(_Accession_key) + 1 as maxKey from ACC_Accession', 'auto')
-    if results[0]['maxKey'] is None:
-	accKey = 1000
-    else:
-	accKey = results[0]['maxKey']
+    accKey = results[0]['maxKey']
 
-    results = db.sql('select max(_Synonym_key) + 1 as maxKey from MGI_Synonym', 'auto')
-    if results[0]['maxKey'] is None:
-	synKey = 1000
-    else:
-	synKey = results[0]['maxKey']
+    results = db.sql('''' select nextval('mgi_synonym_seg') as maxKey ''', 'auto')
+    synKey = results[0]['maxKey']
 
     results = db.sql('select maxNumericPart + 1 as maxKey from ACC_AccessionMax where prefixPart = \'%s\'' % (mgiPrefix), 'auto')
     mgiKey = results[0]['maxKey']
@@ -968,6 +950,10 @@ def bcpFiles():
 
     # update mgi_reference_assoc_seq auto-sequence
     db.sql(''' select setval('mgi_reference_assoc_seq', (select max(_Assoc_key) from MGI_Reference_Assoc)) ''', None)
+    db.commit()
+
+    # update mgi_synonym_seq auto-sequence
+    db.sql(''' select setval('mgi_synonym_seq', (select max(_Synonym_key) from MGI_Synonym)) ''', None)
     db.commit()
 
 #
