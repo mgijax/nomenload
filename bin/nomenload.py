@@ -161,6 +161,7 @@ mgiKey = 0		# ACC_AccessionMax.maxNumericPart
 refAssocKey = 0		# MGI_Reference_Assoc._Assoc_key
 alleleKey = 0		# ALL_Allele._Allele_key
 noteKey = 0		# MGI_Note._Note_key
+historyKey = 0
 
 statusDict = {}		# dictionary of marker statuses for quick lookup
 referenceDict = {}	# dictionary of references for quick lookup
@@ -250,7 +251,7 @@ def init():
     global synFileName, accFileName, accrefFileName
     global markerFile, refFile, synFile, accFile, accrefFile, mappingFile
     global mrkcurrentFile, historyFile, alleleFile, noteFile, notechunkFile
-    global markerKey, accKey, synKey, mgiKey, refAssocKey, alleleKey, noteKey
+    global markerKey, accKey, synKey, mgiKey, refAssocKey, alleleKey, noteKey, historyKey
 
     db.useOneConnection(1)
     db.set_sqlUser(user)
@@ -630,11 +631,14 @@ def setPrimaryKeys():
     #
     '''
 
-    global markerKey, accKey, mgiKey, synKey, alleleKey, noteKey
+    global markerKey, accKey, mgiKey, synKey, alleleKey, noteKey, historyKey
     global refAssocKey
 
     results = db.sql(''' select nextval('mrk_marker_seq') as maxKey ''', 'auto')
     markerKey = results[0]['maxKey']
+
+    results = db.sql(''' select nextval('mrk_history_seq') as maxKey ''', 'auto')
+    historyKey = results[0]['maxKey']
 
     results = db.sql('select max(_Allele_key) + 1 as maxKey from ALL_Allele', 'auto')
     alleleKey = results[0]['maxKey']
@@ -690,7 +694,7 @@ def processFile():
     '''
 
     global bcpon
-    global markerKey, accKey, mgiKey, synKey, refAssocKey, createdByKey, alleleKey, noteKey
+    global markerKey, accKey, mgiKey, synKey, refAssocKey, createdByKey, alleleKey, noteKey, historyKey
     global markerType 
     global symbol 
     global name 
@@ -757,8 +761,8 @@ def processFile():
 	mrkcurrentFile.write('%d|%d|%s|%s\n' \
 	    % (markerKey, markerKey, cdate, cdate))
 
-	historyFile.write('%d|1|-1|%d|%d|1|%s|%s|%s|%s|%s|%s\n' \
-	    % (markerKey, markerKey, referenceKey, name, cdate,
+	historyFile.write('%d|%d|1|-1|%d|%d|1|%s|%s|%s|%s|%s|%s\n' \
+	    % (historyKey, markerKey, markerKey, referenceKey, name, cdate,
 		createdByKey, createdByKey, cdate, cdate))
 
 	# maybe we don't need this
@@ -849,6 +853,7 @@ def processFile():
 	        mgiKey = mgiKey + 1
 
 	markerKey = markerKey + 1
+	historyKey = historyKey + 1
 
     # end of "for line in inputFile.readlines():"
 
@@ -946,6 +951,10 @@ def bcpFiles():
 
     # update mrk_marker_seq auto-sequence
     db.sql(''' select setval('mrk_marker_seq', (select max(_Marker_key) from MRK_Marker)) ''', None)
+    db.commit()
+
+    # update mrk_history_seq auto-sequence
+    db.sql(''' select setval('mrk_history_seq', (select max(_Assoc_key) from MRK_History)) ''', None)
     db.commit()
 
     # update mgi_reference_assoc_seq auto-sequence
