@@ -25,7 +25,7 @@ date >> ${NOMENLOG}
 echo "Updating markers in: ${NOMENDATAFILE} to Marker Type: ${NEWMKRTYPE}, Updated By: ${MODIFIEDBY}" | tee -a ${NOMENLOG}
 echo ${MGD_DBSERVER} | tee -a  ${NOMENLOG}
 echo ${MGD_DBNAME} | tee -a ${NOMENLOG}
-${NOMENLOAD}/bin/updateMkrType.py >& ${NOMENLOG}
+${PYTHON} ${NOMENLOAD}/bin/updateMkrType.py >& ${NOMENLOG}
 set returnStatus=$status
 if ( $returnStatus ) then
     echo "Marker Type Update ${CONFIGFILE}: FAILED" | tee -a ${NOMENLOG}

@@ -143,7 +143,7 @@ echo "" | tee -a ${LOG_FILE}
 date | tee -a ${LOG_FILE}
 echo "Running nomenload : ${NOMENMODE}" | tee -a ${LOG_FILE}
 cd ${OUTPUTDIR}
-${NOMENLOAD}/bin/nomenload.py | tee -a ${LOG_DIAG}
+${PYTHON} ${NOMENLOAD}/bin/nomenload.py | tee -a ${LOG_DIAG}
 STAT=$?
 checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE} : ${NOMENMODE} :"
 

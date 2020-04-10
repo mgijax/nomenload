@@ -1,5 +1,3 @@
-#!/usr/local/bin/python
-
 '''
 #
 # Purpose:
@@ -102,7 +100,6 @@
 
 import sys
 import os
-import string
 import db
 import mgi_utils
 import accessionlib
@@ -216,19 +213,19 @@ def exit(status, message = None):
     db.useOneConnection()
 
     if message is not None:
-	sys.stderr.write('\n' + str(message) + '\n')
+        sys.stderr.write('\n' + str(message) + '\n')
 
     try:
-	inputFile.close()
-	diagFile.flush()
-	errorFile.flush()
-	diagFile.write('\n\nEnd Date/Time: %s\n' % (mgi_utils.date()))
+        inputFile.close()
+        diagFile.flush()
+        errorFile.flush()
+        diagFile.write('\n\nEnd Date/Time: %s\n' % (mgi_utils.date()))
         errorFile.write('\nEnd file\n')
-	diagFile.close()
-	errorFile.close()
-	outputFile.close()
+        diagFile.close()
+        errorFile.close()
+        outputFile.close()
     except:
-	pass
+        pass
 
     sys.exit(status)
  
@@ -270,80 +267,80 @@ def init():
     notechunkFileName = 'MGI_NoteChunk.bcp'
 
     try:
-	inputFile = open(inputFileName, 'r')
+        inputFile = open(inputFileName, 'r')
     except:
-	exit(1, 'Could not open file %s\n' % inputFileName)
-	    
+        exit(1, 'Could not open file %s\n' % inputFileName)
+            
     try:
-	outputFile = open(outputFileName, 'w')
+        outputFile = open(outputFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % outputFileName)
-	    
+        exit(1, 'Could not open file %s\n' % outputFileName)
+            
     try:
-	diagFile = open(diagFileName, 'w')
+        diagFile = open(diagFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % diagFileName)
-	    
+        exit(1, 'Could not open file %s\n' % diagFileName)
+            
     try:
-	errorFile = open(errorFileName, 'w')
+        errorFile = open(errorFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % errorFileName)
-	    
+        exit(1, 'Could not open file %s\n' % errorFileName)
+            
     try:
-	markerFile = open(markerFileName, 'w')
+        markerFile = open(markerFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % markerFileName)
-	    
+        exit(1, 'Could not open file %s\n' % markerFileName)
+            
     try:
-	refFile = open(refFileName, 'w')
+        refFile = open(refFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % refFileName)
-	    
+        exit(1, 'Could not open file %s\n' % refFileName)
+            
     try:
-	synFile = open(synFileName, 'w')
+        synFile = open(synFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % synFileName)
-	    
+        exit(1, 'Could not open file %s\n' % synFileName)
+            
     try:
-	accFile = open(accFileName, 'w')
+        accFile = open(accFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % accFileName)
-	    
+        exit(1, 'Could not open file %s\n' % accFileName)
+            
     try:
-	accrefFile = open(accrefFileName, 'w')
+        accrefFile = open(accrefFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % accrefFileName)
-	    
+        exit(1, 'Could not open file %s\n' % accrefFileName)
+            
     try:
-	mappingFile = open(mappingFileName, 'w')
+        mappingFile = open(mappingFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % mappingFileName)
-	    
+        exit(1, 'Could not open file %s\n' % mappingFileName)
+            
     try:
-	mrkcurrentFile = open(mrkcurrentFileName, 'w')
+        mrkcurrentFile = open(mrkcurrentFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % mrkcurrentFileName)
-	    
+        exit(1, 'Could not open file %s\n' % mrkcurrentFileName)
+            
     try:
-	historyFile = open(historyFileName, 'w')
+        historyFile = open(historyFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % historyFileName)
-	    
+        exit(1, 'Could not open file %s\n' % historyFileName)
+            
     try:
-	alleleFile = open(alleleFileName, 'w')
+        alleleFile = open(alleleFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % alleleFileName)
-	    
+        exit(1, 'Could not open file %s\n' % alleleFileName)
+            
     try:
-	noteFile = open(noteFileName, 'w')
+        noteFile = open(noteFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % noteFileName)
-	    
+        exit(1, 'Could not open file %s\n' % noteFileName)
+            
     try:
-	notechunkFile = open(notechunkFileName, 'w')
+        notechunkFile = open(notechunkFileName, 'w')
     except:
-	exit(1, 'Could not open file %s\n' % notechunkFileName)
-	    
+        exit(1, 'Could not open file %s\n' % notechunkFileName)
+            
     # Log all SQL 
     db.set_sqlLogFunction(db.sqlLogAll)
 
@@ -375,10 +372,10 @@ def verifyMode():
     global DEBUG, bcpon
 
     if mode == 'preview':
-	DEBUG = 1
-	bcpon = 0
+        DEBUG = 1
+        bcpon = 0
     elif mode not in ['load']:
-	exit(1, 'Invalid Processing Mode:  %s\n' % (mode))
+        exit(1, 'Invalid Processing Mode:  %s\n' % (mode))
 
 def verifyMarkerStatus(markerStatus, lineNum):
     '''
@@ -399,11 +396,11 @@ def verifyMarkerStatus(markerStatus, lineNum):
 
     markerStatusKey = 0
 
-    if statusDict.has_key(markerStatus):
-	markerStatusKey = statusDict[markerStatus]
+    if markerStatus in statusDict:
+        markerStatusKey = statusDict[markerStatus]
     else:
-	errorFile.write('Invalid Marker Status (row %d): %s\n' % (lineNum, markerStatus))
-	markerStatusKey = 0
+        errorFile.write('Invalid Marker Status (row %d): %s\n' % (lineNum, markerStatus))
+        markerStatusKey = 0
 
     return(markerStatusKey)
 
@@ -433,30 +430,30 @@ def verifyDuplicateMarker(symbol, lineNum):
     #
 
     results = db.sql('''select _Marker_key from MRK_Marker 
-	where _Organism_key = 1 
-		and _Marker_Status_key in (2)
-		and symbol = '%s'
-	''' % (symbol), 'auto')
+        where _Organism_key = 1 
+                and _Marker_Status_key in (2)
+                and symbol = '%s'
+        ''' % (symbol), 'auto')
 
     if len(results) > 0:
-	errorFile.write('WARNING: Symbol is Withdrawn (row %d): %s\n\n' % (lineNum, symbol))
+        errorFile.write('WARNING: Symbol is Withdrawn (row %d): %s\n\n' % (lineNum, symbol))
 
     #
     # official/reserved
     #
 
     results = db.sql('''
-	select _Marker_key from MRK_Marker 
-	where _Organism_key = 1 
-		and _Marker_Status_key in (1,3)
-		and symbol = '%s'
-	''' % (symbol), 'auto')
+        select _Marker_key from MRK_Marker 
+        where _Organism_key = 1 
+                and _Marker_Status_key in (1,3)
+                and symbol = '%s'
+        ''' % (symbol), 'auto')
 
     if len(results) == 0:
-	return 0
+        return 0
     else:
-	errorFile.write('Symbol is Official/Reserved (row %d): %s\n' % (lineNum, symbol))
-	return 1
+        errorFile.write('Symbol is Official/Reserved (row %d): %s\n' % (lineNum, symbol))
+        return 1
 
 def verifyChromosome(chromosome, lineNum):
     '''
@@ -476,13 +473,13 @@ def verifyChromosome(chromosome, lineNum):
     '''
 
     results = db.sql('''select * from MRK_Chromosome where _Organism_key = 1 and chromosome = '%s'
-	''' % (chromosome), 'auto')
+        ''' % (chromosome), 'auto')
 
     if len(results) > 0:
-	return 1
+        return 1
     else:
-	errorFile.write('Invalid Chromosome (row %d): %s\n' % (lineNum, chromosome))
-	return 0
+        errorFile.write('Invalid Chromosome (row %d): %s\n' % (lineNum, chromosome))
+        return 0
 
 def verifyLogicalDB(logicalDB, lineNum):
     '''
@@ -503,16 +500,16 @@ def verifyLogicalDB(logicalDB, lineNum):
 
     logicalDBKey = 0
 
-    if logicalDBDict.has_key(logicalDB):
-	logicalDBKey = logicalDBDict[logicalDB]
+    if logicalDB in logicalDBDict:
+        logicalDBKey = logicalDBDict[logicalDB]
     else:
-	errorFile.write('Invalid Logical DB (row %d): %s\n' % (lineNum, logicalDB))
-	logicalDBKey = 0
+        errorFile.write('Invalid Logical DB (row %d): %s\n' % (lineNum, logicalDB))
+        logicalDBKey = 0
 
     return(logicalDBKey)
 
 def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms, 
-	otherAccIDs, createdBy, lineNum):
+        otherAccIDs, createdBy, lineNum):
     '''
     #
     # requires:
@@ -548,22 +545,22 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     # duplicate rows in input file
     #
     if symbol in markerLookup:
-	errorFile.write('WARNING: Duplicate Symbol in input file (row %d): %s\n' % (lineNum, symbol))
-	error = 1
+        errorFile.write('WARNING: Duplicate Symbol in input file (row %d): %s\n' % (lineNum, symbol))
+        error = 1
     else:
-    	markerLookup.append(symbol)
+        markerLookup.append(symbol)
 
     #
     # Duplciate Reference
     #
     if len(referenceLookup) > 0 and referenceKey not in referenceLookup:
-	errorFile.write('More than 1 Reference in input file (row %d): %s\n' % (lineNum, symbol))
-	error = 1
+        errorFile.write('More than 1 Reference in input file (row %d): %s\n' % (lineNum, symbol))
+        error = 1
     else:
-    	referenceLookup.append(referenceKey)
+        referenceLookup.append(referenceKey)
 
     #if len(synonyms) == 0:
-	#errorFile.write('WARNING: Missing Synonyms (row %d): %s\n' % (lineNum, symbol))
+        #errorFile.write('WARNING: Missing Synonyms (row %d): %s\n' % (lineNum, symbol))
 
     # 
     # Sequences
@@ -573,35 +570,35 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     #if len(otherAccIDs) == 0:
         #errorFile.write('WARNING: Missing Sequences (row %d): %s\n' % (lineNum, symbol))
 
-    for otherAcc in string.split(otherAccIDs, '|'):
-    	if len(otherAcc) > 0:
-	    try:
-	    	[logicalDB, acc] = string.split(otherAcc, ':')
-	    	logicalDBKey = verifyLogicalDB(logicalDB, lineNum)
-	    	if logicalDBKey > 0:
-	        	otherAccDict[acc] = logicalDBKey
-	    	else:
-	        	error = 1
-	    except:
-	        errorFile.write('Sequences without Logical DB (row %d): %s\n' % (lineNum, otherAcc))
-	        error = 1
+    for otherAcc in str.split(otherAccIDs, '|'):
+        if len(otherAcc) > 0:
+            try:
+                [logicalDB, acc] = str.split(otherAcc, ':')
+                logicalDBKey = verifyLogicalDB(logicalDB, lineNum)
+                if logicalDBKey > 0:
+                        otherAccDict[acc] = logicalDBKey
+                else:
+                        error = 1
+            except:
+                errorFile.write('Sequences without Logical DB (row %d): %s\n' % (lineNum, otherAcc))
+                error = 1
 
     #
     # check if sequences are associated with other markers.
     # if so, send warning but allow load to continue
     #
-    for acc in otherAccDict.keys():
-    	results = db.sql('''select m.symbol 
-		from MRK_Marker m, ACC_Accession a
-		where m._Organism_key = 1 
-			and m._Marker_key = a._Object_key
-			and a.accID = '%s'
-			and a._MGIType_key = 2
-		''' % (acc), 'auto')
+    for acc in list(otherAccDict.keys()):
+        results = db.sql('''select m.symbol 
+                from MRK_Marker m, ACC_Accession a
+                where m._Organism_key = 1 
+                        and m._Marker_key = a._Object_key
+                        and a.accID = '%s'
+                        and a._MGIType_key = 2
+                ''' % (acc), 'auto')
 
-    	for r in results:
-		errorFile.write('WARNING: Sequence is associated with other Marker (row %d): %s ; %s\n\n' 
-			% (lineNum, acc, r['symbol']))
+        for r in results:
+                errorFile.write('WARNING: Sequence is associated with other Marker (row %d): %s ; %s\n\n' 
+                        % (lineNum, acc, r['symbol']))
 
     #
     # invalid terms
@@ -615,7 +612,7 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
        createdByKey == 0:
 
         # set error flag to true
-	error = 1
+        error = 1
 
     return (error)
 
@@ -674,11 +671,11 @@ def loadDictionaries():
 
     results = db.sql('select _Marker_Status_key, status from MRK_Status', 'auto')
     for r in results:
-	statusDict[r['status']] = r['_Marker_Status_key']
+        statusDict[r['status']] = r['_Marker_Status_key']
 
     results = db.sql('select _LogicalDB_key, name from ACC_LogicalDB', 'auto')
     for r in results:
-	logicalDBDict[r['name']] = r['_LogicalDB_key']
+        logicalDBDict[r['name']] = r['_LogicalDB_key']
 
 def processFile():
     '''
@@ -714,146 +711,146 @@ def processFile():
 
     for line in inputFile.readlines():
 
-	lineNum = lineNum + 1
-	otherAccDict = {}
+        lineNum = lineNum + 1
+        otherAccDict = {}
 
-	# Split the line into tokens
-	tokens = string.split(line[:-1], '\t')
+        # Split the line into tokens
+        tokens = str.split(line[:-1], '\t')
 
-	try:
-	    markerType = tokens[0]
-	    symbol = tokens[1]
-	    name = tokens[2]
-	    chromosome = tokens[3]
-	    markerStatus = tokens[4]
-	    jnum = tokens[5]
-	    synonyms = tokens[6]
-	    otherAccIDs = tokens[7]
-	    notes = tokens[8]
-	    createdBy = tokens[9]
-	except:
-	    errorFile.write('Invalid Line (missing column(s)) (row %d): %s\n' % (lineNum, line))
-	    continue
+        try:
+            markerType = tokens[0]
+            symbol = tokens[1]
+            name = tokens[2]
+            chromosome = tokens[3]
+            markerStatus = tokens[4]
+            jnum = tokens[5]
+            synonyms = tokens[6]
+            otherAccIDs = tokens[7]
+            notes = tokens[8]
+            createdBy = tokens[9]
+        except:
+            errorFile.write('Invalid Line (missing column(s)) (row %d): %s\n' % (lineNum, line))
+            continue
 
-	#
-	# sanity checks
-	#
+        #
+        # sanity checks
+        #
 
         if sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
-	    	otherAccIDs, createdBy, lineNum) == 1:
-	    errorFile.write(str(tokens) + '\n\n')
+                otherAccIDs, createdBy, lineNum) == 1:
+            errorFile.write(str(tokens) + '\n\n')
 
-	    # uncomment, if the bcp should not run if at least 1 error is found
-	    #bcpon = 0
+            # uncomment, if the bcp should not run if at least 1 error is found
+            #bcpon = 0
 
-	    continue
+            continue
 
-	if chromosome == 'UN':
-		cmOffset = -999
-	else:
-		cmOffset = -1
+        if chromosome == 'UN':
+                cmOffset = -999
+        else:
+                cmOffset = -1
 
-	# if no errors, process the marker
-	markerFile.write('%d|1|%d|%d|%s|%s|%s||%s|%s|%s|%s|%s\n' \
-	    % (markerKey, markerStatusKey, markerTypeKey, symbol, name, chromosome, cmOffset, \
-		createdByKey, createdByKey, cdate, cdate))
+        # if no errors, process the marker
+        markerFile.write('%d|1|%d|%d|%s|%s|%s||%s|%s|%s|%s|%s\n' \
+            % (markerKey, markerStatusKey, markerTypeKey, symbol, name, chromosome, cmOffset, \
+                createdByKey, createdByKey, cdate, cdate))
 
-	mrkcurrentFile.write('%d|%d|%s|%s\n' \
-	    % (markerKey, markerKey, cdate, cdate))
+        mrkcurrentFile.write('%d|%d|%s|%s\n' \
+            % (markerKey, markerKey, cdate, cdate))
 
-	historyFile.write('%d|%d|1|-1|%d|%d|1|%s|%s|%s|%s|%s|%s\n' \
-	    % (historyKey, markerKey, markerKey, referenceKey, name, cdate,
-		createdByKey, createdByKey, cdate, cdate))
+        historyFile.write('%d|%d|1|-1|%d|%d|1|%s|%s|%s|%s|%s|%s\n' \
+            % (historyKey, markerKey, markerKey, referenceKey, name, cdate,
+                createdByKey, createdByKey, cdate, cdate))
 
-	# maybe we don't need this
-	refFile.write('%d|%d|%d|%d|%d|%s|%s|%s|%s\n' \
-	    % (refAssocKey, referenceKey, markerKey, mgiTypeKey, \
-		refAssocTypeKey, createdByKey, createdByKey, cdate, cdate))
+        # maybe we don't need this
+        refFile.write('%d|%d|%d|%d|%d|%s|%s|%s|%s\n' \
+            % (refAssocKey, referenceKey, markerKey, mgiTypeKey, \
+                refAssocTypeKey, createdByKey, createdByKey, cdate, cdate))
 
-	# MGI Accession ID for the marker
+        # MGI Accession ID for the marker
 
-	accFile.write('%d|%s%d|%s|%s|1|%d|%d|0|1|%s|%s|%s|%s\n' \
-	    % (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, markerKey, \
-		mgiTypeKey, createdByKey, createdByKey, cdate, cdate))
+        accFile.write('%d|%s%d|%s|%s|1|%d|%d|0|1|%s|%s|%s|%s\n' \
+            % (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, markerKey, \
+                mgiTypeKey, createdByKey, createdByKey, cdate, cdate))
 
-	# Sequence Notes (1009)
-	if len(notes) > 0:
-	    notes = notes.replace('|', '\\|')
-	    noteFile.write('%d|%s|2|1009|%s|%s|%s|%s\n' \
-	    	% (noteKey, markerKey, createdByKey, createdByKey, cdate, cdate))
-	    notechunkFile.write('%d|1|%s|%s|%s|%s|%s\n' \
-	    	% (noteKey, notes, createdByKey, createdByKey, cdate, cdate))
+        # Sequence Notes (1009)
+        if len(notes) > 0:
+            notes = notes.replace('|', '\\|')
+            noteFile.write('%d|%s|2|1009|%s|%s|%s|%s\n' \
+                % (noteKey, markerKey, createdByKey, createdByKey, cdate, cdate))
+            notechunkFile.write('%d|1|%s|%s|%s|%s|%s\n' \
+                % (noteKey, notes, createdByKey, createdByKey, cdate, cdate))
 
-	# write record back out and include MGI Accession ID
-	outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-	    	% (markerType, symbol, name, chromosome, \
-		markerStatus, jnum, mgi_utils.prvalue(synonyms), \
-		mgi_utils.prvalue(otherAccIDs), \
-		mgi_utils.prvalue(notes), createdByKey, \
-		mgiPrefix + str(mgiKey)))
+        # write record back out and include MGI Accession ID
+        outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+                % (markerType, symbol, name, chromosome, \
+                markerStatus, jnum, mgi_utils.prvalue(synonyms), \
+                mgi_utils.prvalue(otherAccIDs), \
+                mgi_utils.prvalue(notes), createdByKey, \
+                mgiPrefix + str(mgiKey)))
 
-	# mapping record; write it out before incrementing the acc id keys
+        # mapping record; write it out before incrementing the acc id keys
 
-	mappingFile.write('%s%d|%s|%s|%s|%s|%s|%s|%s\n' \
-	    % (mgiPrefix, mgiKey, chromosome, mappingCol3, mappingCol4, \
-		mappingCol5, mappingCol6, jnum, createdBy))
+        mappingFile.write('%s%d|%s|%s|%s|%s|%s|%s|%s\n' \
+            % (mgiPrefix, mgiKey, chromosome, mappingCol3, mappingCol4, \
+                mappingCol5, mappingCol6, jnum, createdBy))
 
-	accKey = accKey + 1
-	mgiKey = mgiKey + 1
-	refAssocKey = refAssocKey + 1
-	noteKey = noteKey + 1
+        accKey = accKey + 1
+        mgiKey = mgiKey + 1
+        refAssocKey = refAssocKey + 1
+        noteKey = noteKey + 1
 
-	# synonyms
-	for o in string.split(synonyms, '|'):
-	    if len(o) > 0:
-		synFile.write('%d|%d|%d|%d|%s|%s|%s|%s|%s|%s\n' \
-		    % (synKey, markerKey, mgiTypeKey, synTypeKey, referenceKey, \
-			o, createdByKey, createdByKey, cdate, cdate))
-		synKey = synKey + 1
+        # synonyms
+        for o in str.split(synonyms, '|'):
+            if len(o) > 0:
+                synFile.write('%d|%d|%d|%d|%s|%s|%s|%s|%s|%s\n' \
+                    % (synKey, markerKey, mgiTypeKey, synTypeKey, referenceKey, \
+                        o, createdByKey, createdByKey, cdate, cdate))
+                synKey = synKey + 1
 
-	# accession ids
+        # accession ids
 
-	for acc in otherAccDict.keys():
-	    prefixpart, numericpart = accessionlib.split_accnum(acc)
-	    accFile.write('%d|%s|%s|%s|%d|%d|%d|0|1|%s|%s|%s|%s\n' \
-		% (accKey, acc, prefixpart, numericpart, otherAccDict[acc], \
-		    markerKey, mgiTypeKey, createdByKey, createdByKey, \
-		    cdate, cdate))
-	    accrefFile.write('%d|%s|%s|%s|%s|%s\n' \
-		% (accKey, referenceKey, createdByKey, createdByKey, \
-		    cdate, cdate))
-	    accKey = accKey + 1
+        for acc in list(otherAccDict.keys()):
+            prefixpart, numericpart = accessionlib.split_accnum(acc)
+            accFile.write('%d|%s|%s|%s|%d|%d|%d|0|1|%s|%s|%s|%s\n' \
+                % (accKey, acc, prefixpart, numericpart, otherAccDict[acc], \
+                    markerKey, mgiTypeKey, createdByKey, createdByKey, \
+                    cdate, cdate))
+            accrefFile.write('%d|%s|%s|%s|%s|%s\n' \
+                % (accKey, referenceKey, createdByKey, createdByKey, \
+                    cdate, cdate))
+            accKey = accKey + 1
 
-	#
-	# if 'official' and markerType = 'gene'
-	#
+        #
+        # if 'official' and markerType = 'gene'
+        #
 
-	if markerStatus == 'official' and markerTypeKey == 1:
-	    if symbol.find('mt-') < 0 or \
-   	       name.find('withdrawn, =') < 0 or  \
-   	       name.find('dna segment') < 0 or \
-   	       name.find('EST ') < 0 or \
-   	       name.find('expressed sequence') < 0 or \
-   	       name.find('cDNA sequence') < 0 or \
-   	       name.find('gene model') < 0 or \
-   	       name.find('hypothetical protein') < 0 or \
+        if markerStatus == 'official' and markerTypeKey == 1:
+            if symbol.find('mt-') < 0 or \
+               name.find('withdrawn, =') < 0 or  \
+               name.find('dna segment') < 0 or \
+               name.find('EST ') < 0 or \
+               name.find('expressed sequence') < 0 or \
+               name.find('cDNA sequence') < 0 or \
+               name.find('gene model') < 0 or \
+               name.find('hypothetical protein') < 0 or \
                name.find('ecotropic viral integration site') < 0 or \
                name.find('viral polymerase') < 0:
 
-		alleleFile.write('%d|%d|-2|847095|847131|847114|3982955|11025586|%s|%s|1|0|0||4268545|%s|%s|%s|%s|%s|%s\n' \
-	    		% (alleleKey, markerKey, symbol + '<+>', 'wild type', createdByKey, createdByKey, createdByKey, cdate, cdate, cdate))
-	        # MGI Accession ID for the allele
+                alleleFile.write('%d|%d|-2|847095|847131|847114|3982955|11025586|%s|%s|1|0|0||4268545|%s|%s|%s|%s|%s|%s\n' \
+                        % (alleleKey, markerKey, symbol + '<+>', 'wild type', createdByKey, createdByKey, createdByKey, cdate, cdate, cdate))
+                # MGI Accession ID for the allele
 
-	        accFile.write('%d|%s%d|%s|%s|1|%d|%d|0|1|%s|%s|%s|%s\n' \
-	            % (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, alleleKey, \
-		        alleleTypeKey, createdByKey, createdByKey, cdate, cdate))
+                accFile.write('%d|%s%d|%s|%s|1|%d|%d|0|1|%s|%s|%s|%s\n' \
+                    % (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, alleleKey, \
+                        alleleTypeKey, createdByKey, createdByKey, cdate, cdate))
 
-	        alleleKey = alleleKey + 1
-	        accKey = accKey + 1
-	        mgiKey = mgiKey + 1
+                alleleKey = alleleKey + 1
+                accKey = accKey + 1
+                mgiKey = mgiKey + 1
 
-	markerKey = markerKey + 1
-	historyKey = historyKey + 1
+        markerKey = markerKey + 1
+        historyKey = historyKey + 1
 
     # end of "for line in inputFile.readlines():"
 
@@ -862,8 +859,8 @@ def processFile():
     #
 
     if not DEBUG and bcpon:
-	db.sql('''update ACC_AccessionMax set maxnumericpart = %s where prefixpart = 'MGI:' ''' % (mgiKey), 'auto')
- 	db.commit()
+        db.sql('''update ACC_AccessionMax set maxnumericpart = %s where prefixpart = 'MGI:' ''' % (mgiKey), 'auto')
+        db.commit()
 
     markerFile.close()
     refFile.close()
@@ -894,7 +891,7 @@ def bcpFiles():
     currentDir = os.getcwd()
 
     bcp1 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
-	(bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_Marker', currentDir, markerFileName)
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MRK_Marker', currentDir, markerFileName)
 
     bcp2 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Reference_Assoc', currentDir, refFileName)
@@ -947,7 +944,7 @@ def bcpFiles():
 
     results = db.sql('select * from ACC_AccessionMax', 'auto')
     for r in results:
-    	print r
+        print(r)
 
     # update mrk_marker_seq auto-sequence
     db.sql(''' select setval('mrk_marker_seq', (select max(_Marker_key) from MRK_Marker)) ''', None)
@@ -985,10 +982,9 @@ loadDictionaries()
 processFile()
 
 if not DEBUG and bcpon:
-    print 'sanity check PASSED : loading data'
+    print('sanity check PASSED : loading data')
 #    print 'bcpFiles()'
     bcpFiles()
     exit(0)
 else:
     exit(1)
-
