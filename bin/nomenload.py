@@ -637,7 +637,7 @@ def setPrimaryKeys():
     results = db.sql(''' select nextval('mrk_history_seq') as maxKey ''', 'auto')
     historyKey = results[0]['maxKey']
 
-    results = db.sql('select max(_Allele_key) + 1 as maxKey from ALL_Allele', 'auto')
+    results = db.sql(''' select nextval('all_allele_seq') as maxKey ''', 'auto')
     alleleKey = results[0]['maxKey']
 
     results = db.sql('select max(_Note_key) + 1 as maxKey from MGI_Note', 'auto')
@@ -960,6 +960,10 @@ def bcpFiles():
 
     # update mgi_synonym_seq auto-sequence
     db.sql(''' select setval('mgi_synonym_seq', (select max(_Synonym_key) from MGI_Synonym)) ''', None)
+    db.commit()
+
+    # update all_allele_seq auto-sequence
+    db.sql(''' select setval('all_allele_seq', (select max(_Allele_key) from ALL_Allele)) ''', None)
     db.commit()
 
 #

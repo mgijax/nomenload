@@ -1,7 +1,8 @@
-TAG: nomenload-6-0-16-1
-DATE: 08/21/2020
-STAFF: sc
-CHANGES: TR13204/I20 project/python 3.7 upgrade
+TAG: nomenload-6-0-16-2
+DATE: 10/23/2020
+STAFF: lec
+CHANGES:
+TR13425/nomenload/new allele/autocomplete
 
 TAG: nomenload-6-0-14-2
 TAG: nomenload-6-0-14-1
