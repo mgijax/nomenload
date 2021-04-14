@@ -110,7 +110,7 @@ def init():
     '''
 
     global inputFile, diagFile, diagFileName
-    global erroFile, errorFileName
+    global errorFile, errorFileName
     global eventReasonLookup
 
     db.useOneConnection(1)
@@ -129,7 +129,7 @@ def init():
         errorFile = open(errorFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % errorFileName)
-            
+
     results = db.sql('select * from MRK_EventReason', 'auto')
     for r in results:
         key = r['eventreason']
@@ -192,22 +192,27 @@ def sanityCheck():
 
     error = 0
 
-    markerKey = loadlib.verifyMarker(markerID, lineNum, errorFile)
+    markerKey = loadlib.verifyMarker(markerID, lineNum, None)
 
-    refKey = loadlib.verifyReference(jnum, lineNum, errorFile)
-    createdByKey = loadlib.verifyUser(createdBy, lineNum, errorFile)
+    refKey = loadlib.verifyReference(jnum, lineNum, None)
+    createdByKey = loadlib.verifyUser(createdBy, lineNum, None)
 
     if eventReason not in eventReasonLookup:
         eventReasonKey = 0
     else:
         eventReasonKey = eventReasonLookup[eventReason][0]
 
+    if markerKey != 0:
+        results = db.sql(''' select * from mrk_marker where _marker_key = %s and symbol = '%s' ''' % (markerKey, symbol), 'auto')
+        print(str(results))
+        if len(results) > 0:
+                errorFile.write('Duplicate Marker: ' + markerID + ', ' + symbol + '\n')
+                error = 1
+
     if markerKey == 0 or \
        refKey == 0 or \
        eventReasonKey == 0 or \
        createdByKey == 0:
-
-        # set error flag to true
         error = 1
 
     return (error)
