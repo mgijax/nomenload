@@ -12,10 +12,11 @@
 #               field 1: MGI:xxxx
 #               field 2: Current Symbol Name
 #               field 3: New Symbol Name
-#               field 4: J:xxx
-#               field 5: Reason for Rename : use *exact* term as in the list of Reasons in the PWI/Marker module
-#               field 6: Add Current As Synonym : "y" or "no"
-#               field 7: User : yz
+#               field 4: New Name
+#               field 5: J:xxx
+#               field 6: Reason for Rename : use *exact* term as in the list of Reasons in the PWI/Marker module
+#               field 7: Add Current As Synonym : "y" or "no"
+#               field 8: User : yz
 #
 # Parameters:
 #
@@ -188,14 +189,10 @@ def sanityCheck():
     global refKey
     global eventReasonKey
     global createdByKey
-    global name
 
     error = 0
 
     markerKey = loadlib.verifyMarker(markerID, lineNum, errorFile)
-    if markerKey > 0:
-        results = db.sql(''' select name from MRK_Marker where _marker_key = %s ''' % (markerKey), 'auto')
-        name = results[0]['name']
 
     refKey = loadlib.verifyReference(jnum, lineNum, errorFile)
     createdByKey = loadlib.verifyUser(createdBy, lineNum, errorFile)
