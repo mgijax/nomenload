@@ -204,7 +204,6 @@ def sanityCheck():
 
     if markerKey != 0:
         results = db.sql(''' select * from mrk_marker where _marker_key = %s and symbol = '%s' ''' % (markerKey, symbol), 'auto')
-        print(str(results))
         if len(results) > 0:
                 errorFile.write('Duplicate Marker: ' + markerID + ', ' + symbol + '\n')
                 error = 1
