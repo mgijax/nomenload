@@ -1,28 +1,27 @@
 #!/bin/sh
 #
-#  nomenload.sh
+#  batchrename.sh
 ###########################################################################
 #
 #  Purpose:
-# 	This script runs the Nomenclature & Mapping load
+# 	This script runs the Nomenclature Batch Rename load
 #
-  Usage=nomenload.sh
+  Usage=batchrename.sh
 #
 #  Env Vars:
 #
-#      See the configuration file nomenload.config
+#      See the configuration file batchrename.config
 #
 #  Inputs:
 #
-#      - configuration file - nomenload.config
-#      - input file - see nomenload.config
+#      - configuration file - batchrename.config
+#      - input file - see batchrename.config
 #
 #  Outputs:
 #
 #      - An archive file
-#      - Log files defined by the environment variables ${LOG_PROC},
-#        ${LOG_FILE}, ${LOG_FILE_CUR}, ${LOG_FILE_VAL}, ${LOG_ERROR}
-#      - nomenload logs and bcp file to ${OUTPUTDIR}
+#      - Log files defined by the environment variables 
+#      - batchrename logs and bcp file to ${OUTPUTDIR}
 #      - mappingload logs and bcp files  - see mappingload
 #      - Records written to the database tables
 #      - Exceptions written to standard error
@@ -42,15 +41,15 @@
 #      4) Initialize the log file.
 #      5) Determine if the input file has changed since the last time that
 #         the load was run. Do not continue if the input file is not new.
-#      6) Load nomenload using configuration file
+#      6) Load batchrename using configuration file
 #      7) Load mappingload using configuration file
 #      8) Archive the input file.
-#      9) Touch the "lastrun" file to timestamp the last run of the load.
+#      9) Touch the "lastrun.batchrename" file to timestamp the last run of the load.
 #
 # History:
 #
 # lec	09/28/2015
-#	- new (using nomenload as a template)
+#	- new (using batchrename as a template)
 #
 
 cd `dirname $0`
@@ -61,10 +60,19 @@ cd `dirname $0`
 CONFIG_FILE=$1
 . ${CONFIG_FILE}
 
-MAIL_LOADNAME="${NOMENMODE} : Nomen/Mapping Load"
+MAIL_LOADNAME="${NOMENMODE} : Batch Rename Load"
 export MAIL_LOADNAME
 
-rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} ${LOG_ERROR}
+# change names to ${LOG}
+LOG_FILE=${RENAME_LOG_FILE} 
+LOG_PROC=${RENAME_LOG_PROC} 
+LOG_DIAG=${RENAME_LOG_DIAG} 
+LOG_CUR=${RENAME_LOG_CUR} 
+LOG_VAL=${RENAME_LOG_VAL} 
+LOG_ERROR=${RENAME_LOG_ERROR}
+export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_ERROR
+
+rm -rf ${RENAME_LOG_FILE} ${RENAME_LOG_PROC} ${RENAME_LOG_DIAG} ${RENAME_LOG_CUR} ${RENAME_LOG_VAL} ${RENAME_LOG_ERROR}
 
 #
 # use user-provied value or use config/default value
@@ -72,11 +80,11 @@ rm -rf ${LOG_FILE} ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} ${LOG_ERROR}
 #
 if [ $# -eq 2 ] 
 then
-    INPUT_FILE_DEFAULT=$2
+    RENAME_FILE_DEFAULT=$2
 fi
-if [ ! -r ${INPUT_FILE_DEFAULT} ]
+if [ ! -r ${RENAME_FILE_DEFAULT} ]
 then
-    echo "Missing input file: ${INPUT_FILE_DEFAULT}" | tee -a ${LOG_FILE}
+    echo "Missing input file: ${RENAME_FILE_DEFAULT}" | tee -a ${RENAME_LOG_FILE}
     exit 1
 fi
 
@@ -90,11 +98,11 @@ then
     then
         . ${DLAJOBSTREAMFUNC}
     else
-        echo "Cannot source DLA functions script: ${DLAJOBSTREAMFUNC}" | tee -a ${LOG_FILE}
+        echo "Cannot source DLA functions script: ${DLAJOBSTREAMFUNC}" | tee -a ${RENAME_LOG_FILE}
         exit 1
     fi  
 else
-    echo "Environment variable DLAJOBSTREAMFUNC has not been defined." | tee -a ${LOG_FILE}
+    echo "Environment variable DLAJOBSTREAMFUNC has not been defined." | tee -a ${RENAME_LOG_FILE}
     exit 1
 fi
 
@@ -109,25 +117,25 @@ fi
 #
 if [ ${NOMENMODE} != "preview" ]
 then
-    startLog ${LOG_PROC} ${LOG_DIAG} ${LOG_CUR} ${LOG_VAL} | tee -a ${LOG}
-    getConfigEnv >> ${LOG_PROC}
-    getConfigEnv -e >> ${LOG_DIAG}
+    startLog ${RENAME_LOG_PROC} ${RENAME_LOG_DIAG} ${RENAME_LOG_CUR} ${RENAME_LOG_VAL} | tee -a ${RENAME_LOG}
+    getConfigEnv >> ${RENAME_LOG_PROC}
+    getConfigEnv -e >> ${RENAME_LOG_DIAG}
 fi
 
 #
-# There should be a "lastrun" file in the input directory that was created
+# There should be a "lastrun.batchrename" file in the input directory that was created
 # the last time the load was run for this input file. If this file exists
 # and is more recent than the input file, the load does not need to be run.
 #
 if [ ${NOMENMODE} != "preview" ]
 then
-    LASTRUN_FILE=${INPUTDIR}/lastrun
+    LASTRUN_FILE=${INPUTDIR}/lastrun.batchrename
 
     if [ -f ${LASTRUN_FILE} ]
     then
-        if test ${LASTRUN_FILE} -nt ${INPUT_FILE_DEFAULT}
+        if test ${LASTRUN_FILE} -nt ${RENAME_FILE_DEFAULT}
         then
-            echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${LOG_FILE_PROC}
+            echo "SKIPPED: ${NOMENMODE} : Input file has not been updated" | tee -a ${RENAME_LOG_FILE_PROC}
 	    exit 0
         fi
     fi
@@ -137,34 +145,18 @@ fi
 # Convert the input file into a QC-ready version that can be used to run
 # the sanity/QC reports against.
 #
-dos2unix ${INPUT_FILE_DEFAULT} ${INPUT_FILE_DEFAULT} 2>/dev/null
+dos2unix ${RENAME_FILE_DEFAULT} ${RENAME_FILE_DEFAULT} 2>/dev/null
 
 #
 # Execute nomen load
 #
-echo "" | tee -a ${LOG_FILE}
-date | tee -a ${LOG_FILE}
-echo "Running nomenload : ${NOMENMODE}" | tee -a ${LOG_FILE}
+echo "" | tee -a ${RENAME_LOG_FILE}
+date | tee -a ${RENAME_LOG_FILE}
+echo "Running batchrename : ${NOMENMODE}" | tee -a ${RENAME_LOG_FILE}
 cd ${OUTPUTDIR}
-${PYTHON} ${NOMENLOAD}/bin/nomenload.py | tee -a ${LOG_DIAG}
+${PYTHON} ${NOMENLOAD}/bin/batchrename.py | tee -a ${RENAME_LOG_DIAG}
 STAT=$?
 checkStatus ${STAT} "${NOMENLOAD} ${CONFIG_FILE} : ${NOMENMODE} :"
-
-#
-# Execute mapping load if not "preview" and nomenload was successful
-#
-if [ ${NOMENMODE} != "preview" ]
-then
-	if [[ ${STAT} == 0 ]]
-	then
-		cd ${OUTPUTDIR}
-		${MAPPINGLOAD}/mappingload.sh ${CONFIG_FILE}
-		STAT=$?
-		checkStatus ${STAT} "${MAPPINGLOAD} ${CONFIG_FILE} : ${MAPPINGMODE} :"
-	else
-		echo "FATAL ERROR: nomenload exit status = ${STAT} : ${NOMENMODE}" | tee -a ${LOG_FILE}
-	fi
-fi
 
 #
 # set permissions
@@ -178,7 +170,7 @@ case `whoami` in
 	chgrp -f mgi ${DESTFILEDIR}/*
 	chgrp -f mgi ${DESTFILEDIR}/*/*
 	chgrp -f mgi ${NOMENLOAD}/bin
-	chgrp -f mgi ${NOMENLOAD}/bin/nomenload.log
+	chgrp -f mgi ${NOMENLOAD}/bin/batchrename.log
 	;;
 esac
 
@@ -188,11 +180,11 @@ esac
 #
 if [ ${NOMENMODE} != "preview" ]
 then
-    createArchive ${ARCHIVEDIR} ${LOGDIR} ${INPUTDIR} ${OUTPUTDIR} | tee -a ${LOG}
+    createArchive ${ARCHIVEDIR} ${RENAME_LOGDIR} ${RENAMEDIR} ${OUTPUTDIR} | tee -a ${RENAME_LOG}
 fi 
 
 #
-# Touch the "lastrun" file to note when the load was run.
+# Touch the "lastrun.batchrename" file to note when the load was run.
 #
 if [ ${NOMENMODE} != "preview" ]
 then
@@ -202,10 +194,10 @@ fi
 #
 # cat the error file
 #
-cat ${LOG_ERROR}
+cat ${RENAME_LOG_ERROR}
 
-echo "" | tee -a ${LOG_FILE}
-date | tee -a ${LOG_FILE}
+echo "" | tee -a ${RENAME_LOG_FILE}
+date | tee -a ${RENAME_LOG_FILE}
 
 #
 # run postload cleanup and email logs

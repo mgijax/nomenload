@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#  runNomenQC
+#  runBatchRenameQC
 ###########################################################################
 #
 # A copy of this script is intended to reside in /usr/local/bin on all
@@ -18,9 +18,9 @@ fi
 
 usage ()
 {
-    echo "Usage: runNomenQC input_file"
+    echo "Usage: runBatchRenameQC input_file"
     echo "       where"
-    echo "           input_file = path to the nomen input file"
+    echo "           input_file = path to the batch rename input file"
     exit 1
 }
 
@@ -47,8 +47,8 @@ else
 fi
 
 #
-# Invoke the nomenload using santiy check mode
+# Invoke the nomenload/batchrename using santiy check mode
 # and the arguments that were passed to this script.
 #
-${NOMENLOAD}/bin/nomenload.sh ${NOMENLOAD}/nomensanitycheck.config $*
+${NOMENLOAD}/bin/batchrename.sh ${NOMENLOAD}/nomensanitycheck.config $*
 

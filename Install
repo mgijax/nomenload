@@ -79,7 +79,7 @@ if [ -d ${DEPLOY_PATH} ]; then
         # deployment errors are non-fatal, as they can occur regularly in an
         # SE's development area
 
-        for file in runNomenQC publishNomen
+        for file in runNomenQC publishNomen runBatchRenameQC publishBatchRename
         do
                 cp bin/${file} ${DEPLOY_PATH}
                 if [ $? -ne 0 ]; then
@@ -99,6 +99,7 @@ fi
 #
 chmod -f 775 ${FILEDIR}/*
 chgrp mgi ${FILEDIR}/*
+chmod 755 ${NOMENLOAD}/bin/batchrename.sh
 chmod 755 ${NOMENLOAD}/bin/nomenload.sh
 
 exit 0

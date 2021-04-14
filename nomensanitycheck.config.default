@@ -91,6 +91,18 @@ export MAPPINGMODE
 EXPERIMENTTYPE="TEXT-Physical Mapping"
 export EXPERIMENTTYPE
 
+# RENAME stuff
+RENAME_LOG_FILE=${LOGDIR}/batchrename.log
+RENAME_LOG_PROC=${LOGDIR}/batchrename.proc.log
+RENAME_LOG_DIAG=${LOGDIR}/batchrename.diag.log
+RENAME_LOG_CUR=${LOGDIR}/batchrename.cur.log
+RENAME_LOG_VAL=${LOGDIR}/batchrename.val.log
+RENAME_LOG_ERROR=${LOGDIR}/batchrename.error.log
+RENAME_FILE_NAME=batchrename.txt
+RENAME_FILE_DEFAULT=${DESTCURRENTDIR}/${RENAME_FILE_NAME}
+export RENAME_LOG_FILE RENAME_LOG_PROC RENAME_LOG_DIAG RENAME_LOG_CUR RENAME_LOG_VAL RENAME_LOG_ERROR
+export RENAME_FILE_DEFAULT
+
 ###########################################################################
 #
 #  MISCELLANEOUS SETTINGS
@@ -98,8 +110,9 @@ export EXPERIMENTTYPE
 ###########################################################################
 
 #  The name of the load for the subject of an email notification
-MAIL_LOADNAME="${NOMENMODE} : Nomen/Mapping Load"
-export MAIL_LOADNAME
+# moved to individual shell scripts
+#MAIL_LOADNAME="${NOMENMODE} : Nomen/Mapping Load"
+#export MAIL_LOADNAME
 
 #  Recipient list for mailing the log files (comma-separated)
 MAIL_LOG_PROC="${USER},sophia.zhu@jax.org"
