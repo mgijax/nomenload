@@ -159,6 +159,7 @@ refAssocKey = 0		# MGI_Reference_Assoc._Assoc_key
 alleleKey = 0		# ALL_Allele._Allele_key
 noteKey = 0		# MGI_Note._Note_key
 historyKey = 0
+mappingKey = 0          # MLD_Expt_Marker._Assoc_key
 
 statusDict = {}		# dictionary of marker statuses for quick lookup
 referenceDict = {}	# dictionary of references for quick lookup
@@ -628,7 +629,7 @@ def setPrimaryKeys():
     #
     '''
 
-    global markerKey, accKey, mgiKey, synKey, alleleKey, noteKey, historyKey
+    global markerKey, accKey, mgiKey, synKey, alleleKey, noteKey, historyKey, mappingKey
     global refAssocKey
 
     results = db.sql(''' select nextval('mrk_marker_seq') as maxKey ''', 'auto')
@@ -654,6 +655,9 @@ def setPrimaryKeys():
 
     results = db.sql('select maxNumericPart + 1 as maxKey from ACC_AccessionMax where prefixPart = \'%s\'' % (mgiPrefix), 'auto')
     mgiKey = results[0]['maxKey']
+
+    results = db.sql(''' select nextval('mld_expt_marker_seq') as maxKey ''', 'auto')
+    mappingKey = results[0]['maxKey']
 
 def loadDictionaries():
     '''
@@ -791,14 +795,15 @@ def processFile():
 
         # mapping record; write it out before incrementing the acc id keys
 
-        mappingFile.write('%s%d|%s|%s|%s|%s|%s|%s|%s\n' \
-            % (mgiPrefix, mgiKey, chromosome, mappingCol3, mappingCol4, \
+        mappingFile.write('%s|%s%d|%s|%s|%s|%s|%s|%s|%s\n' \
+            % (mappingKey, mgiPrefix, mgiKey, chromosome, mappingCol3, mappingCol4, \
                 mappingCol5, mappingCol6, jnum, createdBy))
 
         accKey = accKey + 1
         mgiKey = mgiKey + 1
         refAssocKey = refAssocKey + 1
         noteKey = noteKey + 1
+        mappingKey = mappingKey + 1
 
         # synonyms
         for o in str.split(synonyms, '|'):
@@ -964,6 +969,10 @@ def bcpFiles():
 
     # update all_allele_seq auto-sequence
     db.sql(''' select setval('all_allele_seq', (select max(_Allele_key) from ALL_Allele)) ''', None)
+    db.commit()
+
+    # update mld_expt_marker_seq auto-sequence
+    db.sql(''' select setval('mld_expt_marker_seq', (select max(_Assoc_key) from MLD_Expt_Marker)) ''', None)
     db.commit()
 
 #
