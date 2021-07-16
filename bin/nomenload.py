@@ -695,7 +695,7 @@ def processFile():
     '''
 
     global bcpon
-    global markerKey, accKey, mgiKey, synKey, refAssocKey, createdByKey, alleleKey, noteKey, historyKey
+    global markerKey, accKey, mgiKey, synKey, refAssocKey, createdByKey, alleleKey, noteKey, historyKey, mappingKey
     global markerType 
     global symbol 
     global name 
