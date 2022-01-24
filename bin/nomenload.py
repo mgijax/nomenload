@@ -138,7 +138,6 @@ mrkcurrentFile = ''	# file descriptor
 historyFile = ''	# file descriptor
 alleleFile = ''		# file descriptor
 noteFile = ''		# file descriptor
-notechunkFile = ''		# file descriptor
 
 markerFileName = ''	# file name
 refFileName = ''	# file name
@@ -149,7 +148,6 @@ mrkcurrentFileName = ''	# file name
 historyFileName = ''	# file name
 alleleFileName = ''	# file name
 noteFileName = ''	# file name
-notechunkFileName = ''	# file name
 
 markerKey = 0		# MRK_Marker._Marker_key
 accKey = 0		# ACC_Accession._Accession_key
@@ -245,10 +243,10 @@ def init():
 
     global inputFile, outputFile, diagFile, errorFile
     global errorFileName, diagFileName, markerFileName, refFileName
-    global mrkcurrentFileName, historyFileName, alleleFileName, noteFileName, notechunkFileName
+    global mrkcurrentFileName, historyFileName, alleleFileName, noteFileName
     global synFileName, accFileName, accrefFileName
     global markerFile, refFile, synFile, accFile, accrefFile, mappingFile
-    global mrkcurrentFile, historyFile, alleleFile, noteFile, notechunkFile
+    global mrkcurrentFile, historyFile, alleleFile, noteFile
     global markerKey, accKey, synKey, mgiKey, refAssocKey, alleleKey, noteKey, historyKey
 
     db.useOneConnection(1)
@@ -265,7 +263,6 @@ def init():
     historyFileName = 'MRK_History.bcp'
     alleleFileName = 'ALL_Allele.bcp'
     noteFileName = 'MGI_Note.bcp'
-    notechunkFileName = 'MGI_NoteChunk.bcp'
 
     try:
         inputFile = open(inputFileName, 'r')
@@ -336,11 +333,6 @@ def init():
         noteFile = open(noteFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % noteFileName)
-            
-    try:
-        notechunkFile = open(notechunkFileName, 'w')
-    except:
-        exit(1, 'Could not open file %s\n' % notechunkFileName)
             
     # Log all SQL 
     db.set_sqlLogFunction(db.sqlLogAll)
@@ -641,7 +633,7 @@ def setPrimaryKeys():
     results = db.sql(''' select nextval('all_allele_seq') as maxKey ''', 'auto')
     alleleKey = results[0]['maxKey']
 
-    results = db.sql('select max(_Note_key) + 1 as maxKey from MGI_Note', 'auto')
+    results = db.sql(''' select nextval('mgi_note_seq') as maxKey ''', 'auto')
     noteKey = results[0]['maxKey']
 
     results = db.sql(''' select nextval('mgi_reference_assoc_seq') as maxKey ''', 'auto')
@@ -780,10 +772,8 @@ def processFile():
         # Sequence Notes (1009)
         if len(notes) > 0:
             notes = notes.replace('|', '\\|')
-            noteFile.write('%d|%s|2|1009|%s|%s|%s|%s\n' \
-                % (noteKey, markerKey, createdByKey, createdByKey, cdate, cdate))
-            notechunkFile.write('%d|1|%s|%s|%s|%s|%s\n' \
-                % (noteKey, notes, createdByKey, createdByKey, cdate, cdate))
+            noteFile.write('%d|%s|2|1009|%s|%s|%s|%s|%s\n' \
+                % (noteKey, markerKey, notes, createdByKey, createdByKey, cdate, cdate))
 
         # write record back out and include MGI Accession ID
         outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
@@ -877,7 +867,6 @@ def processFile():
     historyFile.close()
     alleleFile.close()
     noteFile.close()
-    notechunkFile.close()
     db.commit()
 
 def bcpFiles():
@@ -922,9 +911,6 @@ def bcpFiles():
     bcp9 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Note', currentDir, noteFileName)
 
-    bcp10 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
-        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_NoteChunk', currentDir, notechunkFileName)
-
     diagFile.write('%s\n' % bcp1)
     diagFile.write('%s\n' % bcp2)
     diagFile.write('%s\n' % bcp3)
@@ -934,7 +920,6 @@ def bcpFiles():
     diagFile.write('%s\n' % bcp7)
     diagFile.write('%s\n' % bcp8)
     diagFile.write('%s\n' % bcp9)
-    diagFile.write('%s\n' % bcp10)
 
     os.system(bcp1)
     os.system(bcp2)
@@ -945,7 +930,6 @@ def bcpFiles():
     os.system(bcp7)
     os.system(bcp8)
     os.system(bcp9)
-    os.system(bcp10)
 
     results = db.sql('select * from ACC_AccessionMax', 'auto')
     for r in results:
@@ -955,6 +939,10 @@ def bcpFiles():
     db.sql(''' select setval('mrk_marker_seq', (select max(_Marker_key) from MRK_Marker)) ''', None)
     db.commit()
 
+    # update mgi_note_seq auto-sequence
+    db.sql(''' select setval('mgi_note_seq', (select max(_Note_key) from MGI_Note)) ''', None)
+    db.commit()
+    
     # update mrk_history_seq auto-sequence
     db.sql(''' select setval('mrk_history_seq', (select max(_Assoc_key) from MRK_History)) ''', None)
     db.commit()
