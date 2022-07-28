@@ -130,10 +130,10 @@ def init():
     except:
         exit(1, 'Could not open file %s\n' % errorFileName)
 
-    results = db.sql('select * from MRK_EventReason', 'auto')
+    results = db.sql('select * from VOC_Term where _vocab_key = 34', 'auto')
     for r in results:
-        key = r['eventreason']
-        value = r['_marker_eventreason_key']
+        key = r['term']
+        value = r['_term_key']
         eventReasonLookup[key] = []
         eventReasonLookup[key].append(value)
     #print(eventReasonLookup)

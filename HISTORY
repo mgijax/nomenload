@@ -1,3 +1,9 @@
+TAG: nomenload-6-0-22-1
+DATE: 07/28/2022
+STAFF: lec
+wts2-761/MGD db cleanup - MRK_Event/MRK_EventReason
+#       modified:   bin/batchrename.py
+
 TAG: nomenload-6-0-18-1
 DATE: 02/21/2022
 STAFF: lec
