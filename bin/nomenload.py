@@ -163,8 +163,8 @@ statusDict = {}		# dictionary of marker statuses for quick lookup
 referenceDict = {}	# dictionary of references for quick lookup
 logicalDBDict = {}	# dictionary of logical DBs for quick lookup
 
-markerEvent = 1                        # Assigned
-markerEventReason = -1                 # Not Specified
+markerEvent = 106563604                # Assigned
+markerEventReason = 106563610          # Not Specified
 mgiTypeKey = 2                         # Nomenclature
 alleleTypeKey = 11
 mgiPrefix = "MGI:"
@@ -754,7 +754,7 @@ def processFile():
         mrkcurrentFile.write('%d|%d|%s|%s\n' \
             % (markerKey, markerKey, cdate, cdate))
 
-        historyFile.write('%d|%d|1|-1|%d|%d|1|%s|%s|%s|%s|%s|%s\n' \
+        historyFile.write('%d|%d|106563604|106563610|%d|%d|1|%s|%s|%s|%s|%s|%s\n' \
             % (historyKey, markerKey, markerKey, referenceKey, name, cdate,
                 createdByKey, createdByKey, cdate, cdate))
 
