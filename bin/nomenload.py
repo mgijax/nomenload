@@ -158,6 +158,7 @@ alleleKey = 0		# ALL_Allele._Allele_key
 noteKey = 0		# MGI_Note._Note_key
 historyKey = 0
 mappingKey = 0          # MLD_Expt_Marker._Assoc_key
+mgiCount = 0
 
 statusDict = {}		# dictionary of marker statuses for quick lookup
 referenceDict = {}	# dictionary of references for quick lookup
@@ -700,6 +701,7 @@ def processFile():
     global createdBy
     global otherAccDict
     global markerLookup
+    global mgiCount
 
     # For each line in the input file
 
@@ -794,6 +796,7 @@ def processFile():
         refAssocKey = refAssocKey + 1
         noteKey = noteKey + 1
         mappingKey = mappingKey + 1
+        mgiCount = mgiCount + 1
 
         # synonyms
         for o in str.split(synonyms, '|'):
@@ -848,14 +851,6 @@ def processFile():
         historyKey = historyKey + 1
 
     # end of "for line in inputFile.readlines():"
-
-    #
-    # Update the AccessionMax value
-    #
-
-    if not DEBUG and bcpon:
-        db.sql('''update ACC_AccessionMax set maxnumericpart = %s where prefixpart = 'MGI:' ''' % (mgiKey), 'auto')
-        db.commit()
 
     markerFile.close()
     refFile.close()
@@ -931,9 +926,9 @@ def bcpFiles():
     os.system(bcp8)
     os.system(bcp9)
 
-    results = db.sql('select * from ACC_AccessionMax', 'auto')
-    for r in results:
-        print(r)
+    # update the max accession ID value
+    db.sql('select * from ACC_setMax (%d)' % (mgiCount), None)
+    db.commit()
 
     # update mrk_marker_seq auto-sequence
     db.sql(''' select setval('mrk_marker_seq', (select max(_Marker_key) from MRK_Marker)) ''', None)

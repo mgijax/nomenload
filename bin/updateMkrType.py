@@ -6,7 +6,6 @@ import sys
 import os
 import db
 import mgi_utils
-import accessionlib
 import loadlib
 
 #

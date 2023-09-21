@@ -1,3 +1,9 @@
+TAG: nomenload-6-0-22-3
+DATE: 09/21/2023
+STAFF: lec
+wts2-1282/fl2-545/nomenclature/mapping created duplicate MGI:xxx
+bin/nomenload.py:    db.sql('select * from ACC_setMax (%d)' % (lineNum), None)
+
 TAG: nomenload-6-0-22-2
 TAG: nomenload-6-0-22-1
 DATE: 07/28/2022, 08/03/2022
