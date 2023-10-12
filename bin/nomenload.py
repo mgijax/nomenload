@@ -837,8 +837,8 @@ def processFile():
 
                 alleleFile.write('%d|%d|-2|847095|847131|847114|3982955|11025586|%s|%s|1|0|0||4268545|%s|%s|%s|%s|%s|%s\n' \
                         % (alleleKey, markerKey, symbol + '<+>', 'wild type', createdByKey, createdByKey, createdByKey, cdate, cdate, cdate))
-                # MGI Accession ID for the allele
 
+                # MGI Accession ID for the allele
                 accFile.write('%d|%s%d|%s|%s|1|%d|%d|0|1|%s|%s|%s|%s\n' \
                     % (accKey, mgiPrefix, mgiKey, mgiPrefix, mgiKey, alleleKey, \
                         alleleTypeKey, createdByKey, createdByKey, cdate, cdate))
@@ -846,6 +846,7 @@ def processFile():
                 alleleKey = alleleKey + 1
                 accKey = accKey + 1
                 mgiKey = mgiKey + 1
+                mgiCount = mgiCount + 1
 
         markerKey = markerKey + 1
         historyKey = historyKey + 1

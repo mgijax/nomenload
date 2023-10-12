@@ -1,8 +1,10 @@
+TAG: nomenload-6-0-22-4
 TAG: nomenload-6-0-22-3
-DATE: 09/21/2023
+DATE: 09/21/2023, 10/12/2023
 STAFF: lec
-wts2-1282/fl2-545/nomenclature/mapping created duplicate MGI:xxx
+wts2-1282/fl2-545/fl2-576/nomenclature/mapping created duplicate MGI:xxx
 bin/nomenload.py:    db.sql('select * from ACC_setMax (%d)' % (lineNum), None)
+mgiCount needs to be updated if Allele is also created
 
 TAG: nomenload-6-0-22-2
 TAG: nomenload-6-0-22-1
