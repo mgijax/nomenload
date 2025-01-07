@@ -1,3 +1,10 @@
+TAG: nomenload-6-0-25-1
+DATE: 01/07/2025
+STAFF: lec
+wts2-1591/e4g-03/ENSEMBL gene 113
+added MCV ID field to nomenload
+#	modified:   bin/nomenload.py
+
 TAG: nomenload-6-0-22-4
 TAG: nomenload-6-0-22-3
 DATE: 09/21/2023, 10/12/2023

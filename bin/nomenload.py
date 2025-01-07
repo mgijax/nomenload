@@ -8,6 +8,7 @@
 #	    MGI_Synonym
 #	    ACC_Accession
 #	    ACC_AccessionReference
+#       VOC_Annot (_annottype_key = 1011, _vocab_key = 79)
 #
 # 	2) To create an input file for the mapping load
 #
@@ -30,8 +31,9 @@
 #		field 6: J: (J:#####)
 #		field 7: List of Synonyms, separated by "|"
 #		field 8: LogicalDB:Acc ID|LogicalDB:Acc ID|... (accession ids)
-#		field 9: Nomenclature Notes
-#		field 10: Submitted By
+#		field 9: MCV Term
+#		field 10: Nomenclature Notes
+#		field 11: Submitted By
 #
 # Parameters:
 #
@@ -56,13 +58,14 @@
 #
 # Output:
 #
-#       5 BCP files:
+#       6 BCP files:
 #
 #       MRK_Marker.bcp                  master Nomen records
 #       MGI_Reference_Assoc.bcp         Nomen/Reference records
 #       MGI_Synonym.bcp             	Nomen Synonym records
 #       ACC_Accession.bcp               Accession records
 #       ACC_AccessionReference.bcp      Accession/Reference records
+#       VOC_Annot.bcp                   MCV Annotations
 #
 #	Diagnostics file of all input parameters and SQL commands
 #	Error file
@@ -80,6 +83,10 @@
 #	http://prodwww.informatics.jax.org/software/wiki/index.php/Nomenload
 #
 # History:
+#
+# lec	01/07/2025
+#   wts2-1591/eag-93/ENSEMBL gene 113
+#   add field 9: MCV Term
 #
 # lec	09/29/2015
 #	- TR11216/12070 
@@ -138,6 +145,7 @@ mrkcurrentFile = ''	# file descriptor
 historyFile = ''	# file descriptor
 alleleFile = ''		# file descriptor
 noteFile = ''		# file descriptor
+mcvFile = ''		# file descriptor
 
 markerFileName = ''	# file name
 refFileName = ''	# file name
@@ -148,29 +156,32 @@ mrkcurrentFileName = ''	# file name
 historyFileName = ''	# file name
 alleleFileName = ''	# file name
 noteFileName = ''	# file name
+mcvFileName = ''	# file name
 
 markerKey = 0		# MRK_Marker._Marker_key
-accKey = 0		# ACC_Accession._Accession_key
-synKey = 0		# MGI_Synonym._Synonym_key
-mgiKey = 0		# ACC_AccessionMax.maxNumericPart
+accKey = 0		    # ACC_Accession._Accession_key
+synKey = 0		    # MGI_Synonym._Synonym_key
+mgiKey = 0		    # ACC_AccessionMax.maxNumericPart
 refAssocKey = 0		# MGI_Reference_Assoc._Assoc_key
 alleleKey = 0		# ALL_Allele._Allele_key
-noteKey = 0		# MGI_Note._Note_key
-historyKey = 0
-mappingKey = 0          # MLD_Expt_Marker._Assoc_key
+noteKey = 0		    # MGI_Note._Note_key
+historyKey = 0      # MRK_History._Assoc_key
+mappingKey = 0      # MLD_Expt_Marker._Assoc_key
+mcvKey = 0          # VOC_Annot._Annot_key
 mgiCount = 0
 
 statusDict = {}		# dictionary of marker statuses for quick lookup
 referenceDict = {}	# dictionary of references for quick lookup
 logicalDBDict = {}	# dictionary of logical DBs for quick lookup
+mcvDict = {}        # dictionary of mcv terms for quick lookup
 
 markerEvent = 106563604                # Assigned
 markerEventReason = 106563610          # Not Specified
 mgiTypeKey = 2                         # Nomenclature
 alleleTypeKey = 11
 mgiPrefix = "MGI:"
-refAssocTypeKey = 1018			# General Reference
-synTypeKey = 1004			# Other Synonym Type key
+refAssocTypeKey = 1018			       # General Reference
+synTypeKey = 1004			           # Other Synonym Type key
 
 mappingCol3 = 'yes'			# update Mkr chr?
 mappingCol4 = ''			# band (leave blank)
@@ -193,6 +204,7 @@ markerStatusKey = 0
 createdByKey = 0
 referenceKey = 0
 logicalDBKey = 0
+mcvTermey = 0
 otherAccDict = {}
 markerLookup = []
 referenceLookup = []
@@ -244,11 +256,11 @@ def init():
 
     global inputFile, outputFile, diagFile, errorFile
     global errorFileName, diagFileName, markerFileName, refFileName
-    global mrkcurrentFileName, historyFileName, alleleFileName, noteFileName
+    global mrkcurrentFileName, historyFileName, alleleFileName, noteFileName, mcvFileName
     global synFileName, accFileName, accrefFileName
     global markerFile, refFile, synFile, accFile, accrefFile, mappingFile
-    global mrkcurrentFile, historyFile, alleleFile, noteFile
-    global markerKey, accKey, synKey, mgiKey, refAssocKey, alleleKey, noteKey, historyKey
+    global mrkcurrentFile, historyFile, alleleFile, noteFile, mcvFile
+    global markerKey, accKey, synKey, mgiKey, refAssocKey, alleleKey, noteKey, historyKey, mcvKey
 
     db.useOneConnection(1)
     db.set_sqlUser(user)
@@ -264,6 +276,7 @@ def init():
     historyFileName = 'MRK_History.bcp'
     alleleFileName = 'ALL_Allele.bcp'
     noteFileName = 'MGI_Note.bcp'
+    mcvFileName = 'VOC_Annot.bcp'
 
     try:
         inputFile = open(inputFileName, 'r')
@@ -334,6 +347,11 @@ def init():
         noteFile = open(noteFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % noteFileName)
+            
+    try:
+        mcvFile = open(mcvFileName, 'w')
+    except:
+        exit(1, 'Could not open file %s\n' % mcvFileName)
             
     # Log all SQL 
     db.set_sqlLogFunction(db.sqlLogAll)
@@ -502,6 +520,33 @@ def verifyLogicalDB(logicalDB, lineNum):
 
     return(logicalDBKey)
 
+def verifyMCVTerm(mcvTerm, lineNum):
+    '''
+    # requires:
+    #	mcvTerm - the MCV Term
+    #	lineNum - the line number of the record from the input file
+    #
+    # effects:
+    #	verifies that:
+    #		the MCV Term exists 
+    #	writes to the error file if the MCV Term is invalid
+    #
+    # returns:
+    #	0 if the MCV Term is invalid
+    #	MCV Term Key if the MCV Term is valid
+    #
+    '''
+
+    mcvTermKey = 0
+
+    if mcvTerm in mcvDict:
+        mcvTermKey = mcvDict[mcvTerm]
+    else:
+        errorFile.write('Invalid MCV Term (row %d): %s\n' % (lineNum, mcvTerm))
+        mcvTermKey = 0
+
+    return(mcvTermKey)
+
 def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms, 
         otherAccIDs, createdBy, lineNum):
     '''
@@ -521,7 +566,9 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     global referenceKey
     global createdByKey
     global logicalDBKey
+    global mcvTermKey
     global otherAccDict
+    global mcvDict
     global markerLookup
     global referenceLookup
 
@@ -533,6 +580,7 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
     createdByKey = loadlib.verifyUser(createdBy, lineNum, errorFile)
     isDuplicateMarker = verifyDuplicateMarker(symbol, lineNum)
     chromosomeSearch = verifyChromosome(chromosome, lineNum)
+    mcvTermKey = verifyMCVTerm(mcvTerm, lineNum)
 
     #
     # 1st instance will be loaded
@@ -603,7 +651,8 @@ def sanityCheck(markerType, symbol, chromosome, markerStatus, jnum, synonyms,
        referenceKey == 0 or \
        isDuplicateMarker == 1 or \
        chromosomeSearch == 0 or \
-       createdByKey == 0:
+       createdByKey == 0 or \
+       mcvTermKey == 0:
 
         # set error flag to true
         error = 1
@@ -622,7 +671,8 @@ def setPrimaryKeys():
     #
     '''
 
-    global markerKey, accKey, mgiKey, synKey, alleleKey, noteKey, historyKey, mappingKey
+    global markerKey, accKey, mgiKey, synKey, alleleKey
+    global noteKey, historyKey, mappingKey, mcvKey
     global refAssocKey
 
     results = db.sql(''' select nextval('mrk_marker_seq') as maxKey ''', 'auto')
@@ -652,6 +702,9 @@ def setPrimaryKeys():
     results = db.sql(''' select nextval('mld_expt_marker_seq') as maxKey ''', 'auto')
     mappingKey = results[0]['maxKey']
 
+    results = db.sql(''' select nextval('voc_annot_seq') as maxKey ''', 'auto')
+    mcvKey = results[0]['maxKey']
+
 def loadDictionaries():
     '''
     # requires:
@@ -664,7 +717,7 @@ def loadDictionaries():
     #	nothing
     '''
 
-    global statusDict, logicalDBDict
+    global statusDict, logicalDBDict, mcvDict
 
     results = db.sql('select _Marker_Status_key, status from MRK_Status', 'auto')
     for r in results:
@@ -673,6 +726,18 @@ def loadDictionaries():
     results = db.sql('select _LogicalDB_key, name from ACC_LogicalDB', 'auto')
     for r in results:
         logicalDBDict[r['name']] = r['_LogicalDB_key']
+
+    results = db.sql('''
+        select a.accid , t._term_key
+        from ACC_Accession a, VOC_Term t
+        where a._logicaldb_key = 146 
+        and a._mgitype_key = 13 
+        and a.preferred = 1
+        and a._object_key = t._term_key
+        ''', 'auto')
+    for r in results:
+        mcvDict[r['accid']] = r['_term_key']
+    #print(mcvDict)
 
 def processFile():
     '''
@@ -688,7 +753,8 @@ def processFile():
     '''
 
     global bcpon
-    global markerKey, accKey, mgiKey, synKey, refAssocKey, createdByKey, alleleKey, noteKey, historyKey, mappingKey
+    global markerKey, accKey, mgiKey, synKey, refAssocKey, createdByKey, alleleKey
+    global noteKey, historyKey, mappingKey, mcvKey
     global markerType 
     global symbol 
     global name 
@@ -697,9 +763,11 @@ def processFile():
     global jnum 
     global synonyms 
     global otherAccIDs 
+    global mcvTerm
     global notes 
     global createdBy
     global otherAccDict
+    global mcvDict
     global markerLookup
     global mgiCount
 
@@ -724,8 +792,9 @@ def processFile():
             jnum = tokens[5]
             synonyms = tokens[6]
             otherAccIDs = tokens[7]
-            notes = tokens[8]
-            createdBy = tokens[9]
+            mcvTerm = tokens[8]
+            notes = tokens[9]
+            createdBy = tokens[10]
         except:
             errorFile.write('Invalid Line (missing column(s)) (row %d): %s\n' % (lineNum, line))
             continue
@@ -776,12 +845,19 @@ def processFile():
             notes = notes.replace('|', '\\|')
             noteFile.write('%d|%s|2|1009|%s|%s|%s|%s|%s\n' \
                 % (noteKey, markerKey, notes, createdByKey, createdByKey, cdate, cdate))
+            noteKey = noteKey + 1
+
+        # MCV Term (1011)
+        mcvFile.write('%d|1011|%s|%s|1614158|%s|%s\n' \
+            % (mcvKey, markerKey, mcvTermKey, cdate, cdate))
+        mcvKey = mcvKey + 1
 
         # write record back out and include MGI Accession ID
-        outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+        outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
                 % (markerType, symbol, name, chromosome, \
                 markerStatus, jnum, mgi_utils.prvalue(synonyms), \
                 mgi_utils.prvalue(otherAccIDs), \
+                mgi_utils.prvalue(mcvTerm), \
                 mgi_utils.prvalue(notes), createdByKey, \
                 mgiPrefix + str(mgiKey)))
 
@@ -794,7 +870,6 @@ def processFile():
         accKey = accKey + 1
         mgiKey = mgiKey + 1
         refAssocKey = refAssocKey + 1
-        noteKey = noteKey + 1
         mappingKey = mappingKey + 1
         mgiCount = mgiCount + 1
 
@@ -863,6 +938,7 @@ def processFile():
     historyFile.close()
     alleleFile.close()
     noteFile.close()
+    mcvFile.close()
     db.commit()
 
 def bcpFiles():
@@ -907,6 +983,9 @@ def bcpFiles():
     bcp9 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
         (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'MGI_Note', currentDir, noteFileName)
 
+    bcp10 = '%s %s %s %s %s %s "|" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), 'VOC_Annot', currentDir, mcvFileName)
+
     diagFile.write('%s\n' % bcp1)
     diagFile.write('%s\n' % bcp2)
     diagFile.write('%s\n' % bcp3)
@@ -916,6 +995,7 @@ def bcpFiles():
     diagFile.write('%s\n' % bcp7)
     diagFile.write('%s\n' % bcp8)
     diagFile.write('%s\n' % bcp9)
+    diagFile.write('%s\n' % bcp10)
 
     os.system(bcp1)
     os.system(bcp2)
@@ -926,6 +1006,7 @@ def bcpFiles():
     os.system(bcp7)
     os.system(bcp8)
     os.system(bcp9)
+    os.system(bcp10)
 
     # update the max accession ID value
     db.sql('select * from ACC_setMax (%d)' % (mgiCount), None)
@@ -959,6 +1040,10 @@ def bcpFiles():
     db.sql(''' select setval('mld_expt_marker_seq', (select max(_Assoc_key) from MLD_Expt_Marker)) ''', None)
     db.commit()
 
+    # update voc_annot_seq auto-sequence
+    db.sql(''' select setval('voc_annot_seq', (select max(_Annot_key) from VOC_Annot)) ''', None)
+    db.commit()
+    
 #
 # Main
 #
@@ -980,8 +1065,9 @@ processFile()
 
 if not DEBUG and bcpon:
     print('sanity check PASSED : loading data')
-#    print 'bcpFiles()'
+#    print('bcpFiles()')
     bcpFiles()
     exit(0)
 else:
     exit(1)
+
