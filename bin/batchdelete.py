@@ -184,7 +184,6 @@ def sanityCheck():
     error = 0
 
     markerKey = loadlib.verifyMarker(markerID, lineNum, None)
-
     refKey = loadlib.verifyReference(jnum, lineNum, None)
     createdByKey = loadlib.verifyUser(createdBy, lineNum, None)
 
@@ -196,7 +195,13 @@ def sanityCheck():
     if markerKey != 0:
         results = db.sql(''' select * from mrk_marker where _marker_key = %s and symbol = '%s' ''' % (markerKey, symbol), 'auto')
         if len(results) == 0:
-                errorFile.write('Marker ID, Symbol Do Not Match: ' + markerID + ', ' + symbol + '\n')
+                errorFile.write('\nMarker ID, Symbol Do Not Match: ' + markerID + ', ' + symbol + '\n')
+                error = 1
+
+    if markerKey != 0:
+        results = db.sql(''' select * from mrk_marker where _marker_status_key = 2 and _marker_key = %s ''' % (markerKey), 'auto')
+        if len(results) == 1:
+                errorFile.write('\nMarker ID Already Withdrawn: ' + markerID + ', ' + symbol + '\n')
                 error = 1
 
     if markerKey == 0 or \
