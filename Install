@@ -99,6 +99,7 @@ fi
 #
 chmod -f 775 ${FILEDIR}/*
 chgrp mgi ${FILEDIR}/*
+chmod 755 ${NOMENLOAD}/bin/batchdelete.sh
 chmod 755 ${NOMENLOAD}/bin/batchrename.sh
 chmod 755 ${NOMENLOAD}/bin/nomenload.sh
 
