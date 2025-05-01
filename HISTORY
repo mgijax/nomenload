@@ -1,3 +1,15 @@
+TAG: nomenload-6-0-25-?
+DATE: 05/01/2025
+STAFF: lec
+wts2-1656/e4g-247/Batch Tool
+        modified:   Install
+        modified:   nomenload.config.default
+        modified:   nomensanitycheck.config.default
+        new file:   bin/batchdelete.py
+        new file:   bin/batchdelete.sh
+        new file:   bin/publishBatchDelete
+        new file:   bin/runBatchDeleteQC
+
 TAG: nomenload-6-0-25-1
 DATE: 01/07/2025
 STAFF: lec

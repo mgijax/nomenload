@@ -79,9 +79,9 @@ if [ -d ${DEPLOY_PATH} ]; then
         # deployment errors are non-fatal, as they can occur regularly in an
         # SE's development area
 
-        for file in runNomenQC publishNomen runBatchRenameQC publishBatchRename
+        for file in runNomenQC publishNomen runBatchRenameQC publishBatchRename runBatchDeleteQC publishBatchDelete
         do
-                cp bin/${file} ${DEPLOY_PATH}
+                cp ${NOMENLOAD}/bin/${file} ${DEPLOY_PATH}
                 if [ $? -ne 0 ]; then
                         echo "Warning: Failed to copy ${file} to ${DEPLOY_PATH}"
                 fi
