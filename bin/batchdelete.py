@@ -204,6 +204,12 @@ def sanityCheck():
                 errorFile.write('\nMarker ID Already Withdrawn: ' + markerID + ', ' + symbol + '\n')
                 error = 1
 
+    if markerKey != 0:
+        results = db.sql(''' select * from all_allele where _marker_key = %s ''' % (markerKey), 'auto')
+        if len(results) == 1:
+                errorFile.write('\nMarker ID contains an Allele: ' + markerID + ', ' + symbol + '\n')
+                error = 1
+
     if markerKey == 0 or \
        refKey == 0 or \
        eventReasonKey == 0 or \
