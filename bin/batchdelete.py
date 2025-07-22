@@ -206,7 +206,7 @@ def sanityCheck():
 
     if markerKey != 0:
         results = db.sql(''' select * from all_allele where _marker_key = %s ''' % (markerKey), 'auto')
-        if len(results) == 1:
+        if len(results) >= 1:
                 errorFile.write('\nMarker ID contains an Allele: ' + markerID + ', ' + symbol + '\n')
                 error = 1
 
